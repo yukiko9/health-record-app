@@ -1,0 +1,83 @@
+page {
+  background: #e8f5c8;
+  color: #2e3238;
+  min-height: 100%;
+  font-family: Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.screen {
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 100vh;
+  padding: 24rpx;
+}
+
+.card {
+  background: rgba(240, 255, 219, 0.86);
+  border: 3rpx solid rgba(105, 131, 95, 0.72);
+  border-radius: 24rpx;
+  box-shadow: 0 10rpx 18rpx rgba(38, 62, 35, 0.16);
+}
+
+.label-strong {
+  font-weight: 700;
+  color: #111;
+}
+
+.btn-primary {
+  background: linear-gradient(180deg, #61f751 0%, #41db37 100%);
+  color: #173812;
+  border-radius: 20rpx;
+  border: 2rpx solid #3cae44;
+  font-size: 42rpx;
+  font-weight: 700;
+}
+
+.btn-disabled {
+  opacity: 0.55;
+}
+
+.btn-danger {
+  background: linear-gradient(180deg, #f0929d 0%, #ec808d 100%);
+  color: #6b252d;
+  border-radius: 20rpx;
+  border: 2rpx solid #b66470;
+  font-size: 42rpx;
+  font-weight: 700;
+}
+
+.icon-emoji {
+  font-size: 72rpx;
+  line-height: 1.1;
+}
+
+.mood-emoji.icon-emoji {
+  font-size: 88rpx;
+}
+
+button {
+  transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
+  box-shadow: 0 8rpx 12rpx rgba(0, 0, 0, 0.14);
+}
+
+button::after {
+  border: none;
+}
+
+button:active {
+  transform: scale(0.97) translateY(1rpx);
+  box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.15);
+  filter: brightness(0.96);
+}
+
+.pressable {
+  transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
+}
+
+.pressing {
+  transform: scale(0.97) translateY(1rpx);
+  box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.12);
+  filter: brightness(0.98);
+}

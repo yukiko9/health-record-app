@@ -1,0 +1,84 @@
+.screen.eating-block {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.eating-block {
+  background: transparent;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.return-btn {
+  min-width: 110rpx;
+  text-align: center;
+  padding: 8rpx 0;
+}
+
+.score-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.score {
+  font-size: 90rpx;
+}
+
+.score-caption {
+  font-size: 28rpx;
+  color: rgba(27, 35, 22, 0.62);
+  font-weight: 700;
+}
+
+.content {
+  flex: 1;
+  min-height: 0;
+  margin-top: 20rpx;
+  display: flex;
+  gap: 16rpx;
+}
+
+.menu {
+  width: 180rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.menu-btn {
+  padding: 14rpx 10rpx;
+  text-align: center;
+  font-weight: 700;
+  backdrop-filter: blur(2rpx);
+}
+
+.menu-btn-selected {
+  transform: translateY(4rpx);
+  box-shadow: inset 0 6rpx 12rpx rgba(38, 62, 35, 0.22), 0 2rpx 4rpx rgba(255, 255, 255, 0.35);
+  filter: brightness(0.97);
+}
+
+.eating-data-input {
+  flex: 1;
+  min-width: 0;
+  padding: 12rpx;
+}
+
+.bottom-btns {
+  margin-top: auto;
+  padding-top: 24rpx;
+  padding-bottom: 8rpx;
+  display: flex;
+  gap: 16rpx;
+}
+
+.bottom-btns button {
+  flex: 1;
+}

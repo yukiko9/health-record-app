@@ -1,0 +1,20 @@
+<view class="panel card water-food-panel">
+  <view class="food-item" bindtap="toggleItem" data-key="drink-water-btn">
+    <text>喝水(&gt;500ml) 💧</text>
+    <text>{{selectedMap['drink-water-btn'] ? "✅" : "☑️"}}</text>
+  </view>
+  <view class="food-item" bindtap="toggleItem" data-key="fruit-btn">
+    <text>吃水果 🍎</text>
+    <text>{{selectedMap['fruit-btn'] ? "✅" : "☑️"}}</text>
+  </view>
+  <view class="food-item" bindtap="toggleItem" data-key="drink-milk-btn">
+    <text>喝牛奶 🥛</text>
+    <text>{{selectedMap['drink-milk-btn'] ? "✅" : "☑️"}}</text>
+  </view>
+  <view class="fullness-btn">
+    <text>饱食感</text>
+    <text bindtap="fullnessReduce">❮</text>
+    <text class="n">{{fullness}}</text>
+    <text bindtap="fullnessAdd">❯</text>
+  </view>
+</view>

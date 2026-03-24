@@ -1,0 +1,99 @@
+<view class="screen main-ui" style="{{pageBgStyle}}">
+  <floating-bubbles />
+  <view class="header-panel">
+    <view class="duration-panel card">
+      <text class="duration-label">连胜天数</text>
+      <text class="duration">{{duration}}</text>
+    </view>
+
+    <view class="record-week-bar card">
+      <block wx:for="{{weekDays}}" wx:key="dateKey">
+        <view
+          class="record-day-slot {{item.isFuture ? 'record-day-future' : 'pressable'}}"
+          bindtap="onRecordDayTap"
+          data-key="{{item.dateKey}}"
+          hover-class="{{item.isFuture ? '' : 'pressing'}}"
+        >
+          <text class="record-day-label">{{item.labelEn}}</text>
+          <view class="record-day-circle-wrap">
+            <view wx:if="{{item.showTrophy && item.won}}" class="record-day-trophy">🏆</view>
+            <view class="record-day-circle {{item.won ? 'record-day-won' : ''}} {{item.isToday ? 'record-day-today' : ''}}">
+              <text wx:if="{{item.won}}" class="record-day-check">✓</text>
+            </view>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <view wx:if="{{recordDayModalVisible}}" class="record-day-modal-mask" bindtap="closeRecordDayModal">
+      <view
+        class="record-day-modal card {{recordDayModalWon ? 'record-day-modal-win' : 'record-day-modal-lose'}}"
+        catchtap="noopModal"
+      >
+        <view class="record-day-modal-close pressable" bindtap="closeRecordDayModal" hover-class="pressing">✕</view>
+        <text class="record-day-modal-title">{{recordDayModalTitle}}</text>
+        <text class="record-day-modal-score">{{recordDayModalScore}}</text>
+        <text class="record-day-modal-emoji icon-emoji">{{recordDayModalEmoji}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="main-score">
+    <view class="goal-tip pressable" bindtap="goGoalSetting" hover-class="pressing">
+      <text>目标:</text>
+      <text class="goal">{{goal}}</text>
+      <text class="situation">{{situation}}</text>
+      <text class="goal-setting-btn">设置</text>
+    </view>
+
+    <text class="mood-emoji icon-emoji">{{moodEmoji}}</text>
+    <text class="score label-strong">{{score}}</text>
+    <text class="username label-strong">{{username}}</text>
+  </view>
+
+  <view class="recent-act-list card">
+    <view class="recent-head">
+      <text>最近的活动:</text>
+      <text class="list-close-btn pressable" bindtap="toggleRecentActList" hover-class="pressing">{{showRecentActList ? "◀" : "▶"}}</text>
+    </view>
+    <block wx:if="{{showRecentActList}}">
+      <view wx:if="{{recentActList.length === 0}}" class="recent-empty-hint">
+        <text class="recent-empty-line">点击下面的三个模块开始记录你的活动吧！</text>
+        <text class="recent-empty-line">每次保存记录都会在当前分数上叠加加分，加油！</text>
+      </view>
+      <recent-act-list-show wx:else list="{{recentActList}}" />
+    </block>
+  </view>
+
+  <view class="do-list-panel card">
+    <view class="high-rate-act">
+      <text class="high-rate-act-label">你的高频记录...(点击会帮你进行重复记录！)</text>
+      <block wx:for="{{highRateActList}}" wx:key="index">
+        <view
+          class="high-rate-act {{item.valid ? '' : 'high-rate-act-disabled'}} pressable"
+          bindtap="onHighRateActTap"
+          data-index="{{index}}"
+          hover-class="{{item.valid ? 'pressing' : ''}}"
+        >
+          <text>{{item.do}}</text>
+          <text>{{item.time}}</text>
+          <text>{{item.info}}</text>
+        </view>
+      </block>
+    </view>
+    <view class="entry-btns">
+      <view class="entry-btn act-btn card pressable" bindtap="goActBlock" hover-class="pressing">
+        <text class="icon-emoji">🏃</text>
+        <text>活动</text>
+      </view>
+      <view class="entry-btn eating-btn card pressable" bindtap="goEatingBlock" hover-class="pressing">
+        <text class="icon-emoji">🥄</text>
+        <text>饮食</text>
+      </view>
+      <view class="entry-btn sleep-btn card pressable" bindtap="goSleepBlock" hover-class="pressing">
+        <text class="icon-emoji">🛏️</text>
+        <text>睡眠</text>
+      </view>
+    </view>
+  </view>
+</view>

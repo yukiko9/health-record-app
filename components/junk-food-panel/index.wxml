@@ -1,0 +1,20 @@
+<view class="panel card junk-food-panel">
+  <view class="food-item" bindtap="toggleItem" data-key="junk-btn">
+    <text>快餐 🍔</text>
+    <text>{{selectedMap['junk-btn'] ? "✅" : "☑️"}}</text>
+  </view>
+  <view class="food-item" bindtap="toggleItem" data-key="drink-btn">
+    <text>喝含糖饮料 🧃</text>
+    <text>{{selectedMap['drink-btn'] ? "✅" : "☑️"}}</text>
+  </view>
+  <view class="food-item" bindtap="toggleItem" data-key="drink-wine-btn">
+    <text>喝酒 🍺</text>
+    <text>{{selectedMap['drink-wine-btn'] ? "✅" : "☑️"}}</text>
+  </view>
+  <view class="fullness-btn">
+    <text>饱食感</text>
+    <text bindtap="fullnessReduce">❮</text>
+    <text class="n">{{fullness}}</text>
+    <text bindtap="fullnessAdd">❯</text>
+  </view>
+</view>

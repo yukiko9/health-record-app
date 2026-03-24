@@ -1,0 +1,348 @@
+.main-ui {
+  background: transparent;
+  padding-bottom: 48rpx;
+}
+
+.header-panel {
+  display: flex;
+  gap: 16rpx;
+  align-items: center;
+}
+
+.duration-panel {
+  width: 130rpx;
+  height: 140rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(4rpx);
+  box-shadow: 0 6rpx 14rpx rgba(38, 62, 35, 0.1);
+}
+
+.duration-label {
+  font-size: 24rpx;
+  color: #5d6647;
+}
+
+.duration {
+  font-size: 68rpx;
+  color: #b32b2b;
+  font-weight: 700;
+}
+
+.record-week-bar {
+  flex: 1;
+  display: flex;
+  padding: 12rpx 8rpx 16rpx;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 6rpx;
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 18rpx;
+  border: 2rpx solid rgba(105, 131, 95, 0.22);
+  box-shadow: inset 0 2rpx 8rpx rgba(255, 255, 255, 0.35);
+}
+
+.record-day-slot {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rpx;
+  min-width: 0;
+}
+
+.record-day-future {
+  opacity: 0.38;
+  pointer-events: none;
+}
+
+.record-day-label {
+  font-size: 22rpx;
+  font-weight: 800;
+  color: #3d4a33;
+}
+
+.record-day-circle-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.record-day-trophy {
+  position: absolute;
+  top: -28rpx;
+  font-size: 28rpx;
+  line-height: 1;
+}
+
+.record-day-circle {
+  width: 58rpx;
+  height: 58rpx;
+  border-radius: 50%;
+  background: linear-gradient(165deg, #d8e2cc 0%, #c5ceb8 100%);
+  border: 4rpx solid #8a9a7a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 8rpx rgba(38, 62, 35, 0.12);
+}
+
+.record-day-today {
+  border-color: #2e5b3b;
+  box-shadow: 0 0 0 2rpx rgba(46, 91, 59, 0.35);
+}
+
+.record-day-won {
+  background: linear-gradient(165deg, #6fd06f 0%, #4caf50 100%);
+  border-color: #2e7d32;
+  box-shadow: 0 4rpx 10rpx rgba(46, 125, 50, 0.35);
+}
+
+.record-day-check {
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.record-day-modal-mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx;
+}
+
+.record-day-modal {
+  position: relative;
+  width: 100%;
+  max-width: 560rpx;
+  padding: 48rpx 36rpx 40rpx;
+  border-radius: 24rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.record-day-modal-win {
+  background: linear-gradient(180deg, #d4f5c8 0%, #b8e6a8 100%);
+}
+
+.record-day-modal-lose {
+  background: linear-gradient(180deg, #ffd4d4 0%, #f0a8a8 100%);
+}
+
+.record-day-modal-close {
+  position: absolute;
+  right: 16rpx;
+  top: 12rpx;
+  font-size: 40rpx;
+  color: #b32b2b;
+  padding: 8rpx 16rpx;
+  line-height: 1;
+}
+
+.record-day-modal-title {
+  font-size: 32rpx;
+  font-weight: 800;
+  color: #2a3324;
+}
+
+.record-day-modal-score {
+  font-size: 120rpx;
+  font-weight: 900;
+  line-height: 1.1;
+  color: #1e2a18;
+}
+
+.record-day-modal-emoji {
+  font-size: 64rpx;
+  align-self: flex-start;
+  margin-left: 8rpx;
+}
+
+.main-score {
+  margin-top: 16rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  padding: 8rpx 0 4rpx;
+}
+
+.goal-tip {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  font-size: 36rpx;
+  font-weight: 700;
+  border-radius: 18rpx;
+  padding: 10rpx 14rpx;
+  background: rgba(255, 255, 255, 0.38);
+  border: 2rpx solid rgba(105, 131, 95, 0.28);
+  box-shadow: 0 6rpx 12rpx rgba(38, 62, 35, 0.08);
+}
+
+.goal {
+  font-size: 52rpx;
+}
+
+.situation {
+  font-size: 32rpx;
+  color: #64764e;
+}
+
+.goal-setting-btn {
+  margin-left: auto;
+  color: #2e5b3b;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 10rpx;
+  padding: 4rpx 10rpx;
+}
+
+.score {
+  font-size: 128rpx;
+  line-height: 1;
+  letter-spacing: 2rpx;
+  text-shadow: 0 3rpx 0 rgba(255, 255, 255, 0.3);
+}
+
+.score-caption {
+  margin-top: -10rpx;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: rgba(27, 35, 22, 0.62);
+}
+
+.username {
+  font-size: 52rpx;
+}
+
+.recent-act-list {
+  margin-top: 18rpx;
+  padding: 16rpx 14rpx;
+  backdrop-filter: blur(4rpx);
+  border-radius: 8rpx;
+}
+
+.recent-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8rpx;
+  font-size: 36rpx;
+  font-weight: 700;
+}
+
+.list-close-btn {
+  padding: 0 12rpx;
+}
+
+.recent-empty-hint {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  padding: 20rpx 12rpx 8rpx;
+}
+
+.recent-empty-line {
+  font-size: 30rpx;
+  line-height: 1.45;
+  color: #3d4a33;
+  font-weight: 600;
+}
+
+.do-list-panel {
+  margin-top: 20rpx;
+  padding: 14rpx;
+}
+
+.do-list-panel > .high-rate-act {
+  background: #3d6b2e;
+  border-radius: 20rpx;
+  padding: 14rpx 12rpx 16rpx;
+  margin-bottom: 16rpx;
+  box-shadow: 0 6rpx 12rpx rgba(0, 0, 0, 0.12);
+}
+
+.high-rate-act-label {
+  display: inline-block;
+  font-size: 24rpx;
+  color: #e8f5d0;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999rpx;
+  padding: 6rpx 16rpx;
+  margin-bottom: 12rpx;
+  font-weight: 600;
+}
+
+.do-list-panel > .high-rate-act > .high-rate-act {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  margin-bottom: 8rpx;
+  border: 3rpx solid #7a8b68;
+  border-radius: 14rpx;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.do-list-panel > .high-rate-act > .high-rate-act:last-child {
+  margin-bottom: 0;
+}
+
+.do-list-panel > .high-rate-act > .high-rate-act text {
+  min-width: 0;
+  min-height: 64rpx;
+  line-height: 64rpx;
+  text-align: center;
+  padding: 0 6rpx;
+  box-sizing: border-box;
+  font-weight: 700;
+  background: rgba(224, 252, 177, 0.86);
+  border-right: 2rpx solid #9cb189;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.do-list-panel > .high-rate-act > .high-rate-act text:last-child {
+  border-right: none;
+}
+
+.high-rate-act-disabled {
+  opacity: 0.45;
+}
+
+.entry-btns {
+  display: flex;
+  gap: 16rpx;
+}
+
+.entry-btn {
+  flex: 1;
+  min-height: 200rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  font-size: 42rpx;
+  font-weight: 700;
+  background: rgba(240, 255, 219, 0.86);
+}
+
+.entry-btn .icon-emoji {
+  font-size: 104rpx;
+  line-height: 1;
+}

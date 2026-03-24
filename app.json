@@ -1,0 +1,20 @@
+{
+  "pages": [
+    "pages/enter-ui/index",
+    "pages/main-ui/index",
+    "pages/goal-setting/index",
+    "pages/act-block/index",
+    "pages/eating-block/index",
+    "pages/sleep-night-block/index",
+    "pages/sleep-noon-block/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "health-app",
+    "navigationBarBackgroundColor": "#bef95d",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#bef95d",
+    "backgroundTextStyle": "light"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

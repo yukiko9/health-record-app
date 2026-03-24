@@ -1,0 +1,37 @@
+.recent-act-list-show {
+  border: 4rpx solid #7e8d68;
+  border-radius: 16rpx;
+  overflow: hidden;
+  background: rgba(224, 252, 177, 0.86);
+}
+
+/* 约两条数据行可视高度，其余滚动（scroll-view 需明确高度） */
+.recent-act-scroll {
+  height: 132rpx;
+  width: 100%;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  border-bottom: 2rpx solid #9cb189;
+  min-width: 0;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.row text {
+  min-width: 0;
+  min-height: 64rpx;
+  line-height: 64rpx;
+  padding: 0 8rpx;
+  box-sizing: border-box;
+  text-align: center;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+

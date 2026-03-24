@@ -1,0 +1,33 @@
+<view class="screen sleep-noon-block">
+  <floating-bubbles />
+  <view class="top">
+    <view class="return-btn btn-danger pressable" bindtap="returnBtn" hover-class="pressing">←</view>
+    <view class="score-wrap">
+      <text class="mood-emoji icon-emoji">{{moodEmoji}}</text>
+      <text class="score label-strong">{{score}}</text>
+    </view>
+  </view>
+
+  <view class="sleep-main">
+    <view class="sleep-mode-btn card pressable" bindtap="switchSleepMode" hover-class="pressing">
+      <text>午睡</text>
+      <text class="icon-emoji">☀️</text>
+    </view>
+
+    <view class="sleep-control">
+      <view class="sleep-hour-reduce card pressable" bindtap="sleepHourReduce" hover-class="pressing">❮</view>
+      <view class="sleep-hour card">
+        <text>{{sleepHour}}</text>
+        <text wx:if="{{sleepHalfHour === 30}}">.5</text>
+      </view>
+      <view class="sleep-hour-add card pressable" bindtap="sleepHourAdd" hover-class="pressing">❯</view>
+      <button class="sleep-half-hour btn-primary" bindtap="sleepHalfHour">保存</button>
+    </view>
+  </view>
+
+  <view class="sleep-scene">
+    <text class="icon-emoji">🪟</text>
+    <text class="icon-emoji">😴</text>
+    <text class="icon-emoji">🛏️</text>
+  </view>
+</view>

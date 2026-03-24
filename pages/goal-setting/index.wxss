@@ -1,0 +1,110 @@
+.goal-setting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28rpx;
+  min-height: 100vh;
+  padding-bottom: 40rpx;
+  box-sizing: border-box;
+}
+
+.return-btn {
+  align-self: flex-start;
+  min-width: 110rpx;
+  text-align: center;
+  padding: 10rpx 0;
+}
+
+.score-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.45);
+  border-radius: 22rpx;
+  padding: 12rpx 24rpx;
+  border: 2rpx solid rgba(105, 131, 95, 0.35);
+  box-shadow: 0 10rpx 20rpx rgba(38, 62, 35, 0.12);
+}
+
+.score {
+  font-size: 108rpx;
+  line-height: 1;
+}
+
+.score-caption {
+  margin-top: -4rpx;
+  font-size: 32rpx;
+  color: rgba(34, 47, 27, 0.62);
+  font-weight: 700;
+}
+
+.trophy {
+  font-size: 140rpx;
+  line-height: 1.1;
+}
+
+.title {
+  font-size: 62rpx;
+  text-align: center;
+  line-height: 1.25;
+  font-weight: 800;
+  color: #1e2a18;
+  letter-spacing: 1rpx;
+}
+
+.goal-picker {
+  display: flex;
+  align-items: stretch;
+  gap: 22rpx;
+  flex: 1;
+  width: 100%;
+  max-width: 680rpx;
+  justify-content: center;
+  padding: 20rpx 0;
+}
+
+.goal-reduce,
+.goal-add {
+  width: 100rpx;
+  min-height: 360rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 72rpx;
+}
+
+.goal-digits {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.goal-ten-digits,
+.goal-single-digits {
+  width: 160rpx;
+  height: 160rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 108rpx;
+  font-weight: 700;
+  background: #95f204;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.goal-digit-selected {
+  transform: scale(1.05);
+  box-shadow: 0 0 0 5rpx #2e5b3b, 0 14rpx 28rpx rgba(38, 62, 35, 0.22);
+  z-index: 1;
+}
+
+.save-goal-btn {
+  width: 86%;
+  margin-top: auto;
+}
+
+.tip {
+  margin-top: 12rpx;
+  font-size: 56rpx;
+}

@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "sleep-night-block",
+  "usingComponents": {
+    "floating-bubbles": "/components/floating-bubbles/index"
+  }
+}

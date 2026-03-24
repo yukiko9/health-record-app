@@ -1,0 +1,46 @@
+<view class="screen eating-block" style="{{pageBgStyle}}">
+  <floating-bubbles />
+  <view class="top">
+    <view class="return-btn btn-danger pressable" bindtap="returnBtn" hover-class="pressing">←</view>
+    <view class="score-wrap">
+      <text class="mood-emoji icon-emoji">{{moodEmoji}}</text>
+    </view>
+  </view>
+
+  <view class="content">
+    <view class="menu">
+      <view class="menu-btn balanced-food-btn card pressable {{activePanel === 'balanced-food-panel' ? 'menu-btn-selected' : ''}}" data-panel="balanced-food-panel" bindtap="selectPanel" hover-class="pressing">🥗 健康饮食</view>
+      <view class="menu-btn junk-food-btn card pressable {{activePanel === 'junk-food-panel' ? 'menu-btn-selected' : ''}}" data-panel="junk-food-panel" bindtap="selectPanel" hover-class="pressing">🍔 快餐/饮料</view>
+      <view class="menu-btn water-food-btn card pressable {{activePanel === 'water-food-panel' ? 'menu-btn-selected' : ''}}" data-panel="water-food-panel" bindtap="selectPanel" hover-class="pressing">🍎 水/水果</view>
+    </view>
+
+    <view class="eating-data-input card">
+      <balanced-food-panel
+        wx:if="{{activePanel === 'balanced-food-panel'}}"
+        selectedMap="{{selectedMap}}"
+        fullness="{{fullness}}"
+        bindtoggle="onToggleItem"
+        bindfullnesschange="onFullnessChange"
+      />
+      <junk-food-panel
+        wx:if="{{activePanel === 'junk-food-panel'}}"
+        selectedMap="{{selectedMap}}"
+        fullness="{{fullness}}"
+        bindtoggle="onToggleItem"
+        bindfullnesschange="onFullnessChange"
+      />
+      <water-food-panel
+        wx:if="{{activePanel === 'water-food-panel'}}"
+        selectedMap="{{selectedMap}}"
+        fullness="{{fullness}}"
+        bindtoggle="onToggleItem"
+        bindfullnesschange="onFullnessChange"
+      />
+    </view>
+  </view>
+
+  <view class="bottom-btns">
+    <button class="save-eat-btn btn-primary" bindtap="saveEatBtn">保存</button>
+    <button class="reset-eat-btn btn-danger" bindtap="resetEatBtn">重置</button>
+  </view>
+</view>

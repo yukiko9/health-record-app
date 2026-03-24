@@ -1,0 +1,36 @@
+<view class="metric-panel jog-panel">
+  <view
+    class="metric-card {{inputMode === 'distance' ? 'metric-card-active' : 'metric-card-muted'}}"
+    bindtap="onPickDistance"
+  >
+    <view class="metric-card-head">距离</view>
+    <view class="metric-card-body" catchtap="stopBubble">
+      <input
+        class="metric-input"
+        type="digit"
+        value="{{distStr}}"
+        disabled="{{inputMode !== 'distance'}}"
+        bindinput="onDistanceInput"
+        bindfocus="onPickDistance"
+      />
+      <text class="metric-unit">米</text>
+    </view>
+  </view>
+  <view
+    class="metric-card {{inputMode === 'time' ? 'metric-card-active' : 'metric-card-muted'}}"
+    bindtap="onPickTime"
+  >
+    <view class="metric-card-head">时间</view>
+    <view class="metric-card-body" catchtap="stopBubble">
+      <input
+        class="metric-input"
+        type="digit"
+        value="{{timeStr}}"
+        disabled="{{inputMode !== 'time'}}"
+        bindinput="onTimeInput"
+        bindfocus="onPickTime"
+      />
+      <text class="metric-unit">分</text>
+    </view>
+  </view>
+</view>

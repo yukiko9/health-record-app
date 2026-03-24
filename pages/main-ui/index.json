@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "main-ui",
+  "usingComponents": {
+    "recent-act-list-show": "/components/recent-act-list-show/index",
+    "floating-bubbles": "/components/floating-bubbles/index"
+  }
+}

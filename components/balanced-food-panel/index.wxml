@@ -1,0 +1,24 @@
+<view class="panel card balanced-food-panel">
+  <view class="food-item" bindtap="toggleItem" data-key="vegetable-btn">
+    <text>吃蔬菜 🥬</text>
+    <text>{{selectedMap['vegetable-btn'] ? "✅" : "☑️"}}</text>
+  </view>
+  <view class="food-item" bindtap="toggleItem" data-key="protein-btn">
+    <text>优质蛋白质 🥚</text>
+    <text>{{selectedMap['protein-btn'] ? "✅" : "☑️"}}</text>
+  </view>
+  <view class="food-item" bindtap="toggleItem" data-key="light-btn">
+    <text>清淡饮食 🍵</text>
+    <text>{{selectedMap['light-btn'] ? "✅" : "☑️"}}</text>
+  </view>
+  <view class="food-item" bindtap="toggleItem" data-key="no-drink-btn">
+    <text>不喝含糖饮料 🚫</text>
+    <text>{{selectedMap['no-drink-btn'] ? "✅" : "☑️"}}</text>
+  </view>
+  <view class="fullness-btn">
+    <text>饱食感</text>
+    <text bindtap="fullnessReduce">❮</text>
+    <text class="n">{{fullness}}</text>
+    <text bindtap="fullnessAdd">❯</text>
+  </view>
+</view>

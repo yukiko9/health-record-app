@@ -1,0 +1,30 @@
+<view class="screen goal-setting" style="{{pageBgStyle}}">
+  <floating-bubbles />
+  <view class="return-btn btn-danger pressable" bindtap="returnBtn" hover-class="pressing">←</view>
+
+  <view class="score-wrap">
+    <text>当前健康分数</text>
+    <text class="score label-strong">{{score}}</text>
+  </view>
+
+  <view class="trophy icon-emoji">🏆</view>
+  <view class="title label-strong">设置一个每日目标分数!</view>
+
+  <view class="goal-picker">
+    <view class="goal-reduce card pressable" bindtap="goalReduce" hover-class="pressing">❮</view>
+    <view class="goal-digits">
+      <view
+        class="goal-ten-digits card {{goalDigitTarget === 'ten' ? 'goal-digit-selected' : ''}}"
+        bindtap="selectGoalDigitTen"
+      >{{goalTenDigits}}</view>
+      <view
+        class="goal-single-digits card {{goalDigitTarget === 'single' ? 'goal-digit-selected' : ''}}"
+        bindtap="selectGoalDigitSingle"
+      >{{goalSingleDigits}}</view>
+    </view>
+    <view class="goal-add card pressable" bindtap="goalAdd" hover-class="pressing">❯</view>
+  </view>
+
+  <button class="save-goal-btn btn-primary" bindtap="saveGoalBtn">保存</button>
+  <view class="tip label-strong">然后努力去达到吧!</view>
+</view>

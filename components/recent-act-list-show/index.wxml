@@ -1,0 +1,11 @@
+<view class="recent-act-list-show">
+  <scroll-view class="recent-act-scroll" scroll-y>
+    <block wx:for="{{list}}" wx:key="index">
+      <view class="row">
+        <text>{{item.do}}</text>
+        <text>{{item.time}}</text>
+        <text>{{item.info}}</text>
+      </view>
+    </block>
+  </scroll-view>
+</view>

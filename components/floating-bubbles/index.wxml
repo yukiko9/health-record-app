@@ -1,0 +1,8 @@
+<view class="bubble-layer">
+  <view class="bubble bubble-a"></view>
+  <view class="bubble bubble-b"></view>
+  <view class="bubble bubble-c"></view>
+  <view class="bubble bubble-d"></view>
+  <view class="bubble bubble-e"></view>
+  <view class="bubble bubble-f"></view>
+</view>

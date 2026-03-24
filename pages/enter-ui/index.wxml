@@ -1,0 +1,17 @@
+<view class="screen enter-ui" style="{{pageBgStyle}}" bindtap="enterMainUi">
+  <floating-bubbles />
+  <view class="goal-tip">
+    <text>目标:</text>
+    <text class="goal">{{goal}}</text>
+    <text> </text>
+    <text class="situation">{{situation}}</text>
+  </view>
+
+  <view class="mood-emoji icon-emoji">{{moodEmoji}}</view>
+  <view class="score label-strong">{{score}}</view>
+  <view class="username-row">
+    <view class="username label-strong">{{username}}</view>
+    <view class="sync-nickname-btn card pressable" catchtap="syncWechatNickname" hover-class="pressing">同步微信昵称</view>
+  </view>
+  <view class="float-tip">点击空白处进入</view>
+</view>

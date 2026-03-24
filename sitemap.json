@@ -1,0 +1,9 @@
+{
+  "desc": "health-app sitemap",
+  "rules": [
+    {
+      "action": "allow",
+      "page": "*"
+    }
+  ]
+}

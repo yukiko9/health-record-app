@@ -1,0 +1,77 @@
+.enter-ui {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32rpx;
+  min-height: 100vh;
+  padding: 32rpx 24rpx;
+  box-sizing: border-box;
+}
+
+.goal-tip {
+  font-size: 40rpx;
+  color: #3d4a33;
+  background: rgba(255, 255, 255, 0.42);
+  border-radius: 20rpx;
+  padding: 14rpx 22rpx;
+  box-shadow: 0 8rpx 16rpx rgba(38, 62, 35, 0.12);
+  border: 2rpx solid rgba(105, 131, 95, 0.35);
+}
+
+.goal {
+  font-size: 54rpx;
+  font-weight: 700;
+  color: #2d2f3a;
+}
+
+.situation {
+  color: #2f7f37;
+}
+
+.mood-emoji {
+  margin-top: 30rpx;
+  font-size: 120rpx;
+}
+
+.score {
+  font-size: 160rpx;
+  line-height: 1;
+  letter-spacing: 2rpx;
+  text-shadow: 0 4rpx 0 rgba(255, 255, 255, 0.35);
+}
+
+.score-caption {
+  margin-top: -10rpx;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: rgba(38, 49, 31, 0.58);
+  letter-spacing: 1rpx;
+}
+
+.username-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16rpx;
+  width: 100%;
+  max-width: 620rpx;
+}
+
+.username {
+  font-size: 54rpx;
+  text-align: center;
+}
+
+.sync-nickname-btn {
+  font-size: 28rpx;
+  font-weight: 700;
+  padding: 12rpx 28rpx;
+  text-align: center;
+}
+
+.float-tip {
+  margin-top: 50rpx;
+  font-size: 42rpx;
+  color: rgba(0, 0, 0, 0.4);
+}

@@ -1,0 +1,17 @@
+{
+  "description": "health-app mini program",
+  "packOptions": {
+    "ignore": []
+  },
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true
+  },
+  "compileType": "miniprogram",
+  "libVersion": "3.7.8",
+  "appid": "touristappid",
+  "projectname": "health-app-ui"
+}

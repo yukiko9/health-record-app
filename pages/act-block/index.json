@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "act-block",
+  "usingComponents": {
+    "floating-bubbles": "/components/floating-bubbles/index",
+    "slow-walk-panel": "/components/slow-walk-panel/index",
+    "fast-walk-panel": "/components/fast-walk-panel/index",
+    "jog-panel": "/components/jog-panel/index",
+    "run-panel": "/components/run-panel/index",
+    "sit-overtime-panel": "/components/sit-overtime-panel/index"
+  }
+}

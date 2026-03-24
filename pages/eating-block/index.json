@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "eating-block",
+  "usingComponents": {
+    "floating-bubbles": "/components/floating-bubbles/index",
+    "balanced-food-panel": "/components/balanced-food-panel/index",
+    "junk-food-panel": "/components/junk-food-panel/index",
+    "water-food-panel": "/components/water-food-panel/index"
+  }
+}

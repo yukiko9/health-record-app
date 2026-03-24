@@ -1,0 +1,58 @@
+<view class="screen act-block" style="{{pageBgStyle}}">
+  <floating-bubbles />
+  <view class="top">
+    <view class="return-btn btn-danger pressable" bindtap="returnBtn" hover-class="pressing">←</view>
+    <view class="score-wrap">
+      <text class="mood-emoji icon-emoji">{{moodEmoji}}</text>
+      <text class="score label-strong">{{score}}</text>
+      <text class="score-caption">score</text>
+    </view>
+  </view>
+
+  <view class="content">
+    <view class="menu">
+      <view class="menu-btn slow-walk-btn card pressable {{activePanel === 'slow-walk-panel' ? 'menu-btn-selected' : ''}}" data-panel="slow-walk-panel" bindtap="selectPanel" hover-class="pressing">🚶 慢走</view>
+      <view class="menu-btn fast-walk-btn card pressable {{activePanel === 'fast-walk-panel' ? 'menu-btn-selected' : ''}}" data-panel="fast-walk-panel" bindtap="selectPanel" hover-class="pressing">🚶💦 快走</view>
+      <view class="menu-btn jog-btn card pressable {{activePanel === 'jog-panel' ? 'menu-btn-selected' : ''}}" data-panel="jog-panel" bindtap="selectPanel" hover-class="pressing">🏃 慢跑</view>
+      <view class="menu-btn run-btn card pressable {{activePanel === 'run-panel' ? 'menu-btn-selected' : ''}}" data-panel="run-panel" bindtap="selectPanel" hover-class="pressing">🏃💨 中速/快跑</view>
+      <view class="menu-btn sit-overtime-btn card pressable {{activePanel === 'sit-overtime-panel' ? 'menu-btn-selected' : ''}}" data-panel="sit-overtime-panel" bindtap="selectPanel" hover-class="pressing">🪑 久坐</view>
+    </view>
+
+    <view class="act-data-input card">
+      <slow-walk-panel
+        wx:if="{{activePanel === 'slow-walk-panel'}}"
+        value="{{actDataInput}}"
+        inputMode="{{actInputModes.slowWalk}}"
+        bindchange="onSlowWalkChange"
+      />
+      <fast-walk-panel
+        wx:if="{{activePanel === 'fast-walk-panel'}}"
+        value="{{actDataInput}}"
+        inputMode="{{actInputModes.fastWalk}}"
+        bindchange="onFastWalkChange"
+      />
+      <jog-panel
+        wx:if="{{activePanel === 'jog-panel'}}"
+        value="{{actDataInput}}"
+        inputMode="{{actInputModes.jog}}"
+        bindchange="onJogChange"
+      />
+      <run-panel
+        wx:if="{{activePanel === 'run-panel'}}"
+        value="{{actDataInput}}"
+        inputMode="{{actInputModes.run}}"
+        bindchange="onRunChange"
+      />
+      <sit-overtime-panel
+        wx:if="{{activePanel === 'sit-overtime-panel'}}"
+        value="{{actDataInput}}"
+        bindchange="onSitOvertimeChange"
+      />
+    </view>
+  </view>
+
+  <view class="bottom-btns">
+    <button class="save-act-btn btn-primary" bindtap="saveActBtn">保存</button>
+    <button class="reset-act-btn btn-danger" bindtap="resetActBtn">重置</button>
+  </view>
+</view>
