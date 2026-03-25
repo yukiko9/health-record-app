@@ -33,22 +33,22 @@ function calcActScore(payload) {
     raw =
       mode === "distance"
         ? (Number(payload.slowWalkDistance) || 0) * 0.00465
-        : (Number(payload.slowWalkTime) || 0) * 0.2335;
+        : (((1-0.9**Number(payload.slowWalkTime))/0.1) || 0) * 0.467;
   } else if (panel === "fast-walk-panel") {
     raw =
       mode === "distance"
         ? (Number(payload.fastWalkDistance) || 0) * 0.006
-        : (Number(payload.fastWalkTime) || 0) * 0.465;
+        : (0.7464*(1-0.88**Number(payload.fastWalkTime))/0.12 || 0) ;
   } else if (panel === "jog-panel") {
     raw =
       mode === "distance"
         ? (Number(payload.jogDistance) || 0) * 0.007
-        : (Number(payload.jogTime) || 0) * 0.09335;
+        : (1.494*(1-0.88**Number(payload.jogTime))/0.15 || 0);
   } else if (panel === "run-panel") {
     raw =
       mode === "distance"
-        ? (Number(payload.runDistance) || 0) * 0.0625
-        : (Number(payload.runTime) || 0) * 0.1895;
+        ? (Number(payload.runDistance) || 0) * 0.009
+        : (1.8664*(1-0.82**Number(payload.runTime))/0.18 || 0);
   }
 
   return Math.round(raw);
