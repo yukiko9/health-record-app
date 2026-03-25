@@ -8,7 +8,7 @@
   </view>
 
   <view class="mood-emoji icon-emoji">{{moodEmoji}}</view>
-  <view class="score label-strong">{{score}}</view>
+  <rolling-score score-class="score label-strong" value="{{score}}" />
   <view class="username-row">
     <view class="username label-strong">{{username}}</view>
     <view class="sync-nickname-btn card pressable" catchtap="syncWechatNickname" hover-class="pressing">同步微信昵称</view>

@@ -1,0 +1,12 @@
+<view class="roller-root score-class">
+  <view class="roller-col" wx:for="{{columns}}" wx:key="k">
+    <view class="roller-stack">
+      <view
+        class="roller-track {{item.anim ? 'roller-track-on' : ''}}"
+        style="transform: translate3d(0, {{item.offsetEm}}em, 0);"
+      >
+        <text wx:for="{{item.stack}}" wx:for-item="line" wx:key="*this" class="roller-line">{{line}}</text>
+      </view>
+    </view>
+  </view>
+</view>

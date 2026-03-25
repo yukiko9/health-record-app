@@ -1,0 +1,39 @@
+.roller-root {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.roller-col {
+  height: 1em;
+  overflow: hidden;
+  position: relative;
+}
+
+.roller-stack {
+  height: 100%;
+}
+
+.roller-track {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  will-change: transform;
+}
+
+.roller-track-on {
+  transition: transform 0.52s cubic-bezier(0.28, 0.02, 0.18, 1);
+}
+
+.roller-line {
+  height: 1em;
+  line-height: 1em;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+  text-align: center;
+  min-width: 0.55em;
+}

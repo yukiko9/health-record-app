@@ -1,5 +1,11 @@
 const app = getApp();
-const { fetchUserDashboard, fetchHighRateActList, fetchWeekProgress } = require("../../utils/api");
+const {
+  fetchUserDashboard,
+  fetchHighRateActList,
+  fetchWeekProgress,
+  uploadAiAnalyzeImage
+} = require("../../utils/api");
+const { applyAiAnalyzeToApp } = require("../../utils/aiApply");
 const scoreUtil = require("../../utils/score");
 const { buildFiveDaySlots, mergeWeekApi, dateKeyFromDate } = require("../../utils/weekUi");
 const { getScorePageBackgroundStyle } = require("../../utils/pageBg");
@@ -104,10 +110,27 @@ Page({
       delta = scoreUtil.calcActScore(item.scorePayload);
     } else if (item.module === "eating") {
       const c = scoreUtil.getEatingCountsToday();
-      delta = scoreUtil.calcEatingScore({
-        ...item.scorePayload,
-        wineCountToday: c.wine,
-        milkCountToday: c.milk
+      const portions = scoreUtil.getEatingPortionCountsToday();
+      const m = item.scorePayload.selectedMap || {};
+      const overwhelmMarginal = scoreUtil.calcEatingOverwhelmMarginal(portions, m);
+      delta =
+        scoreUtil.calcEatingScore({
+          ...item.scorePayload,
+          wineCountToday: c.wine,
+          milkCountToday: c.milk
+        }) + overwhelmMarginal;
+      let nw = c.wine;
+      let nm = c.milk;
+      if (m["drink-wine-btn"]) nw += 1;
+      if (m["drink-milk-btn"]) nm += 1;
+      const afterPortions = scoreUtil.eatingPortionsAfterSave(portions, m);
+      wx.setStorageSync("eatingDailyBtnCounts", {
+        date: scoreUtil.localDateKey(),
+        wine: nw,
+        milk: nm,
+        vegetable: afterPortions.vegetable,
+        fruit: afterPortions.fruit,
+        protein: afterPortions.protein
       });
     } else if (item.module === "sleep") {
       delta = scoreUtil.calcSleepScore(item.scorePayload);
@@ -140,5 +163,58 @@ Page({
 
   goSleepBlock() {
     wx.navigateTo({ url: "/pages/sleep-night-block/index" });
+  },
+
+  onAiAnalyzeTap() {
+    wx.chooseMedia({
+      count: 1,
+      mediaType: ["image"],
+      success: async (pick) => {
+        const f = pick.tempFiles && pick.tempFiles[0];
+        if (!f || !f.tempFilePath) {
+          return;
+        }
+        wx.showLoading({ title: "分析中…", mask: true });
+        let raw;
+        try {
+          raw = await uploadAiAnalyzeImage(f.tempFilePath);
+        } catch (e) {
+          wx.hideLoading();
+          wx.showToast({ title: "上传失败，请重试", icon: "none" });
+          return;
+        }
+        wx.hideLoading();
+
+        let sleepHour = raw.sleepHour;
+        let calorie = raw.calorie;
+        const missS = sleepHour === undefined || sleepHour === null;
+        const missC = calorie === undefined || calorie === null;
+        if (missS && missC) {
+          wx.showModal({
+            title: "提示",
+            content: "未检测到有效睡眠和活动热量值，请重新上传截图！",
+            showCancel: false
+          });
+          return;
+        }
+        if (missS) {
+          sleepHour = 0;
+          wx.showToast({ title: "只获取到活动热量值！", icon: "none" });
+        } else if (missC) {
+          calorie = 0;
+          wx.showToast({ title: "只获取到睡眠时间！", icon: "none" });
+        }
+
+        const summary = applyAiAnalyzeToApp(app, sleepHour, calorie);
+        this.setData({
+          score: summary.scoreDisplay,
+          situation: summary.situation,
+          moodEmoji: app.getMoodEmoji(summary.scoreValue),
+          pageBgStyle: getScorePageBackgroundStyle(summary.scoreValue)
+        });
+        wx.showToast({ title: "已更新分数", icon: "success" });
+      },
+      fail() {}
+    });
   }
 });

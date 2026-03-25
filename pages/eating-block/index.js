@@ -3,7 +3,10 @@ const { saveEatingRecord, fetchRecentActList } = require("../../utils/api");
 const {
   calcEatingScore: calcEatingScoreUtil,
   localDateKey,
-  getEatingCountsToday
+  getEatingCountsToday,
+  getEatingPortionCountsToday,
+  calcEatingOverwhelmMarginal,
+  eatingPortionsAfterSave
 } = require("../../utils/score");
 const { getScorePageBackgroundStyle } = require("../../utils/pageBg");
 
@@ -42,9 +45,22 @@ Page({
   },
 
   selectPanel(e) {
-    this.setData({ activePanel: e.currentTarget.dataset.panel });
+    const panel = e.currentTarget.dataset.panel;
+    if (panel === this.data.activePanel) {
+      this.setData({ panelBump: false });
+      setTimeout(() => this.setData({ panelBump: true }), 0);
+      return;
+    }
+    this.setData({
+      activePanel: panel,
+      panelBump: true
+    });
   },
 
+  onPanelBumpEnd() {
+    this.setData({ panelBump: false });
+  },
+  
   onToggleItem(e) {
     const { key } = e.detail;
     const selectedMap = { ...this.data.selectedMap, [key]: !this.data.selectedMap[key] };
@@ -81,15 +97,21 @@ Page({
       wx.showToast({ title: "保存失败，请重试", icon: "none" });
       return;
     }
-    const eatingScore = this.calcEatingScore(payload);
+    const portions = getEatingPortionCountsToday();
+    const overwhelmMarginal = calcEatingOverwhelmMarginal(portions, this.data.selectedMap);
+    const eatingScore = this.calcEatingScore(payload) + overwhelmMarginal;
     let nw = counts.wine;
     let nm = counts.milk;
     if (this.data.selectedMap["drink-wine-btn"]) nw += 1;
     if (this.data.selectedMap["drink-milk-btn"]) nm += 1;
+    const afterPortions = eatingPortionsAfterSave(portions, this.data.selectedMap);
     wx.setStorageSync("eatingDailyBtnCounts", {
       date: localDateKey(),
       wine: nw,
-      milk: nm
+      milk: nm,
+      vegetable: afterPortions.vegetable,
+      fruit: afterPortions.fruit,
+      protein: afterPortions.protein
     });
     const summary = app.setModuleScore("eating", eatingScore);
     this.setData({

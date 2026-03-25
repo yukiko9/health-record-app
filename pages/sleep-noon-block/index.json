@@ -1,6 +1,7 @@
 {
   "navigationBarTitleText": "sleep-noon-block",
   "usingComponents": {
-    "floating-bubbles": "/components/floating-bubbles/index"
+    "floating-bubbles": "/components/floating-bubbles/index",
+    "rolling-score": "/components/rolling-score/index"
   }
 }

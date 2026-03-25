@@ -142,11 +142,64 @@ function getEatingCountsToday() {
   return { wine: Number(raw.wine) || 0, milk: Number(raw.milk) || 0 };
 }
 
+/** 当日已保存的蔬菜/水果/蛋白「份」计数（不含本次） */
+function getEatingPortionCountsToday() {
+  const key = localDateKey();
+  const raw = wx.getStorageSync("eatingDailyBtnCounts") || {};
+  if (raw.date !== key) {
+    return { wine: 0, milk: 0, vegetable: 0, fruit: 0, protein: 0 };
+  }
+  return {
+    wine: Number(raw.wine) || 0,
+    milk: Number(raw.milk) || 0,
+    vegetable: Number(raw.vegetable) || 0,
+    fruit: Number(raw.fruit) || 0,
+    protein: Number(raw.protein) || 0
+  };
+}
+
+/** 超量惩罚当日累计扣分（正数，表示应从分数中扣掉的总量） */
+function totalEatingOverwhelmPenalty(portions) {
+  const v = Number(portions.vegetable) || 0;
+  const f = Number(portions.fruit) || 0;
+  const p = Number(portions.protein) || 0;
+  const vegPen = Math.min(Math.max(0, v - 5) * 1, 3);
+  const fruitPen = Math.min(Math.max(0, f - 4) * 2, 3);
+  const proteinPen = Math.min(Math.max(0, p - 3) * 2, 6);
+  return vegPen + fruitPen + proteinPen;
+}
+
+/** 本次保存/快捷记分后份数（各 +1 若对应 btn 勾选） */
+function eatingPortionsAfterSave(before, selectedMap) {
+  const m = selectedMap || {};
+  return {
+    vegetable: before.vegetable + (m["vegetable-btn"] ? 1 : 0),
+    fruit: before.fruit + (m["fruit-btn"] ? 1 : 0),
+    protein: before.protein + (m["protein-btn"] ? 1 : 0)
+  };
+}
+
+/** 边际超量扣分：应叠加到 calcEatingScore 结果上（通常为 ≤0） */
+function calcEatingOverwhelmMarginal(beforePortions, selectedMap) {
+  const after = eatingPortionsAfterSave(beforePortions, selectedMap);
+  const penBefore = totalEatingOverwhelmPenalty(beforePortions);
+  const penAfter = totalEatingOverwhelmPenalty({
+    vegetable: after.vegetable,
+    fruit: after.fruit,
+    protein: after.protein
+  });
+  return penBefore - penAfter;
+}
+
 module.exports = {
   calcActScore,
   calcEatingScore,
   calcSleepScore,
   localDateKey,
   getSitDailyTotalBefore,
-  getEatingCountsToday
+  getEatingCountsToday,
+  getEatingPortionCountsToday,
+  totalEatingOverwhelmPenalty,
+  eatingPortionsAfterSave,
+  calcEatingOverwhelmMarginal
 };

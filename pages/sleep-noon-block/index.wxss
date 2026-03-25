@@ -6,7 +6,7 @@
 }
 
 .sleep-noon-block {
-  background: linear-gradient(180deg, #98e2ff 0%, #cfeaf4 100%);
+  background: linear-gradient(180deg, #b8ecff 0%, #d8f4fc 45%, #e8f8fc 100%);
   color: #111;
 }
 
@@ -103,9 +103,28 @@
 
 .sleep-scene {
   margin-top: auto;
-  padding: 32rpx 0 24rpx;
+  padding: 40rpx 20rpx 36rpx;
   display: flex;
-  justify-content: space-around;
-  align-items: center;
-  font-size: 112rpx;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12rpx;
+}
+
+.sleep-scene .icon-emoji {
+  font-size: 72rpx;
+  line-height: 1;
+  filter: drop-shadow(0 3rpx 6rpx rgba(46, 91, 59, 0.2));
+}
+
+.sleep-scene .icon-emoji:nth-child(2) {
+  font-size: 100rpx;
+  align-self: center;
+}
+
+.sleep-noon-block .sleep-mode-btn .icon-emoji {
+  font-size: 58rpx;
+}
+
+.sleep-noon-block .mood-emoji.icon-emoji {
+  font-size: 82rpx;
 }

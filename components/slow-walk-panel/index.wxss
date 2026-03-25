@@ -1,64 +1,66 @@
 .metric-panel {
   display: flex;
   flex-direction: column;
-  gap: 18rpx;
-  padding: 10rpx 4rpx 12rpx;
+  gap: 20rpx;
+  padding: 8rpx 2rpx 8rpx;
 }
 
 .metric-card {
-  border-radius: 20rpx;
+  border-radius: 24rpx;
   overflow: hidden;
-  box-shadow: 0 6rpx 18rpx rgba(45, 90, 45, 0.18);
-  border: 2rpx solid rgba(255, 255, 255, 0.45);
+  box-shadow: 0 10rpx 18rpx rgba(38, 62, 35, 0.14);
+  border: 3rpx solid rgba(105, 131, 95, 0.55);
 }
 
 .metric-card-active .metric-card-head {
-  background: linear-gradient(180deg, #3b82c4 0%, #2563a8 100%);
-  color: #fff;
+  background: linear-gradient(180deg, #61f751 0%, #41db37 100%);
+  color: #173812;
+  border-bottom: 2rpx solid #3cae44;
 }
 
 .metric-card-muted .metric-card-head {
-  background: #b8c4d4;
-  color: #5a6570;
+  background: linear-gradient(180deg, #dbe8c8 0%, #c5d4b0 100%);
+  color: #4a5c3e;
 }
 
 .metric-card-muted .metric-card-body {
-  opacity: 0.55;
-  background: #eef2f6;
+  opacity: 0.58;
+  background: rgba(240, 255, 219, 0.72);
 }
 
 .metric-card-active .metric-card-body {
-  background: #fff;
+  background: rgba(255, 255, 255, 0.96);
 }
 
 .metric-card-head {
-  font-size: 28rpx;
+  font-size: 30rpx;
   font-weight: 800;
-  padding: 14rpx 20rpx;
+  padding: 16rpx 22rpx;
   letter-spacing: 2rpx;
 }
 
 .metric-card-body {
   display: flex;
   align-items: center;
-  gap: 12rpx;
-  padding: 18rpx 20rpx;
+  gap: 14rpx;
+  padding: 22rpx 22rpx;
 }
 
 .metric-input {
   flex: 1;
-  min-height: 72rpx;
-  border: 2rpx solid #94b8d4;
-  border-radius: 12rpx;
-  padding: 0 16rpx;
-  font-size: 34rpx;
+  min-height: 76rpx;
+  border: 2rpx solid rgba(105, 131, 95, 0.5);
+  border-radius: 16rpx;
+  padding: 0 18rpx;
+  font-size: 36rpx;
   font-weight: 700;
   background: #fff;
+  color: #1a2e14;
 }
 
 .metric-unit {
-  font-size: 28rpx;
+  font-size: 30rpx;
   font-weight: 700;
-  color: #3d5a73;
-  min-width: 48rpx;
+  color: #2e5b3b;
+  min-width: 52rpx;
 }

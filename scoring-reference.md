@@ -40,6 +40,18 @@
 - **组合奖**：仅 `balanced-food-panel` 且蔬菜+蛋白+轻食全选 → +10。
 - 最终 `Math.trunc(eatingScore)`，**无 35 封顶**。
 
+### 一日饮食过多（超量惩罚）
+
+本地 `eatingDailyBtnCounts` 中 `vegetable` / `fruit` / `protein`：每成功保存一次饮食且勾选对应 `vegetable-btn` / `fruit-btn` / `protein-btn`，该项 +1（与红酒/牛奶计数同次写入）。
+
+累计扣分（正数，表示当日已从分数中扣掉的总量）：
+
+- 蔬菜：超过 5 份后每份 −1，当日该项最多扣 3 分。
+- 水果：超过 4 份后每份 −2，当日该项最多扣 3 分。
+- 蛋白：超过 3 份后每份 −2，当日该项最多扣 6 分。
+
+单次保存的 **边际扣分** = `totalPenalty(保存后)` − `totalPenalty(保存前)`；本条饮食 delta = `calcEatingScore(...) − 边际扣分`（实现见 `calcEatingOverwhelmMarginal`）。高频快捷区饮食一行在记分后会同步更新 `eatingDailyBtnCounts`，与保存页一致。
+
 ---
 
 ## 睡眠 `calcSleepScore(payload)`

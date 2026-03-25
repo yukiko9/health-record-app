@@ -365,6 +365,34 @@ async function fetchWeekProgress() {
   }
 }
 
+/**
+ * 上传截图供后端视觉/OCR 解析；返回 JSON 中的 sleepHour、calorie（可为 undefined）
+ * @param {string} filePath 本地临时路径
+ */
+async function uploadAiAnalyzeImage(filePath) {
+  if (useMock()) {
+    await delay();
+    return { sleepHour: 7, calorie: 640 };
+  }
+  return new Promise((resolve, reject) => {
+    wx.uploadFile({
+      url: `${API_BASE}/api/ai/analyze`,
+      filePath,
+      name: "image",
+      success(res) {
+        try {
+          const body = JSON.parse(res.data || "{}");
+          const payload = body.data != null ? body.data : body;
+          resolve(payload || {});
+        } catch (e) {
+          reject(e);
+        }
+      },
+      fail: reject
+    });
+  });
+}
+
 module.exports = {
   API_BASE,
   useMock,
@@ -381,5 +409,6 @@ module.exports = {
   saveGoal,
   saveActRecord,
   saveEatingRecord,
-  saveSleepRecord
+  saveSleepRecord,
+  uploadAiAnalyzeImage
 };

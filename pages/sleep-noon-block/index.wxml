@@ -4,7 +4,7 @@
     <view class="return-btn btn-danger pressable" bindtap="returnBtn" hover-class="pressing">←</view>
     <view class="score-wrap">
       <text class="mood-emoji icon-emoji">{{moodEmoji}}</text>
-      <text class="score label-strong">{{score}}</text>
+      <rolling-score score-class="score label-strong" value="{{score}}" />
     </view>
   </view>
 

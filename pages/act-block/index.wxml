@@ -4,8 +4,7 @@
     <view class="return-btn btn-danger pressable" bindtap="returnBtn" hover-class="pressing">←</view>
     <view class="score-wrap">
       <text class="mood-emoji icon-emoji">{{moodEmoji}}</text>
-      <text class="score label-strong">{{score}}</text>
-      <text class="score-caption">score</text>
+      <rolling-score score-class="score label-strong" value="{{score}}" />
     </view>
   </view>
 
@@ -18,7 +17,15 @@
       <view class="menu-btn sit-overtime-btn card pressable {{activePanel === 'sit-overtime-panel' ? 'menu-btn-selected' : ''}}" data-panel="sit-overtime-panel" bindtap="selectPanel" hover-class="pressing">🪑 久坐</view>
     </view>
 
-    <view class="act-data-input card">
+    <view
+      class="act-data-input card {{panelBump ? 'act-panel-bump' : ''}}"
+      bindanimationend="onPanelBumpEnd"
+    >
+      <text class="act-panel-title" wx:if="{{activePanel === 'slow-walk-panel'}}">🚶 慢走</text>
+      <text class="act-panel-title" wx:elif="{{activePanel === 'fast-walk-panel'}}">🚶💦 快走</text>
+      <text class="act-panel-title" wx:elif="{{activePanel === 'jog-panel'}}">🏃 慢跑</text>
+      <text class="act-panel-title" wx:elif="{{activePanel === 'run-panel'}}">🏃💨 中速/快跑</text>
+      <text class="act-panel-title" wx:elif="{{activePanel === 'sit-overtime-panel'}}">🪑 久坐</text>
       <slow-walk-panel
         wx:if="{{activePanel === 'slow-walk-panel'}}"
         value="{{actDataInput}}"

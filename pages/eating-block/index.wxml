@@ -4,6 +4,7 @@
     <view class="return-btn btn-danger pressable" bindtap="returnBtn" hover-class="pressing">←</view>
     <view class="score-wrap">
       <text class="mood-emoji icon-emoji">{{moodEmoji}}</text>
+      <rolling-score score-class="score label-strong" value="{{score}}" />
     </view>
   </view>
 
@@ -14,7 +15,8 @@
       <view class="menu-btn water-food-btn card pressable {{activePanel === 'water-food-panel' ? 'menu-btn-selected' : ''}}" data-panel="water-food-panel" bindtap="selectPanel" hover-class="pressing">🍎 水/水果</view>
     </view>
 
-    <view class="eating-data-input card">
+    <view class="eating-data-input card {{panelBump ? 'eating-panel-bump' : ''}}"bindanimationend="onPanelBumpEnd"
+    >
       <balanced-food-panel
         wx:if="{{activePanel === 'balanced-food-panel'}}"
         selectedMap="{{selectedMap}}"

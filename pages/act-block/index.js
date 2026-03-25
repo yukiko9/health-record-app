@@ -32,7 +32,8 @@ Page({
       fastWalk: "time",
       jog: "time",
       run: "time"
-    }
+    },
+    panelBump: false
   },
 
   onShow() {
@@ -49,7 +50,20 @@ Page({
   },
 
   selectPanel(e) {
-    this.setData({ activePanel: e.currentTarget.dataset.panel });
+    const panel = e.currentTarget.dataset.panel;
+    if (panel === this.data.activePanel) {
+      this.setData({ panelBump: false });
+      setTimeout(() => this.setData({ panelBump: true }), 0);
+      return;
+    }
+    this.setData({
+      activePanel: panel,
+      panelBump: true
+    });
+  },
+
+  onPanelBumpEnd() {
+    this.setData({ panelBump: false });
   },
 
   onSlowWalkChange(e) {

@@ -1,12 +1,13 @@
 /**
  * 按 health 分数（0–100）生成与 background-color.png 一致的竖直渐变背景 style 字符串。
  */
+/** 与 background-color.png 五档对齐（含 score=60 浅青柠顶 / 黄绿底） */
 const STOPS = [
   { s: 0, top: "#fff44f", bottom: "#e85d04" },
   { s: 40, top: "#fff44f", bottom: "#e6b800" },
-  { s: 60, top: "#e8f5c8", bottom: "#f0e040" },
-  { s: 80, top: "#e8f5c8", bottom: "#9fe04a" },
-  { s: 100, top: "#e8f5c8", bottom: "#5cb85c" }
+  { s: 60, top: "#e8f5c8", bottom: "#c4dd4a" },
+  { s: 80, top: "#e8f5c8", bottom: "#7fd843" },
+  { s: 100, top: "#e8f5c8", bottom: "#4caf50" }
 ];
 
 function hexToRgb(hex) {
@@ -58,7 +59,7 @@ function getScorePageBackgroundStyle(scoreValue) {
       ? Math.max(0, Math.min(100, scoreValue))
       : 60;
   const { top, bottom } = interpolateStops(s);
-  return `background: linear-gradient(180deg, ${top} 0%, ${bottom} 100%);`;
+  return `background: linear-gradient(180deg, ${top} 0%, ${bottom} 100%); transition: background 0.65s cubic-bezier(0.4, 0, 0.2, 1);`;
 }
 
 module.exports = {

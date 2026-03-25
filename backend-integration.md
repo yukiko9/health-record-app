@@ -67,7 +67,7 @@
 
 - **`POST /api/records/eating`**
 - Body 附加 **`recordedAt`**、**`summary`**；其余含 `panel`、`selectedMap`、`fullness`（见 [`pages/eating-block/index.js`](pages/eating-block/index.js)）。
-- **红酒/牛奶当日次数（前端本地）**：`wx.setStorageSync('eatingDailyBtnCounts', { date, wine, milk })`，用于流程图内酒水惩罚与牛奶第三次起不加分的计算。后端若要严格一致，可入库每次勾选并自行计数，或与 [`scoring-reference.md`](scoring-reference.md) 中公式对齐重算。
+- **饮食当日计数（前端本地）**：`wx.setStorageSync('eatingDailyBtnCounts', { date, wine, milk, vegetable, fruit, protein })`。`wine`/`milk` 用于酒水惩罚与牛奶第三次起不加分；`vegetable`/`fruit`/`protein` 为当日已保存次数（每次保存若勾选对应 `*-btn` 则 +1），用于 [超量惩罚](scoring-reference.md)（蔬菜 >5、水果 >4、蛋白 >3 的边际扣分，见 [`utils/score.js`](utils/score.js) `calcEatingOverwhelmMarginal`）。后端若要严格一致，可按日累计各按钮次数并重算。
 
 ### 6) 保存睡眠记录
 
@@ -83,6 +83,30 @@
 ```
 
 便于前端重试与对账。
+
+### 8) AI 识图分析（主界面 `ai-analyze-btn`）
+
+- **`POST /api/ai/analyze`**（`API_BASE` 已配置且非 mock 时，前端通过 **`wx.uploadFile`** 调用；**multipart** 字段名 **`image`**，值为用户选择的截图临时文件。）
+- **鉴权**：与现有业务一致（如 Header 带 token）；**大模型 / 视觉识别 API Key、提示词模板均只放在后端**，小程序不持有密钥。
+- **响应**（可直接 JSON 或包在 `{ data: { ... } }`）：至少包含可选字段 **`sleepHour`**、**`calorie`**（均为 number；缺失时用 `null`/`undefined` 表示未识别）。
+  - **`sleepHour`**：夜间睡眠时长（**小时**，允许小数，如 `7.5`）；前端会按 30 分钟粒度对齐后喂给 [`calcSleepScore`](utils/score.js)（`sleepMode: "night"`）。
+  - **`calorie`**：活动热量（千卡或其它与产品约定一致的单位）；前端换算活动分：`heatScore = min(20, 20 * (1 - exp(-calorie/800)))`。
+- **前端行为摘要**（与流程图一致，**不写** `recentActList`、**不**新增记录类 POST）：
+  - 二者皆未识别 → 弹窗提示重新上传。
+  - 仅缺其一 → 缺失侧按 **0** 处理，并 Toast 提示「只获取到活动热量值！」或「只获取到睡眠时间！」。
+  - 用 **`heatScore` 覆盖当日活动模块分**：从全局分中扣掉当前 `moduleScore.act` 再加 `heatScore`，并令 **`moduleScore.act = heatScore`**（历史活动记录列表保留，仅分数按产品逻辑重算）。
+  - **夜间睡眠**：从全局分与 `moduleScore.sleep` 中扣除本日已计入的夜间分（本地 **`nightSleepScoreApplied`**，与手工保存夜间页写入一致），再按新 `sleepHour` 加分；并写入 **`nightSleepSavedDate`**，与「每日一条夜间」一致。
+- **本地存储键**（供后端对账或迁移参考）：`nightSleepScoreApplied`：`{ date: 'YYYY-MM-DD', delta: number }`。
+
+#### AI 分析提示词（后端填写）
+
+以下由 **后端设计者** 将实际发给模型的系统/用户提示词粘贴到部署配置或密钥管理中；**勿**写进小程序仓库。
+
+```
+<!-- PROMPT_PLACEHOLDER_START -->
+（请在此处粘贴：截图理解任务说明、输出 JSON 字段 sleepHour / calorie 的格式要求、单位与容错规则等全文。）
+<!-- PROMPT_PLACEHOLDER_END -->
+```
 
 ## 五日达标条（`record-week-bar`，原 record-tab 扩展）
 
@@ -141,13 +165,14 @@
 ## 联调顺序建议
 
 1. 配置 **`API_BASE`** 与合法域名。
-2. 打通 **`GET /api/records/recent`** 与 **`GET /api/dashboard`**（或合并策略）。
-3. 联调 **`POST /api/records/{act,eating,sleep}`**，保存后回到 `main-ui` 应 **`onShow` 拉取** 最新列表。
-4. 联调 **`POST /api/goal/save`**。
-5. 整链路：三模块保存 + 首页空列表引导文案 + 有数据时列表三列语义校验（表头英文已移除，仅数据行三列）。
-6. 联调 **`GET /api/records/week-progress`** 与五日条、详情浮层。
-7. 校验 **夜间睡眠同日唯一**（POST 重复夜间应失败）与前端 `nightSleepSavedDate` 一致体验。
-8. 活动保存 body 含 **`actInputMode`** 与 **时间/距离二选一** 字段合法性。
+2. 实现 **`POST /api/ai/analyze`**（密钥与提示词仅后端），与主界面 **`ai-analyze-btn`** 联调上传与 JSON 字段。
+3. 打通 **`GET /api/records/recent`** 与 **`GET /api/dashboard`**（或合并策略）。
+4. 联调 **`POST /api/records/{act,eating,sleep}`**，保存后回到 `main-ui` 应 **`onShow` 拉取** 最新列表。
+5. 联调 **`POST /api/goal/save`**。
+6. 整链路：三模块保存 + 首页空列表引导文案 + 有数据时列表三列语义校验（表头英文已移除，仅数据行三列）。
+7. 联调 **`GET /api/records/week-progress`** 与五日条、详情浮层。
+8. 校验 **夜间睡眠同日唯一**（POST 重复夜间应失败）与前端 `nightSleepSavedDate` 一致体验。
+9. 活动保存 body 含 **`actInputMode`** 与 **时间/距离二选一** 字段合法性。
 
 ## 主界面无数据时的文案
 

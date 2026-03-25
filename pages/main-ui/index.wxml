@@ -46,8 +46,17 @@
       <text class="goal-setting-btn">设置</text>
     </view>
 
-    <text class="mood-emoji icon-emoji">{{moodEmoji}}</text>
-    <text class="score label-strong">{{score}}</text>
+    <view class="main-score-row">
+      <view class="main-score-col">
+        <text class="mood-emoji icon-emoji">{{moodEmoji}}</text>
+        <rolling-score score-class="score label-strong" value="{{score}}" />
+      </view>
+      <view class="ai-analyze-btn pressable" bindtap="onAiAnalyzeTap" hover-class="pressing">
+        <view class="ai-analyze-icon">
+          <text class="ai-analyze-icon-ai">AI</text>
+        </view>
+      </view>
+    </view>
     <text class="username label-strong">{{username}}</text>
   </view>
 

@@ -76,6 +76,10 @@ Page({
     }
     const sleepScore = this.calcSleepScore(payload);
     const summary = app.setModuleScore("sleep", sleepScore);
+    wx.setStorageSync("nightSleepScoreApplied", {
+      date: localDateKey(),
+      delta: sleepScore
+    });
     wx.setStorageSync("nightSleepSavedDate", localDateKey());
     this.setData({
       score: summary.scoreDisplay,

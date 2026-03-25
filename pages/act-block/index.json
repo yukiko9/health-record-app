@@ -6,6 +6,7 @@
     "fast-walk-panel": "/components/fast-walk-panel/index",
     "jog-panel": "/components/jog-panel/index",
     "run-panel": "/components/run-panel/index",
-    "sit-overtime-panel": "/components/sit-overtime-panel/index"
+    "sit-overtime-panel": "/components/sit-overtime-panel/index",
+    "rolling-score": "/components/rolling-score/index"
   }
 }
