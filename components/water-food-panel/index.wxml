@@ -11,6 +11,10 @@
     <text>喝牛奶 🥛</text>
     <text>{{selectedMap['drink-milk-btn'] ? "✅" : "☑️"}}</text>
   </view>
+  <view class="food-item" bindtap="toggleItem" data-key="coffee-btn">
+    <text>咖啡 ☕️</text>
+    <text>{{selectedMap['coffee-btn'] ? "✅" : "☑️"}}</text>
+  </view>
   <view class="fullness-btn">
     <text>饱食感</text>
     <text bindtap="fullnessReduce">❮</text>

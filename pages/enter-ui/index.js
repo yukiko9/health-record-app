@@ -8,7 +8,9 @@ Page({
     goal: 80,
     situation: "未完成",
     moodEmoji: "🙂",
-    pageBgStyle: ""
+    pageBgStyle: "",
+    readmeVisible: false,
+    scoreBump: false
   },
 
   onShow() {
@@ -23,8 +25,21 @@ Page({
       goal,
       situation,
       moodEmoji: app.getMoodEmoji(scoreValue),
-      pageBgStyle: getScorePageBackgroundStyle(scoreValue)
+      pageBgStyle: getScorePageBackgroundStyle(scoreValue),
+      scoreBump: false
     });
+    setTimeout(() => this.setData({ scoreBump: true }), 30);
+    setTimeout(() => this.setData({ scoreBump: false }), 520);
+  },
+
+  noopReadme() {},
+
+  openReadme() {
+    this.setData({ readmeVisible: true });
+  },
+
+  closeReadme() {
+    this.setData({ readmeVisible: false });
   },
 
   syncWechatNickname() {

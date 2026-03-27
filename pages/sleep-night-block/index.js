@@ -25,7 +25,8 @@ Page({
     score: "60",
     sleepHour: 7,
     sleepHalfHour: 0,
-    nightSleepLocked: false
+    nightSleepLocked: false,
+    scoreBump: false
   },
 
   onShow() {
@@ -34,8 +35,11 @@ Page({
     this.setData({
       score: scoreDisplay,
       moodEmoji: app.getMoodEmoji(scoreValue),
-      nightSleepLocked
+      nightSleepLocked,
+      scoreBump: false
     });
+    setTimeout(() => this.setData({ scoreBump: true }), 30);
+    setTimeout(() => this.setData({ scoreBump: false }), 520);
   },
 
   returnBtn() {

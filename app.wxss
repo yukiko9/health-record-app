@@ -81,3 +81,27 @@ button:active {
   box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.12);
   filter: brightness(0.98);
 }
+
+@keyframes scoreEntryBump {
+  0% {
+    transform: translateY(10rpx) scale(0.992);
+    opacity: 0.94;
+  }
+  58% {
+    transform: translateY(-8rpx) scale(1.006);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.score-bump-wrap {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.score-entry-bump {
+  animation: scoreEntryBump 0.44s cubic-bezier(0.34, 1.18, 0.64, 1) forwards;
+}

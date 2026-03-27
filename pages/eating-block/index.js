@@ -27,8 +27,14 @@ Page({
       "drink-wine-btn": false,
       "drink-water-btn": false,
       "fruit-btn": false,
-      "drink-milk-btn": false
-    }
+      "drink-milk-btn": false,
+      "milktea-btn": false,
+      "puffed-food-btn": false,
+      "coffee-btn": false
+    },
+    milkteaSugar: "full",
+    scoreBump: false,
+    panelBump: false
   },
 
   onShow() {
@@ -36,8 +42,11 @@ Page({
     this.setData({
       score: scoreDisplay,
       moodEmoji: app.getMoodEmoji(scoreValue),
-      pageBgStyle: getScorePageBackgroundStyle(scoreValue)
+      pageBgStyle: getScorePageBackgroundStyle(scoreValue),
+      scoreBump: false
     });
+    setTimeout(() => this.setData({ scoreBump: true }), 30);
+    setTimeout(() => this.setData({ scoreBump: false }), 520);
   },
 
   returnBtn() {
@@ -63,8 +72,20 @@ Page({
   
   onToggleItem(e) {
     const { key } = e.detail;
-    const selectedMap = { ...this.data.selectedMap, [key]: !this.data.selectedMap[key] };
-    this.setData({ selectedMap });
+    const next = !this.data.selectedMap[key];
+    const selectedMap = { ...this.data.selectedMap, [key]: next };
+    const patch = { selectedMap };
+    if (key === "milktea-btn" && !next) {
+      patch.milkteaSugar = "full";
+    }
+    this.setData(patch);
+  },
+
+  onMilkteaSugarChange(e) {
+    const v = e.detail && e.detail.milkteaSugar;
+    if (v) {
+      this.setData({ milkteaSugar: v });
+    }
   },
 
   onFullnessChange(e) {
@@ -77,7 +98,7 @@ Page({
     Object.keys(this.data.selectedMap).forEach((k) => {
       resetMap[k] = false;
     });
-    this.setData({ selectedMap: resetMap, fullness: 3 });
+    this.setData({ selectedMap: resetMap, fullness: 3, milkteaSugar: "full" });
   },
 
   async saveEatBtn() {
@@ -87,7 +108,9 @@ Page({
       selectedMap: this.data.selectedMap,
       fullness: this.data.fullness,
       wineCountToday: counts.wine,
-      milkCountToday: counts.milk
+      milkCountToday: counts.milk,
+      coffeeCountToday: counts.coffee,
+      milkteaSugar: this.data.milkteaSugar
     };
     try {
       await saveEatingRecord(payload);
@@ -102,13 +125,16 @@ Page({
     const eatingScore = this.calcEatingScore(payload) + overwhelmMarginal;
     let nw = counts.wine;
     let nm = counts.milk;
+    let nc = counts.coffee;
     if (this.data.selectedMap["drink-wine-btn"]) nw += 1;
     if (this.data.selectedMap["drink-milk-btn"]) nm += 1;
+    if (this.data.selectedMap["coffee-btn"]) nc += 1;
     const afterPortions = eatingPortionsAfterSave(portions, this.data.selectedMap);
     wx.setStorageSync("eatingDailyBtnCounts", {
       date: localDateKey(),
       wine: nw,
       milk: nm,
+      coffee: nc,
       vegetable: afterPortions.vegetable,
       fruit: afterPortions.fruit,
       protein: afterPortions.protein

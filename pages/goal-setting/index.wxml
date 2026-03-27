@@ -4,7 +4,9 @@
 
   <view class="score-wrap">
     <text>当前健康分数</text>
-    <rolling-score score-class="score label-strong" value="{{score}}" />
+    <view class="score-bump-wrap {{scoreBump ? 'score-entry-bump' : ''}}">
+      <rolling-score score-class="score label-strong" value="{{score}}" />
+    </view>
   </view>
 
   <view class="trophy icon-emoji">🏆</view>

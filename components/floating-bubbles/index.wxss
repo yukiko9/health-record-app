@@ -79,7 +79,7 @@
     opacity: 0.45;
   }
   100% {
-    transform: translateY(-66vh) scale(1.05);
+    transform: translateY(-80vh) scale(1.05);
     opacity: 0;
   }
 }

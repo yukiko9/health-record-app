@@ -1,4 +1,4 @@
-<view class="roller-root score-class">
+<view class="roller-root score-class {{light ? 'roller-light' : ''}}">
   <view class="roller-col" wx:for="{{columns}}" wx:key="k">
     <view class="roller-stack">
       <view

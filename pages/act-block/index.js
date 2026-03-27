@@ -25,15 +25,19 @@ Page({
       jogDistance: 0,
       runTime: 10,
       runDistance: 0,
-      sitOvertimeTime: 30
+      sitOvertimeTime: 30,
+      rideTime: 10,
+      rideDistance: 0
     },
     actInputModes: {
       slowWalk: "time",
       fastWalk: "time",
       jog: "time",
-      run: "time"
+      run: "time",
+      ride: "time"
     },
-    panelBump: false
+    panelBump: false,
+    scoreBump: false
   },
 
   onShow() {
@@ -41,8 +45,11 @@ Page({
     this.setData({
       score: scoreDisplay,
       moodEmoji: app.getMoodEmoji(scoreValue),
-      pageBgStyle: getScorePageBackgroundStyle(scoreValue)
+      pageBgStyle: getScorePageBackgroundStyle(scoreValue),
+      scoreBump: false
     });
+    setTimeout(() => this.setData({ scoreBump: true }), 30);
+    setTimeout(() => this.setData({ scoreBump: false }), 520);
   },
 
   returnBtn() {
@@ -110,6 +117,16 @@ Page({
     this.setData({ actDataInput: { ...this.data.actDataInput, ...e.detail } });
   },
 
+  onRideChange(e) {
+    const d = e.detail;
+    const modes = { ...this.data.actInputModes };
+    if (d.actInputMode) modes.ride = d.actInputMode;
+    this.setData({
+      actDataInput: { ...this.data.actDataInput, ...d },
+      actInputModes: modes
+    });
+  },
+
   resetActBtn() {
     this.setData({
       actDataInput: {
@@ -121,13 +138,16 @@ Page({
         jogDistance: 0,
         runTime: 10,
         runDistance: 0,
-        sitOvertimeTime: 30
+        sitOvertimeTime: 30,
+        rideTime: 10,
+        rideDistance: 0
       },
       actInputModes: {
         slowWalk: "time",
         fastWalk: "time",
         jog: "time",
-        run: "time"
+        run: "time",
+        ride: "time"
       }
     });
   },
@@ -139,7 +159,8 @@ Page({
       "fast-walk-panel": this.data.actInputModes.fastWalk,
       "jog-panel": this.data.actInputModes.jog,
       "run-panel": this.data.actInputModes.run,
-      "sit-overtime-panel": "time"
+      "sit-overtime-panel": "time",
+      "ride-panel": this.data.actInputModes.ride
     };
     const payload = {
       panel: p,

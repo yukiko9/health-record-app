@@ -1,5 +1,7 @@
 # 后端对接说明
 
+**接口路径级速查（给设计者）**：另见同目录 [`API.md`](API.md)。
+
 ## 前端配置
 
 - 在 [`utils/api.js`](utils/api.js) 顶部设置 **`API_BASE`** 为后端根地址（如 `https://api.example.com`，**无末尾斜杠**）。
@@ -12,7 +14,7 @@
 | 字段 | 含义 |
 |------|------|
 | **do** | 模块类型：**「活动」/「饮食」/「睡眠」** |
-| **time** | 记录时间展示：**日 + 时 + 分**，与本机 `recordedAt` 一致；前端展示格式为 `MM/DD H时M分`（如 `03/22 14时35分`） |
+| **time** | 记录时间展示：**仅「时、分」**（如 `14时35分`）；后端可仍返回 `recordedAt: { day, hour, minute }`，前端会格式化为时分并**省略日期** |
 | **info** | 具体事件描述，与 POST body 中的 **`summary`** 或等价字段一致（如「吃蔬菜，饱食度为4」「慢跑，10min」） |
 
 若 GET 返回「完整记录」（含 `module`、`recordedAt`、`summary`），前端会用 **`mapRecordToRecentItem`** 映射为上述三列；后端也可直接返回已对齐的三字段。
@@ -57,9 +59,10 @@
 - **`POST /api/records/act`**
 - Body 在现有页面字段基础上，前端会附加：
   - **`recordedAt`**：`{ day: "MM/DD", hour: number, minute: number }`（本机时间）
-  - **`summary`**：人类可读，对应列表 **`info`**（慢走/快走/慢跑/跑步会按 **时间或距离** 二选一生成文案，如「慢走，10min」或「慢走，1000米」）
-  - **`actInputMode`**：`"time"` | `"distance"`（仅对 `slow-walk-panel` / `fast-walk-panel` / `jog-panel` / `run-panel` 有意义；**久坐面板**不传或视为仅时间）
+  - **`summary`**：人类可读，对应列表 **`info`**（慢走/快走/慢跑/跑步/**骑行**会按 **时间或距离** 二选一生成文案，如「慢走，10min」「骑行，1200米」）
+  - **`actInputMode`**：`"time"` | `"distance"`（对 `slow-walk-panel` / `fast-walk-panel` / `jog-panel` / `run-panel` / **`ride-panel`** 有意义；**久坐面板**不传或视为仅时间）
 - 仍包含：`panel` 与各面板数值字段；**二选一规则**：当 `actInputMode === "time"` 时 **距离类字段应为 0**；当 `actInputMode === "distance"` 时 **时间类字段应为 0**。后端可按 `actInputMode` 校验并入库，重算分时与前端 [`utils/score.js`](utils/score.js) 保持一致。
+- **`ride-panel`（通勤骑行）**：`rideTime`（分钟）、`rideDistance`（米）；前端计分：`min(6, round(时间公式或 0.373*距离))`，与 `actInputMode` 二选一有效分支一致。
 - **`panel` 互斥**：后端以当前 `panel` 为准采纳有效分支即可。
 - **久坐加分（前端本地）**：当日累计久坐分钟数存 `wx.setStorageSync('sitDailyAccum', { date: 'YYYY-MM-DD', total })`；仅当 **累计 + 本次 `sitOvertimeTime` ≥ 300** 时本次加分 `trunc(sitOvertimeTime * 0.5)`。后端若需一致校验，可要求客户端上报 **`sitDailyTotalBefore`** 与本次时长，或自行按用户维度累计当日久坐记录后重算。
 
@@ -67,14 +70,17 @@
 
 - **`POST /api/records/eating`**
 - Body 附加 **`recordedAt`**、**`summary`**；其余含 `panel`、`selectedMap`、`fullness`（见 [`pages/eating-block/index.js`](pages/eating-block/index.js)）。
-- **饮食当日计数（前端本地）**：`wx.setStorageSync('eatingDailyBtnCounts', { date, wine, milk, vegetable, fruit, protein })`。`wine`/`milk` 用于酒水惩罚与牛奶第三次起不加分；`vegetable`/`fruit`/`protein` 为当日已保存次数（每次保存若勾选对应 `*-btn` 则 +1），用于 [超量惩罚](scoring-reference.md)（蔬菜 >5、水果 >4、蛋白 >3 的边际扣分，见 [`utils/score.js`](utils/score.js) `calcEatingOverwhelmMarginal`）。后端若要严格一致，可按日累计各按钮次数并重算。
+- **junk-food-panel 扩展**：`selectedMap` 可含 **`milktea-btn`**、**`puffed-food-btn`**；另传 **`milkteaSugar`**：`full` | `half` | `light` | `none`（全糖/半糖/微糖/无糖），影响奶茶扣分档位。
+- **water-food-panel 扩展**：`selectedMap` 可含 **`coffee-btn`**；另传 **`coffeeCountToday`**（保存**前**当日已记咖啡次数，不含本条），用于第 1 杯 +1 分、第 2 杯 0 分、≥3 杯 -1 分（与 [`calcEatingScore`](utils/score.js) 一致）。
+- **饮食当日计数（前端本地）**：`wx.setStorageSync('eatingDailyBtnCounts', { date, wine, milk, coffee, vegetable, fruit, protein })`。`wine` / `milk` / `coffee` 用于酒、奶、咖啡阶梯计分；`vegetable`/`fruit`/`protein` 为当日已保存份数（每次保存若勾选对应 `*-btn` 则 +1），用于 [超量惩罚](scoring-reference.md)。后端若要严格一致，可按日累计各按钮次数并重算。
 
 ### 6) 保存睡眠记录
 
 - **`POST /api/records/sleep`**
 - Body 附加 **`recordedAt`**、**`summary`**；含 `sleepMode`：`"night"` | `"noon"`，`sleepHour`，`sleepHalfHour`（`0` | `30`）。
 - 用途：`sleep-night-block` / `sleep-noon-block` 在用户操作 **`sleep-half-hour`** 时提交（与现交互一致）。
-- **夜间睡眠单日唯一（建议后端强校验）**：以用户 **手机本地日历日** 为界（自然日 0 点换日，时区按用户设备）。同一用户在同一自然日内 **`sleepMode: "night"`** 的成功记录 **至多一条**。若重复提交，应返回 **4xx** 与明确 `message`，前端当前亦用本地存储 `nightSleepSavedDate` 做防抖；**午睡 `noon` 不受此限制**（可与产品再确认是否也要限次）。
+- **午睡二次不加分**：Body 含 **`noonSleepSavesBefore`**（整数，本条请求发起前当日已成功保存的午睡次数）。前端规则：若 **`noonSleepSavesBefore >= 1`**，则本条午睡模块分为 **0**（仍允许落库）。后端可对 `sleepMode: "noon"` 校验该字段与用户维度当日午睡次数一致。前端本地另用 `wx.setStorageSync('noonSleepSaves', { date: 'YYYY-MM-DD', count })` 累计次数。
+- **夜间睡眠单日唯一（建议后端强校验）**：以用户 **手机本地日历日** 为界（自然日 0 点换日，时区按用户设备）。同一用户在同一自然日内 **`sleepMode: "night"`** 的成功记录 **至多一条**。若重复提交，应返回 **4xx** 与明确 `message`，前端当前亦用本地存储 `nightSleepSavedDate` 做防抖；**午睡 `noon` 不受「每日一条」限制**（可与产品再确认是否也要限次）。
 
 ### 7) 保存响应（推荐）
 
@@ -180,7 +186,7 @@
 
 ## 高频快捷区（highRateAct / `high-rate-act`）
 
-**位置**：[`main-ui`](pages/main-ui/index.wxml) 的 `do-list-panel` 内、三个模块入口按钮 **上方**；深色槽内 **固定两行**，每行 class **`high-rate-act`**（与外层容器同名，通过父子选择器区分样式），三列文案与 **`recentActList` 完全一致**（`do` / `time` / `info`）。
+**位置**：[`main-ui`](pages/main-ui/index.wxml) 的 `do-list-panel` 内、三个模块入口按钮 **上方**；深色槽内 **固定两行**，每行 class **`high-rate-act`**（与外层容器同名，通过父子选择器区分样式），**展示为两列**：`do`（类型）与 `info`（摘要），**不再展示 `time`**；占位比约 **1 : 2**。后端仍可返回 `time` 供审计，前端忽略展示。
 
 **产品意图**：面向通勤/饮食/作息规律用户，用 **两条最常重复** 的历史事件做「一键再记」入口，减少进模块页操作次数。
 
@@ -199,7 +205,7 @@
 - **`module`**：`act` | `eating` | `sleep`（与 `app.globalData.moduleScore` 键一致）
 - **`scorePayload`**：与对应 **`POST /api/records/{act,eating,sleep}`** 的请求体同结构的可计算子集（至少满足 [`utils/score.js`](utils/score.js) 中 `calcActScore` / `calcEatingScore` / `calcSleepScore` 的入参要求）
 
-前端在用户点击某一行时，用 **`scorePayload` + `module`** 计算本条 **delta**（与 [`scoring-reference.md`](scoring-reference.md) 一致；饮食会合并本地 `eatingDailyBtnCounts`，久坐会读 `sitDailyAccum`），通过 **`app.addModuleScoreDelta`** 叠加到全局 **`scoreValue`**（再 0–100 clamp），**不调用后端算分**。
+前端在用户点击某一行时，用 **`scorePayload` + `module`** 计算本条 **delta**（与 [`scoring-reference.md`](scoring-reference.md) 一致；饮食会合并本地 `eatingDailyBtnCounts`（含 **`coffee`**），并沿用 payload 中的 **`milkteaSugar`**；久坐会读 `sitDailyAccum`），通过 **`app.addModuleScoreDelta`** 叠加到全局 **`scoreValue`**（再 0–100 clamp），**不调用后端算分**。
 
 ### 可选二期：快速落库
 

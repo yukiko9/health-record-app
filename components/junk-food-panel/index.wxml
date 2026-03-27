@@ -7,6 +7,30 @@
     <text>喝含糖饮料 🧃</text>
     <text>{{selectedMap['drink-btn'] ? "✅" : "☑️"}}</text>
   </view>
+  <view class="milktea-block">
+    <view class="food-item" bindtap="toggleItem" data-key="milktea-btn">
+      <text>喝奶茶 🧋</text>
+      <text>{{selectedMap['milktea-btn'] ? "✅" : "☑️"}}</text>
+    </view>
+    <view wx:if="{{selectedMap['milktea-btn']}}" class="milktea-sugar-drawer">
+      <text class="sugar-title">含糖量</text>
+      <view class="sugar-chips">
+        <view
+          wx:for="{{sugarOptions}}"
+          wx:key="value"
+          class="sugar-chip {{milkteaSugar === item.value ? 'sugar-chip-on' : ''}}"
+          data-value="{{item.value}}"
+          catchtap="onSugarTap"
+        >
+          {{item.label}}
+        </view>
+      </view>
+    </view>
+  </view>
+  <view class="food-item" bindtap="toggleItem" data-key="puffed-food-btn">
+    <text>吃膨化食品(一袋) 🍿</text>
+    <text>{{selectedMap['puffed-food-btn'] ? "✅" : "☑️"}}</text>
+  </view>
   <view class="food-item" bindtap="toggleItem" data-key="drink-wine-btn">
     <text>喝酒 🍺</text>
     <text>{{selectedMap['drink-wine-btn'] ? "✅" : "☑️"}}</text>

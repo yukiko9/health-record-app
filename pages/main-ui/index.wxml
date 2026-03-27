@@ -49,13 +49,18 @@
     <view class="main-score-row">
       <view class="main-score-col">
         <text class="mood-emoji icon-emoji">{{moodEmoji}}</text>
-        <rolling-score score-class="score label-strong" value="{{score}}" />
-      </view>
-      <view class="ai-analyze-btn pressable" bindtap="onAiAnalyzeTap" hover-class="pressing">
-        <view class="ai-analyze-icon">
-          <text class="ai-analyze-icon-ai">AI</text>
+        <view class="score-bump-wrap {{scoreBump ? 'score-entry-bump' : ''}}">
+          <rolling-score score-class="score label-strong" value="{{score}}" />
         </view>
       </view>
+        <view class="ai-analyze-col">
+          <view class="ai-analyze-btn pressable" bindtap="onAiAnalyzeTap" hover-class="pressing">
+            <view class="ai-analyze-icon">
+              <text class="ai-analyze-icon-ai">AI</text>
+            </view>
+          </view>
+          <text class="ai-analyze-caption">截图读取\napp记录</text>
+        </view>
     </view>
     <text class="username label-strong">{{username}}</text>
   </view>
@@ -85,7 +90,6 @@
           hover-class="{{item.valid ? 'pressing' : ''}}"
         >
           <text>{{item.do}}</text>
-          <text>{{item.time}}</text>
           <text>{{item.info}}</text>
         </view>
       </block>

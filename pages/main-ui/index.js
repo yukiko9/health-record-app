@@ -27,7 +27,8 @@ Page({
     recordDayModalTitle: "",
     recordDayModalScore: "",
     recordDayModalWon: false,
-    recordDayModalEmoji: "🙂"
+    recordDayModalEmoji: "🙂",
+    scoreBump: false
   },
 
   async onShow() {
@@ -70,8 +71,11 @@ Page({
       score: summary.scoreDisplay,
       situation: summary.situation,
       moodEmoji: app.getMoodEmoji(summary.scoreValue),
-      pageBgStyle: getScorePageBackgroundStyle(summary.scoreValue)
+      pageBgStyle: getScorePageBackgroundStyle(summary.scoreValue),
+      scoreBump: false
     });
+    setTimeout(() => this.setData({ scoreBump: true }), 30);
+    setTimeout(() => this.setData({ scoreBump: false }), 520);
   },
 
   onRecordDayTap(e) {
@@ -117,17 +121,22 @@ Page({
         scoreUtil.calcEatingScore({
           ...item.scorePayload,
           wineCountToday: c.wine,
-          milkCountToday: c.milk
+          milkCountToday: c.milk,
+          coffeeCountToday: c.coffee,
+          milkteaSugar: item.scorePayload.milkteaSugar
         }) + overwhelmMarginal;
       let nw = c.wine;
       let nm = c.milk;
+      let nc = c.coffee;
       if (m["drink-wine-btn"]) nw += 1;
       if (m["drink-milk-btn"]) nm += 1;
+      if (m["coffee-btn"]) nc += 1;
       const afterPortions = scoreUtil.eatingPortionsAfterSave(portions, m);
       wx.setStorageSync("eatingDailyBtnCounts", {
         date: scoreUtil.localDateKey(),
         wine: nw,
         milk: nm,
+        coffee: nc,
         vegetable: afterPortions.vegetable,
         fruit: afterPortions.fruit,
         protein: afterPortions.protein

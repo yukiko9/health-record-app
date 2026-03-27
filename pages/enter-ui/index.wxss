@@ -1,12 +1,21 @@
 .enter-ui {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 32rpx 24rpx 120rpx;
+  box-sizing: border-box;
+}
+
+.enter-main {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 32rpx;
-  min-height: 100vh;
-  padding: 32rpx 24rpx;
-  box-sizing: border-box;
 }
 
 .goal-tip {
@@ -31,22 +40,15 @@
 
 .mood-emoji {
   margin-top: 30rpx;
-  font-size: 120rpx;
+  font-size: 200rpx;
 }
 
-.score {
-  font-size: 160rpx;
+.enter-ui .score.label-strong {
+  font-size: 300rpx;
   line-height: 1;
   letter-spacing: 2rpx;
-  text-shadow: 0 4rpx 0 rgba(255, 255, 255, 0.35);
-}
-
-.score-caption {
-  margin-top: -10rpx;
-  font-size: 34rpx;
-  font-weight: 700;
-  color: rgba(38, 49, 31, 0.58);
-  letter-spacing: 1rpx;
+  color: #ffffff;
+  text-shadow: none;
 }
 
 .username-row {
@@ -74,4 +76,83 @@
   margin-top: 50rpx;
   font-size: 42rpx;
   color: rgba(0, 0, 0, 0.4);
+}
+
+.readme-fab-col {
+  position: fixed;
+  right: 32rpx;
+  bottom: 48rpx;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.readme-btn {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48rpx;
+  font-weight: 900;
+  color: #173812;
+  background: linear-gradient(180deg, #61f751 0%, #41db37 100%);
+  border: 3rpx solid #3cae44;
+  box-shadow: 0 10rpx 18rpx rgba(38, 62, 35, 0.22);
+}
+
+.readme-fab-caption {
+  font-size: 22rpx;
+  font-weight: 700;
+  color: #3d4a33;
+}
+
+.readme-mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx 28rpx;
+  box-sizing: border-box;
+}
+
+.readme-page {
+  position: relative;
+  width: 100%;
+  max-width: 620rpx;
+  max-height: 72vh;
+  padding: 48rpx 28rpx 28rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+.readme-close {
+  position: absolute;
+  right: 12rpx;
+  top: 8rpx;
+  font-size: 48rpx;
+  line-height: 1;
+  color: #b32b2b;
+  padding: 8rpx 20rpx;
+}
+
+.readme-scroll {
+  flex: 1;
+  max-height: 58vh;
+  margin-top: 8rpx;
+}
+
+.readme-placeholder {
+  font-size: 30rpx;
+  line-height: 1.55;
+  color: #2e3238;
 }

@@ -37,3 +37,9 @@
   text-align: center;
   min-width: 0.55em;
 }
+
+.roller-root.roller-light,
+.roller-root.roller-light .roller-line {
+  color: #ffffff;
+  text-shadow: none;
+}

@@ -4,7 +4,9 @@
     <view class="return-btn btn-danger pressable" bindtap="returnBtn" hover-class="pressing">←</view>
     <view class="score-wrap">
       <text class="mood-emoji icon-emoji">{{moodEmoji}}</text>
-      <rolling-score score-class="score label-strong" value="{{score}}" />
+      <view class="score-bump-wrap {{scoreBump ? 'score-entry-bump' : ''}}">
+        <rolling-score score-class="score label-strong" value="{{score}}" />
+      </view>
     </view>
   </view>
 
@@ -15,17 +17,19 @@
       <view class="menu-btn jog-btn card pressable {{activePanel === 'jog-panel' ? 'menu-btn-selected' : ''}}" data-panel="jog-panel" bindtap="selectPanel" hover-class="pressing">🏃 慢跑</view>
       <view class="menu-btn run-btn card pressable {{activePanel === 'run-panel' ? 'menu-btn-selected' : ''}}" data-panel="run-panel" bindtap="selectPanel" hover-class="pressing">🏃💨 中速/快跑</view>
       <view class="menu-btn sit-overtime-btn card pressable {{activePanel === 'sit-overtime-panel' ? 'menu-btn-selected' : ''}}" data-panel="sit-overtime-panel" bindtap="selectPanel" hover-class="pressing">🪑 久坐</view>
+      <view class="menu-btn ride-btn card pressable {{activePanel === 'ride-panel' ? 'menu-btn-selected' : ''}}" data-panel="ride-panel" bindtap="selectPanel" hover-class="pressing">🚴 通勤骑行</view>
     </view>
 
     <view
       class="act-data-input card {{panelBump ? 'act-panel-bump' : ''}}"
-      bindanimationend="onPanelBumpEnd"
+      catchanimationend="onPanelBumpEnd"
     >
       <text class="act-panel-title" wx:if="{{activePanel === 'slow-walk-panel'}}">🚶 慢走</text>
       <text class="act-panel-title" wx:elif="{{activePanel === 'fast-walk-panel'}}">🚶💦 快走</text>
       <text class="act-panel-title" wx:elif="{{activePanel === 'jog-panel'}}">🏃 慢跑</text>
       <text class="act-panel-title" wx:elif="{{activePanel === 'run-panel'}}">🏃💨 中速/快跑</text>
       <text class="act-panel-title" wx:elif="{{activePanel === 'sit-overtime-panel'}}">🪑 久坐</text>
+      <text class="act-panel-title" wx:elif="{{activePanel === 'ride-panel'}}">🚴 通勤骑行</text>
       <slow-walk-panel
         wx:if="{{activePanel === 'slow-walk-panel'}}"
         value="{{actDataInput}}"
@@ -54,6 +58,12 @@
         wx:if="{{activePanel === 'sit-overtime-panel'}}"
         value="{{actDataInput}}"
         bindchange="onSitOvertimeChange"
+      />
+      <ride-panel
+        wx:if="{{activePanel === 'ride-panel'}}"
+        value="{{actDataInput}}"
+        inputMode="{{actInputModes.ride}}"
+        bindchange="onRideChange"
       />
     </view>
   </view>

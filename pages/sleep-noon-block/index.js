@@ -1,6 +1,6 @@
 const app = getApp();
 const { saveSleepRecord, fetchRecentActList } = require("../../utils/api");
-const { calcSleepScore: calcSleepScoreUtil } = require("../../utils/score");
+const { calcSleepScore: calcSleepScoreUtil, getNoonSleepSavesToday, localDateKey } = require("../../utils/score");
 
 function noonTotalToParts(totalMin) {
   let t = Math.round(totalMin / 30) * 30;
@@ -17,12 +17,19 @@ Page({
     moodEmoji: "🙂",
     score: "60",
     sleepHour: 1,
-    sleepHalfHour: 0
+    sleepHalfHour: 0,
+    scoreBump: false
   },
 
   onShow() {
     const { scoreDisplay, scoreValue } = app.globalData;
-    this.setData({ score: scoreDisplay, moodEmoji: app.getMoodEmoji(scoreValue) });
+    this.setData({
+      score: scoreDisplay,
+      moodEmoji: app.getMoodEmoji(scoreValue),
+      scoreBump: false
+    });
+    setTimeout(() => this.setData({ scoreBump: true }), 30);
+    setTimeout(() => this.setData({ scoreBump: false }), 520);
   },
 
   returnBtn() {
@@ -44,10 +51,12 @@ Page({
   },
 
   async sleepHalfHour() {
+    const noonSleepSavesBefore = getNoonSleepSavesToday();
     const payload = {
       sleepMode: "noon",
       sleepHour: this.data.sleepHour,
-      sleepHalfHour: this.data.sleepHalfHour
+      sleepHalfHour: this.data.sleepHalfHour,
+      noonSleepSavesBefore
     };
     try {
       await saveSleepRecord(payload);
@@ -57,6 +66,10 @@ Page({
       wx.showToast({ title: "保存失败，请重试", icon: "none" });
       return;
     }
+    wx.setStorageSync("noonSleepSaves", {
+      date: localDateKey(),
+      count: noonSleepSavesBefore + 1
+    });
     const sleepScore = this.calcSleepScore(payload);
     const summary = app.setModuleScore("sleep", sleepScore);
     this.setData({

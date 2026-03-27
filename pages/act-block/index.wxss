@@ -51,6 +51,8 @@
 
 .menu {
   width: 156rpx;
+  max-height: 72vh;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 10rpx;

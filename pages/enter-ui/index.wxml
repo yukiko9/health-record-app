@@ -1,17 +1,38 @@
-<view class="screen enter-ui" style="{{pageBgStyle}}" bindtap="enterMainUi">
+<view class="screen enter-ui" style="{{pageBgStyle}}">
   <floating-bubbles />
-  <view class="goal-tip">
-    <text>目标:</text>
-    <text class="goal">{{goal}}</text>
-    <text> </text>
-    <text class="situation">{{situation}}</text>
+
+  <view class="enter-main" bindtap="enterMainUi">
+    <view class="goal-tip">
+      <text>目标:</text>
+      <text class="goal">{{goal}}</text>
+      <text> </text>
+      <text class="situation">{{situation}}</text>
+    </view>
+
+    <view class="mood-emoji icon-emoji">{{moodEmoji}}</view>
+    <view class="score-bump-wrap {{scoreBump ? 'score-entry-bump' : ''}}">
+      <rolling-score score-class="score label-strong" value="{{score}}" light="{{true}}" />
+    </view>
+    <view class="username-row">
+      <view class="username label-strong">{{username}}</view>
+      <view class="sync-nickname-btn card pressable" catchtap="syncWechatNickname" hover-class="pressing">同步微信昵称</view>
+    </view>
+    <view class="float-tip">点击空白处进入</view>
   </view>
 
-  <view class="mood-emoji icon-emoji">{{moodEmoji}}</view>
-  <rolling-score score-class="score label-strong" value="{{score}}" />
-  <view class="username-row">
-    <view class="username label-strong">{{username}}</view>
-    <view class="sync-nickname-btn card pressable" catchtap="syncWechatNickname" hover-class="pressing">同步微信昵称</view>
+  <view class="readme-fab-col" catchtap="noopReadme">
+    <view class="readme-btn card pressable" catchtap="openReadme" hover-class="pressing">?</view>
+    <text class="readme-fab-caption">用户说明</text>
   </view>
-  <view class="float-tip">点击空白处进入</view>
+
+  <view wx:if="{{readmeVisible}}" class="readme-mask" catchtap="closeReadme">
+    <view class="readme-page card" catchtap="noopReadme">
+      <view class="readme-close pressable" catchtap="closeReadme" hover-class="pressing">×</view>
+      <scroll-view scroll-y class="readme-scroll">
+        <text class="readme-placeholder" selectable>
+          （请在此处编写使用说明正文；也可替换为 rich-text 等组件。）
+        </text>
+      </scroll-view>
+    </view>
+  </view>
 </view>

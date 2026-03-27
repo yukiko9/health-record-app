@@ -13,7 +13,7 @@
 
 .row {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 2fr;
   border-bottom: 2rpx solid #9cb189;
   min-width: 0;
 }
@@ -30,8 +30,14 @@
   box-sizing: border-box;
   text-align: center;
   font-weight: 700;
+  font-size: 30rpx;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.row text:nth-child(3) {
+  text-align: left;
+  padding-left: 12rpx;
+  padding-right: 12rpx;
+}

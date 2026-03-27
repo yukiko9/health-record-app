@@ -4,7 +4,9 @@
     <view class="return-btn btn-danger pressable" bindtap="returnBtn" hover-class="pressing">←</view>
     <view class="score-wrap">
       <text class="mood-emoji icon-emoji">{{moodEmoji}}</text>
-      <rolling-score score-class="score label-strong" value="{{score}}" />
+      <view class="score-bump-wrap {{scoreBump ? 'score-entry-bump' : ''}}">
+        <rolling-score score-class="score label-strong" value="{{score}}" />
+      </view>
     </view>
   </view>
 
@@ -31,9 +33,8 @@
     </view>
   </view>
 
-  <view class="sleep-scene">
-    <text class="icon-emoji">🌃</text>
-    <text class="icon-emoji">😴</text>
-    <text class="icon-emoji">🛏️</text>
+  <view class="sleep-buddy-card sleep-buddy-night">
+    <image class="sleep-buddy-img" src="/images/sleepingbuddy-night.png" mode="aspectFit" />
+    <text class="sleep-buddy-note">固定作息、减少蓝光，更易入睡。（插图与文案可按 PRD 替换）</text>
   </view>
 </view>

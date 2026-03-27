@@ -4,7 +4,9 @@
     <view class="return-btn btn-danger pressable" bindtap="returnBtn" hover-class="pressing">←</view>
     <view class="score-wrap">
       <text class="mood-emoji icon-emoji">{{moodEmoji}}</text>
-      <rolling-score score-class="score label-strong" value="{{score}}" />
+      <view class="score-bump-wrap {{scoreBump ? 'score-entry-bump' : ''}}">
+        <rolling-score score-class="score label-strong" value="{{score}}" />
+      </view>
     </view>
   </view>
 
@@ -15,7 +17,9 @@
       <view class="menu-btn water-food-btn card pressable {{activePanel === 'water-food-panel' ? 'menu-btn-selected' : ''}}" data-panel="water-food-panel" bindtap="selectPanel" hover-class="pressing">🍎 水/水果</view>
     </view>
 
-    <view class="eating-data-input card {{panelBump ? 'eating-panel-bump' : ''}}"bindanimationend="onPanelBumpEnd"
+    <view
+      class="eating-data-input card {{panelBump ? 'eating-panel-bump' : ''}}"
+      catchanimationend="onPanelBumpEnd"
     >
       <balanced-food-panel
         wx:if="{{activePanel === 'balanced-food-panel'}}"
@@ -28,8 +32,10 @@
         wx:if="{{activePanel === 'junk-food-panel'}}"
         selectedMap="{{selectedMap}}"
         fullness="{{fullness}}"
+        milkteaSugar="{{milkteaSugar}}"
         bindtoggle="onToggleItem"
         bindfullnesschange="onFullnessChange"
+        bindmilkteasugarchange="onMilkteaSugarChange"
       />
       <water-food-panel
         wx:if="{{activePanel === 'water-food-panel'}}"

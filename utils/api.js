@@ -30,6 +30,21 @@ function formatRecordedAtDisplay(recordedAt) {
   return day ? `${day} ${tail}` : tail;
 }
 
+/** 最近列表等：仅「时、分」，不含日期 */
+function formatRecordedAtTimeOnly(recordedAt) {
+  if (!recordedAt) return "";
+  const h = recordedAt.hour != null ? recordedAt.hour : 0;
+  const m = recordedAt.minute != null ? recordedAt.minute : 0;
+  return `${h}时${m}分`;
+}
+
+function stripDayFromTimeDisplay(s) {
+  if (s == null || !String(s).trim()) return "";
+  const str = String(s).trim();
+  const m = str.match(/^\d{1,2}\/\d{1,2}\s+(.+)$/);
+  return m ? m[1] : str;
+}
+
 function buildActSummary(payload) {
   const mode = payload.actInputMode === "distance" ? "distance" : "time";
   const map = {
@@ -45,7 +60,10 @@ function buildActSummary(payload) {
     "run-panel": mode === "distance"
       ? `跑步，${payload.runDistance}米`
       : `跑步，${payload.runTime}min`,
-    "sit-overtime-panel": `久坐，${payload.sitOvertimeTime}min`
+    "sit-overtime-panel": `久坐，${payload.sitOvertimeTime}min`,
+    "ride-panel": mode === "distance"
+      ? `骑行，${payload.rideDistance}米`
+      : `骑行，${payload.rideTime}min`
   };
   return map[payload.panel] || "活动记录";
 }
@@ -58,17 +76,43 @@ const FOOD_LABELS = {
   "junk-btn": "垃圾食品",
   "drink-btn": "饮品",
   "drink-wine-btn": "酒",
-  "drink-water-btn": "水",
+  "drink-water-btn": "喝水",
   "fruit-btn": "水果",
-  "drink-milk-btn": "奶"
+  "drink-milk-btn": "喝牛奶",
+  "milktea-btn": "奶茶",
+  "puffed-food-btn": "膨化食品(一袋)",
+  "coffee-btn": "咖啡"
 };
+
+const DRINK_STYLE_KEYS = {
+  "drink-water-btn": true,
+  "drink-milk-btn": true,
+  "coffee-btn": true,
+  "milktea-btn": true
+};
+
+function eatingPhraseForKey(key, payload) {
+  if (key === "milktea-btn" && payload && payload.milkteaSugar) {
+    const map = { full: "全糖", half: "半糖", light: "微糖", none: "无糖" };
+    const lab = map[payload.milkteaSugar] || "";
+    return lab ? `喝奶茶（${lab}）` : "喝奶茶";
+  }
+  if (DRINK_STYLE_KEYS[key]) {
+    const raw = FOOD_LABELS[key] || key;
+    if (raw.startsWith("喝")) return raw;
+    return `喝${raw}`;
+  }
+  const base = FOOD_LABELS[key] || key;
+  if (base.startsWith("吃")) return base;
+  return `吃${base}`;
+}
 
 function buildEatingSummary(payload) {
   const selected = Object.keys(payload.selectedMap || {}).filter((k) => payload.selectedMap[k]);
-  const parts = selected.map((k) => FOOD_LABELS[k] || k).filter(Boolean);
+  const parts = selected.map((k) => eatingPhraseForKey(k, payload)).filter(Boolean);
   const fullness = payload.fullness != null ? payload.fullness : "";
   if (parts.length) {
-    return `吃${parts.join("、")}，饱食度为${fullness}`;
+    return `${parts.join("、")}，饱食度为${fullness}`;
   }
   return `饮食记录，饱食度为${fullness}`;
 }
@@ -105,9 +149,9 @@ function mapRecordToRecentItem(record) {
   const doLabel = normalizeDoFromRecord(record);
   let timeStr = "";
   if (record.time != null && String(record.time).length) {
-    timeStr = String(record.time);
+    timeStr = stripDayFromTimeDisplay(record.time);
   } else if (record.recordedAt) {
-    timeStr = formatRecordedAtDisplay(record.recordedAt);
+    timeStr = formatRecordedAtTimeOnly(record.recordedAt);
   }
   let infoStr = "";
   if (record.info != null && String(record.info).length) {
@@ -198,7 +242,7 @@ async function saveGoal(payload) {
 function pushMockRecent(moduleLabel, recordedAt, summary, scorePayload, moduleKey) {
   const item = {
     do: moduleLabel,
-    time: formatRecordedAtDisplay(recordedAt),
+    time: formatRecordedAtTimeOnly(recordedAt),
     info: summary,
     module: moduleKey,
     scorePayload: scorePayload && typeof scorePayload === "object" ? { ...scorePayload } : null
@@ -219,7 +263,6 @@ function moduleKeyFromDoOrModule(record) {
 function emptyHighRateSlot() {
   return {
     do: "—",
-    time: "—",
     info: "—",
     module: "",
     scorePayload: null,
@@ -239,7 +282,6 @@ function normalizeHighRateItem(record) {
   const valid = !!(module && scorePayload);
   return {
     do: base.do || "—",
-    time: base.time || "—",
     info: base.info || "—",
     module,
     scorePayload,
@@ -398,6 +440,7 @@ module.exports = {
   useMock,
   buildRecordedAt,
   formatRecordedAtDisplay,
+  formatRecordedAtTimeOnly,
   buildActSummary,
   buildEatingSummary,
   buildSleepSummary,

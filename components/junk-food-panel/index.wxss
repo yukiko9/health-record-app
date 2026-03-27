@@ -33,3 +33,56 @@
 .n {
   font-size: 42rpx;
 }
+
+.milktea-block {
+  margin-bottom: 10rpx;
+}
+
+.milktea-sugar-drawer {
+  overflow: hidden;
+  animation: milktea-open 0.28s ease-out;
+  margin: -6rpx 0 0;
+  padding: 0 8rpx 10rpx;
+}
+
+@keyframes milktea-open {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-8rpx);
+  }
+  to {
+    opacity: 1;
+    max-height: 200rpx;
+    transform: translateY(0);
+  }
+}
+
+.sugar-title {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 800;
+  color: #5a3038;
+  padding: 8rpx 6rpx 6rpx;
+}
+
+.sugar-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.sugar-chip {
+  padding: 10rpx 20rpx;
+  border-radius: 999rpx;
+  font-size: 26rpx;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.55);
+  border: 2rpx solid rgba(120, 70, 80, 0.45);
+  color: #4a2830;
+}
+
+.sugar-chip-on {
+  background: linear-gradient(180deg, #ffd4dc 0%, #f5a8b8 100%);
+  border-color: rgba(120, 70, 80, 0.75);
+}

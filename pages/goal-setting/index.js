@@ -9,7 +9,8 @@ Page({
     goal: 0,
     goalTenDigits: 0,
     goalSingleDigits: 0,
-    goalDigitTarget: "single"
+    goalDigitTarget: "single",
+    scoreBump: false
   },
 
   onShow() {
@@ -19,8 +20,11 @@ Page({
       goal,
       goalTenDigits: Math.floor(goal / 10),
       goalSingleDigits: goal % 10,
-      pageBgStyle: getScorePageBackgroundStyle(scoreValue)
+      pageBgStyle: getScorePageBackgroundStyle(scoreValue),
+      scoreBump: false
     });
+    setTimeout(() => this.setData({ scoreBump: true }), 30);
+    setTimeout(() => this.setData({ scoreBump: false }), 520);
   },
 
   selectGoalDigitTen() {

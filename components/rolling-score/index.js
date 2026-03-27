@@ -25,6 +25,11 @@ Component({
     value: {
       type: String,
       value: "60"
+    },
+    /** enter-ui 等：白色数字，避免页面样式无法穿透组件 */
+    light: {
+      type: Boolean,
+      value: false
     }
   },
   data: {
