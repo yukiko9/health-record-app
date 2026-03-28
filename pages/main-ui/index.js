@@ -28,8 +28,17 @@ Page({
     recordDayModalScore: "",
     recordDayModalWon: false,
     recordDayModalEmoji: "🙂",
+    recordDayModalEncourage: "",
+    recordDayModalClosing: false,
     scoreBump: false,
-    todayGoalMet: false
+    todayGoalMet: false,
+    goalProgressPct: 0
+  },
+
+  computeGoalProgress(scoreValue, goal) {
+    const g = typeof goal === "number" && goal > 0 ? goal : 1;
+    const s = typeof scoreValue === "number" ? scoreValue : parseInt(String(scoreValue), 10) || 0;
+    return Math.max(0, Math.min(100, Math.round((s / g) * 100)));
   },
 
   async onShow() {
@@ -78,7 +87,8 @@ Page({
       moodEmoji: app.getMoodEmoji(summary.scoreValue),
       pageBgStyle: getScorePageBackgroundStyle(summary.scoreValue),
       scoreBump: false,
-      todayGoalMet
+      todayGoalMet,
+      goalProgressPct: this.computeGoalProgress(summary.scoreValue, app.globalData.goal)
     });
     setTimeout(() => this.setData({ scoreBump: true }), 30);
     setTimeout(() => this.setData({ scoreBump: false }), 520);
@@ -96,15 +106,24 @@ Page({
     }
     this.setData({
       recordDayModalVisible: true,
+      recordDayModalClosing: false,
       recordDayModalTitle: `${item.labelEn} ${item.labelZh}`,
       recordDayModalScore: String(item.score),
       recordDayModalWon: !!item.won,
-      recordDayModalEmoji: item.won ? "😊" : "👻"
+      recordDayModalEmoji: item.won ? "😊" : "👻",
+      recordDayModalEncourage: item.won ? "继续保持！" : "再接再厉！"
     });
   },
 
   closeRecordDayModal() {
-    this.setData({ recordDayModalVisible: false });
+    if (this.data.recordDayModalClosing) return;
+    this.setData({ recordDayModalClosing: true });
+    setTimeout(() => {
+      this.setData({
+        recordDayModalVisible: false,
+        recordDayModalClosing: false
+      });
+    }, 320);
   },
 
   noopModal() {},
@@ -160,7 +179,8 @@ Page({
       situation: summary.situation,
       moodEmoji: app.getMoodEmoji(summary.scoreValue),
       pageBgStyle: getScorePageBackgroundStyle(summary.scoreValue),
-      todayGoalMet
+      todayGoalMet,
+      goalProgressPct: this.computeGoalProgress(summary.scoreValue, app.globalData.goal)
     });
     wx.showToast({ title: "已记分", icon: "success" });
   },
@@ -235,7 +255,8 @@ Page({
           situation: summary.situation,
           moodEmoji: app.getMoodEmoji(summary.scoreValue),
           pageBgStyle: getScorePageBackgroundStyle(summary.scoreValue),
-          todayGoalMet
+          todayGoalMet,
+          goalProgressPct: this.computeGoalProgress(summary.scoreValue, app.globalData.goal)
         });
         wx.showToast({ title: "已更新分数", icon: "success" });
       },

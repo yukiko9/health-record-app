@@ -22,6 +22,7 @@
 .main-ui-foreground {
   position: relative;
   z-index: 1;
+  padding-top: 52rpx;
 }
 
 .header-panel {
@@ -62,14 +63,17 @@
 .record-week-bar {
   flex: 1;
   display: flex;
-  padding: 12rpx 8rpx 16rpx;
+  padding: 18rpx 10rpx 20rpx;
+  padding-top: 22rpx;
   justify-content: space-between;
   align-items: flex-end;
   gap: 6rpx;
-  background: rgba(255, 255, 255, 0.22);
-  border-radius: 18rpx;
-  border: 2rpx solid rgba(105, 131, 95, 0.22);
-  box-shadow: inset 0 2rpx 8rpx rgba(255, 255, 255, 0.35);
+  background: linear-gradient(180deg, rgba(255, 252, 245, 0.95) 0%, rgba(255, 255, 255, 0.88) 28%, rgba(245, 240, 230, 0.92) 100%);
+  border-radius: 8rpx 8rpx 20rpx 20rpx;
+  border: 3rpx solid rgba(120, 100, 70, 0.35);
+  border-top: 10rpx solid rgba(210, 185, 140, 0.55);
+  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.9), 0 8rpx 18rpx rgba(60, 50, 30, 0.18),
+    inset 0 -6rpx 12rpx rgba(0, 0, 0, 0.06);
   transition: background 0.45s ease, box-shadow 0.45s ease;
 }
 
@@ -180,6 +184,65 @@
   flex-direction: column;
   align-items: center;
   gap: 20rpx;
+  overflow: hidden;
+}
+
+.record-day-modal-in {
+  animation: recordModalIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.record-day-modal-out {
+  animation: recordModalOut 0.3s ease-in forwards;
+}
+
+@keyframes recordModalIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.82) translateY(24rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes recordModalOut {
+  to {
+    opacity: 0;
+    transform: scale(0.88) translateY(16rpx);
+  }
+}
+
+.record-day-modal-bubbles {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 120rpx;
+  pointer-events: none;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.45) 4rpx, transparent 5rpx);
+  background-size: 28rpx 28rpx;
+  animation: modalBubbleDrift 4s linear infinite;
+  opacity: 0.55;
+}
+
+@keyframes modalBubbleDrift {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 56rpx 28rpx;
+  }
+}
+
+@keyframes encourageFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8rpx);
+  }
 }
 
 .record-day-modal-win {
@@ -194,6 +257,7 @@
   position: absolute;
   right: 16rpx;
   top: 12rpx;
+  z-index: 2;
   font-size: 40rpx;
   color: #b32b2b;
   padding: 8rpx 16rpx;
@@ -201,22 +265,32 @@
 }
 
 .record-day-modal-title {
+  position: relative;
+  z-index: 2;
   font-size: 32rpx;
   font-weight: 800;
   color: #2a3324;
 }
 
 .record-day-modal-score {
+  position: relative;
+  z-index: 2;
   font-size: 120rpx;
-  font-weight: 900;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", Arial, sans-serif;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
   line-height: 1.1;
   color: #1e2a18;
 }
 
-.record-day-modal-emoji {
-  font-size: 64rpx;
-  align-self: flex-start;
-  margin-left: 8rpx;
+.record-day-modal-encourage {
+  position: relative;
+  z-index: 2;
+  font-size: 34rpx;
+  font-weight: 800;
+  color: #2a3324;
+  margin-top: 8rpx;
+  animation: encourageFloat 1.8s ease-in-out infinite;
 }
 
 .main-score {
@@ -319,31 +393,144 @@
 
 .goal-tip {
   width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 10rpx;
-  font-size: 36rpx;
-  font-weight: 700;
   border-radius: 18rpx;
-  padding: 10rpx 14rpx;
-  background: rgba(255, 255, 255, 0.38);
+  padding: 0;
   border: 2rpx solid rgba(105, 131, 95, 0.28);
   box-shadow: 0 6rpx 12rpx rgba(38, 62, 35, 0.08);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.55);
 }
 
-.goal {
+.goal-tip-track {
+  position: relative;
+  min-height: 88rpx;
+  padding: 12rpx 14rpx;
+  box-sizing: border-box;
+}
+
+.goal-tip-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  max-width: 100%;
+  background: linear-gradient(90deg, #3d6b2e 0%, #4a7d3a 78%, rgba(61, 107, 46, 0.15) 100%);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.goal-tip-bubbles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.goal-tip-bb {
+  position: absolute;
+  bottom: 8rpx;
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  animation: goalTipBubbleFlow 1.8s linear infinite;
+}
+
+.goal-tip-bb1 {
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.goal-tip-bb2 {
+  left: 35%;
+  animation-delay: 0.4s;
+}
+
+.goal-tip-bb3 {
+  left: 58%;
+  animation-delay: 0.2s;
+}
+
+.goal-tip-bb4 {
+  left: 82%;
+  animation-delay: 0.65s;
+}
+
+@keyframes goalTipBubbleFlow {
+  0% {
+    transform: translateX(-20rpx);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+}
+
+.goal-tip-fill-edge {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 16rpx;
+  background: linear-gradient(90deg, transparent, rgba(61, 107, 46, 0.95));
+  animation: goalTipEdgeSway 2.1s ease-in-out infinite;
+}
+
+@keyframes goalTipEdgeSway {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(6rpx);
+  }
+}
+
+.goal-tip-row {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10rpx 16rpx;
+  font-size: 36rpx;
+  font-weight: 700;
+}
+
+.goal-tip-left-cluster {
+  display: flex;
+  align-items: baseline;
+  gap: 8rpx;
+}
+
+.goal-tip-on-fill {
+  color: #1e2a18;
+}
+
+.goal-tip-has-fill .goal-tip-on-fill {
+  color: #ffffff;
+  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.35);
+}
+
+.goal-tip .goal {
   font-size: 52rpx;
 }
 
-.situation {
+.goal-tip-situation {
   font-size: 32rpx;
-  color: #64764e;
+  color: #3d4a33;
+  flex: 1;
+  min-width: 120rpx;
 }
 
-.goal-setting-btn {
+.goal-tip-btn {
   margin-left: auto;
   color: #2e5b3b;
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.72);
   border-radius: 10rpx;
   padding: 4rpx 10rpx;
 }
@@ -352,7 +539,6 @@
   font-size: 128rpx;
   line-height: 1;
   letter-spacing: 2rpx;
-  text-shadow: 0 3rpx 0 rgb(255, 255, 255);
 }
 
 .score-caption {
@@ -370,7 +556,7 @@
   margin-top: 18rpx;
   padding: 16rpx 14rpx;
   backdrop-filter: blur(4rpx);
-  border-radius: 8rpx;
+  border-radius: 10rpx;
 }
 
 .recent-body {
@@ -382,6 +568,7 @@
   max-height: 2400rpx;
   opacity: 1;
   margin-top: 0;
+  border-radius: 10px;
 }
 
 .recent-body-closed {
@@ -389,6 +576,7 @@
   opacity: 0;
   margin-top: 0;
   pointer-events: none;
+  border-radius: 10px;
 }
 
 .recent-head {
@@ -397,7 +585,8 @@
   align-items: center;
   margin-bottom: 8rpx;
   font-size: 36rpx;
-  font-weight: 700;
+  font-weight: 700;  
+  border-radius: 10rpx;
 }
 
 .list-close-btn {
@@ -409,6 +598,7 @@
   flex-direction: column;
   gap: 16rpx;
   padding: 20rpx 12rpx 8rpx;
+  border-radius: 10rpx;
 }
 
 .recent-empty-line {
@@ -416,6 +606,7 @@
   line-height: 1.45;
   color: #3d4a33;
   font-weight: 600;
+  border-radius: 10rpx;
 }
 
 .do-list-panel {

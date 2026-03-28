@@ -1,33 +1,40 @@
 <view class="screen sleep-noon-block">
-  <floating-bubbles />
-  <view class="top">
-    <view class="return-btn btn-danger pressable" bindtap="returnBtn" hover-class="pressing">←</view>
-    <view class="score-wrap">
-      <text class="mood-emoji icon-emoji">{{moodEmoji}}</text>
-      <view class="score-bump-wrap {{scoreBump ? 'score-entry-bump' : ''}}">
-        <rolling-score score-class="score label-strong" value="{{score}}" />
+  <view class="sleep-full-slide sleep-slide-noon {{sleepExitUp ? 'sleep-slide-exit-up' : ''}} {{sleepEnterPlay ? 'sleep-slide-enter' : ''}}">
+    <floating-bubbles />
+    <view class="top">
+      <view class="return-btn btn-danger pressable" bindtap="returnBtn" hover-class="pressing">←</view>
+      <view class="score-wrap">
+        <text class="mood-emoji icon-emoji">{{moodEmoji}}</text>
+        <view class="score-bump-wrap {{scoreBump ? 'score-entry-bump' : ''}}">
+          <rolling-score score-class="score label-strong" value="{{score}}" />
+        </view>
       </view>
     </view>
-  </view>
 
-  <view class="sleep-main">
-    <view class="sleep-mode-btn card pressable" bindtap="switchSleepMode" hover-class="pressing">
-      <text>午睡</text>
-      <text class="icon-emoji">☀️</text>
-    </view>
-
-    <view class="sleep-control">
-      <view class="sleep-hour-reduce card pressable" bindtap="sleepHourReduce" hover-class="pressing">❮</view>
-      <view class="sleep-hour card">
-        <text>{{sleepHour}}</text>
-        <text wx:if="{{sleepHalfHour === 30}}">.5</text>
+    <view class="sleep-main">
+      <view class="sleep-mode-btn card pressable" bindtap="switchSleepMode" hover-class="pressing">
+        <view class="sleep-mode-center">
+          <text class="sleep-mode-title">午睡</text>
+          <text class="icon-emoji sleep-mode-icon">☀️</text>
+        </view>
+        <view class="sleep-mode-hint-slot">
+          <text class="sleep-mode-switch-hint">点击切换\n夜间睡眠</text>
+        </view>
       </view>
-      <view class="sleep-hour-add card pressable" bindtap="sleepHourAdd" hover-class="pressing">❯</view>
-      <button class="sleep-save-btn btn-primary" bindtap="sleepHalfHour">保存</button>
-    </view>
-  </view>
 
-  <view class="sleep-buddy-card sleep-buddy-noon">
-    <image class="sleep-buddy-img" src="/images/sleepingbuddy-noon.png" mode="widthFix" />
+      <view class="sleep-control">
+        <view class="sleep-hour-reduce card pressable" bindtap="sleepHourReduce" hover-class="pressing">❮</view>
+        <view class="sleep-hour card {{sleepHourBump ? 'sleep-hour-bump' : ''}}" bindanimationend="onSleepHourBumpEnd">
+          <text>{{sleepHour}}</text>
+          <text wx:if="{{sleepHalfHour === 30}}">.5</text>
+        </view>
+        <view class="sleep-hour-add card pressable" bindtap="sleepHourAdd" hover-class="pressing">❯</view>
+        <button class="sleep-save-btn btn-primary" bindtap="sleepHalfHour">保存✅️</button>
+      </view>
+    </view>
+
+    <view class="sleep-buddy-card sleep-buddy-noon {{sleepBuddyFloat ? 'sleep-buddy-float' : ''}}">
+      <image class="sleep-buddy-img" src="/images/sleepingbuddy-noon.png" mode="widthFix" />
+    </view>
   </view>
 </view>

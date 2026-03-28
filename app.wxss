@@ -20,12 +20,49 @@ page {
   height: 36rpx;
   margin: -4rpx -12rpx 16rpx -12rpx;
   border-radius: 12rpx;
-  background-image: radial-gradient(circle at 50% 50%, rgba(55, 55, 55, 0.75) 9rpx, transparent 10rpx);
-  background-size: 40rpx 36rpx;
-  background-repeat: repeat-x;
-  background-position: 18rpx 50%;
+  background-image: linear-gradient(
+      to top,
+      rgba(20, 20, 20, 0.92) 0,
+      rgba(20, 20, 20, 0.92) 42%,
+      transparent 42%
+    ),
+    radial-gradient(circle at 50% 50%, rgba(55, 55, 55, 0.75) 9rpx, transparent 10rpx);
+  background-size: 40rpx 36rpx, 40rpx 36rpx;
+  background-repeat: repeat-x, repeat-x;
+  background-position: 18rpx 50%, 18rpx 50%;
   opacity: 0.42;
   pointer-events: none;
+}
+
+/* 与背景呼吸层分离，避免随底层渐变/透明度变化产生「排钉隐现」观感 */
+.binder-decor-layer {
+  position: absolute;
+  left: 12rpx;
+  right: 12rpx;
+  top: 20rpx;
+  height: 36rpx;
+  border-radius: 12rpx;
+  z-index: 10;
+  box-sizing: border-box;
+  background-image: linear-gradient(
+      to top,
+      rgba(20, 20, 20, 0.92) 0,
+      rgba(20, 20, 20, 0.92) 42%,
+      transparent 42%
+    ),
+    radial-gradient(circle at 50% 50%, rgba(55, 55, 55, 0.75) 9rpx, transparent 10rpx);
+  background-size: 40rpx 36rpx, 40rpx 36rpx;
+  background-repeat: repeat-x, repeat-x;
+  background-position: 18rpx 50%, 18rpx 50%;
+  opacity: 0.42;
+  pointer-events: none;
+}
+
+.main-ui.screen::before,
+.enter-ui.screen::before,
+.sleep-night-block.screen::before,
+.sleep-noon-block.screen::before {
+  display: none;
 }
 
 .card {
@@ -69,6 +106,28 @@ page {
 
 .mood-emoji.icon-emoji {
   font-size: 88rpx;
+}
+
+.roller-line,
+.metric-input,
+.duration,
+text.duration,
+.goal {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", Arial, sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+/* 所有 rolling-score 数字：系统无衬线 + 加粗（与幼圆页面正文字体区分） */
+.roller-root {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", Arial, sans-serif;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 所有使用 .score 的分数展示统一粗体 */
+.score {
+  font-weight: 700;
 }
 
 button {

@@ -1,4 +1,5 @@
 .goal-setting {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", Arial, sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -7,11 +8,17 @@
   min-height: 100vh;
   padding-bottom: 40rpx;
   box-sizing: border-box;
+  margin-top: -40px;
+}
+
+.goal-setting .roller-line {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", Arial, sans-serif;
+  font-weight: 700;
 }
 
 .return-btn {
   align-self: flex-start;
-  min-width: 110rpx;
+  min-width: 200rpx;
   text-align: center;
   padding: 10rpx 0;
 }
@@ -30,6 +37,8 @@
 .score {
   font-size: 108rpx;
   line-height: 1;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", Arial, sans-serif;
+  font-weight: 700;
 }
 
 .score-caption {

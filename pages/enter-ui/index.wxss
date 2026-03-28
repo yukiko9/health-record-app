@@ -19,15 +19,241 @@
   animation: mainPageBgBreathe 3.2s ease-in-out infinite;
 }
 
+/* 视口顶端约 10% 处，纵向覆盖 120px */
+.bubble-layer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 10%;
+  height: 120px;
+  z-index: 1;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.foam-bubble {
+  position: absolute;
+  bottom: 0;
+  border-radius: 50%;
+  border: 2rpx solid rgba(90, 90, 90, 0.65);
+  background: rgba(255, 255, 255, 0.32);
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.foam-a {
+  width: 22rpx;
+  height: 22rpx;
+  left: 6%;
+  animation-name: foamPopEnter;
+  animation-duration: 3.4s;
+  animation-delay: 0s;
+}
+
+.foam-b {
+  width: 16rpx;
+  height: 16rpx;
+  left: 18%;
+  animation-name: foamPopEnterAlt;
+  animation-duration: 2.7s;
+  animation-delay: 0.55s;
+}
+
+.foam-c {
+  width: 28rpx;
+  height: 28rpx;
+  left: 38%;
+  animation-name: foamPopEnter;
+  animation-duration: 3.9s;
+  animation-delay: 1.15s;
+}
+
+.foam-d {
+  width: 18rpx;
+  height: 18rpx;
+  left: 52%;
+  animation-name: foamPopEnterAlt;
+  animation-duration: 3.1s;
+  animation-delay: 0.2s;
+}
+
+.foam-e {
+  width: 24rpx;
+  height: 24rpx;
+  left: 68%;
+  animation-name: foamPopEnter;
+  animation-duration: 2.95s;
+  animation-delay: 1.72s;
+}
+
+.foam-f {
+  width: 14rpx;
+  height: 14rpx;
+  left: 84%;
+  animation-name: foamPopEnterAlt;
+  animation-duration: 3.55s;
+  animation-delay: 2.35s;
+}
+
+.foam-g {
+  width: 20rpx;
+  height: 20rpx;
+  left: 94%;
+  bottom: 8px;
+  animation-name: foamPopEnter;
+  animation-duration: 3.2s;
+  animation-delay: 0.88s;
+}
+
+.foam-h {
+  width: 18rpx;
+  height: 18rpx;
+  left: 12%;
+  bottom: 22px;
+  animation-name: foamPopEnterAlt;
+  animation-duration: 3.65s;
+  animation-delay: 0.12s;
+}
+
+.foam-i {
+  width: 24rpx;
+  height: 24rpx;
+  left: 28%;
+  bottom: 38px;
+  animation-name: foamPopEnter;
+  animation-duration: 2.85s;
+  animation-delay: 1.4s;
+}
+
+.foam-j {
+  width: 14rpx;
+  height: 14rpx;
+  left: 44%;
+  bottom: 6px;
+  animation-name: foamPopEnterAlt;
+  animation-duration: 3.25s;
+  animation-delay: 2.05s;
+}
+
+.foam-k {
+  width: 20rpx;
+  height: 20rpx;
+  left: 58%;
+  bottom: 52px;
+  animation-name: foamPopEnter;
+  animation-duration: 3.5s;
+  animation-delay: 0.42s;
+}
+
+.foam-l {
+  width: 16rpx;
+  height: 16rpx;
+  left: 72%;
+  bottom: 28px;
+  animation-name: foamPopEnterAlt;
+  animation-duration: 2.95s;
+  animation-delay: 1.88s;
+}
+
+.foam-m {
+  width: 26rpx;
+  height: 26rpx;
+  left: 8%;
+  bottom: 68px;
+  animation-name: foamPopEnter;
+  animation-duration: 3.75s;
+  animation-delay: 2.62s;
+}
+
+.foam-n {
+  width: 15rpx;
+  height: 15rpx;
+  left: 88%;
+  bottom: 44px;
+  animation-name: foamPopEnterAlt;
+  animation-duration: 3.15s;
+  animation-delay: 0.72s;
+}
+
+.foam-o {
+  width: 19rpx;
+  height: 19rpx;
+  left: 36%;
+  bottom: 72px;
+  animation-name: foamPopEnter;
+  animation-duration: 2.65s;
+  animation-delay: 1.05s;
+}
+
+.foam-p {
+  width: 17rpx;
+  height: 17rpx;
+  left: 62%;
+  bottom: 88px;
+  animation-name: foamPopEnterAlt;
+  animation-duration: 3.45s;
+  animation-delay: 2.28s;
+}
+
+.foam-q {
+  width: 21rpx;
+  height: 21rpx;
+  left: 78%;
+  bottom: 96px;
+  animation-name: foamPopEnter;
+  animation-duration: 3.05s;
+  animation-delay: 0.28s;
+}
+
+.foam-r {
+  width: 13rpx;
+  height: 13rpx;
+  left: 50%;
+  bottom: 102px;
+  animation-name: foamPopEnterAlt;
+  animation-duration: 3.85s;
+  animation-delay: 1.55s;
+}
+
+@keyframes foamPopEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(8rpx) scale(0.32);
+  }
+  28% {
+    opacity: 1;
+    transform: translateY(-36rpx) scale(1.02);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-88rpx) scale(0.16);
+  }
+}
+
+@keyframes foamPopEnterAlt {
+  0% {
+    opacity: 0;
+    transform: translateY(12rpx) scale(0.26);
+  }
+  32% {
+    opacity: 0.95;
+    transform: translateY(-40rpx) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-96rpx) scale(0.14);
+  }
+}
+
 .enter-ui-foreground {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  padding: 32rpx 24rpx 120rpx;
+  padding: 58rpx 24rpx 120rpx;
   box-sizing: border-box;
 }
 
@@ -43,11 +269,10 @@
 .goal-tip {
   font-size: 40rpx;
   color: #3d4a33;
-  background: rgba(255, 255, 255, 0.42);
+  line-height: 50px;
+  text-align: center;
   border-radius: 20rpx;
   padding: 14rpx 22rpx;
-  box-shadow: 0 8rpx 16rpx rgba(38, 62, 35, 0.12);
-  border: 2rpx solid rgba(105, 131, 95, 0.35);
 }
 
 .goal {
@@ -60,23 +285,20 @@
   color: #2f7f37;
 }
 
-.mood-emoji {
+.enter-ui .mood-nudge-wrap {
   margin-top: 30rpx;
-  font-size: 200rpx;
+  line-height: 1;
 }
 
-.enter-ui .score-gradient.label-strong {
+.enter-ui .mood-emoji.icon-emoji {
+  font-size: 80px;
+}
+
+.enter-ui .score.label-strong {
   font-size: 200rpx;
   line-height: 1;
   letter-spacing: 2rpx;
-}
-
-.enter-ui .score-gradient .roller-line {
-  background-image: linear-gradient(180deg, #d4f8c4 0%, #66bb6a 42%, #1b5e20 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: none;
+  color: #1e2a18;
 }
 
 .username-row {
@@ -103,7 +325,34 @@
 .float-tip {
   margin-top: 50rpx;
   font-size: 42rpx;
-  color: rgba(0, 0, 0, 0.4);
+  color: rgba(0, 0, 0, 0.42);
+  animation: floatTipBreathe 3.2s ease-in-out infinite, floatTipBump 2.15s ease-in-out infinite;
+}
+
+@keyframes floatTipBreathe {
+  0%,
+  100% {
+    opacity: 0.18;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes floatTipBump {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(6rpx);
+  }
+  50% {
+    transform: translateY(-12rpx);
+  }
+  75% {
+    transform: translateY(4rpx);
+  }
 }
 
 .readme-fab-col {

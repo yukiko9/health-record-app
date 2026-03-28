@@ -1,5 +1,26 @@
 <view class="screen enter-ui">
   <view class="page-bg-layer page-bg-breathe-enter" style="{{pageBgStyle}}" />
+  <view class="binder-decor-layer" aria-hidden="true" />
+  <view class="bubble-layer">
+    <view class="foam-bubble foam-a"></view>
+    <view class="foam-bubble foam-b"></view>
+    <view class="foam-bubble foam-c"></view>
+    <view class="foam-bubble foam-d"></view>
+    <view class="foam-bubble foam-e"></view>
+    <view class="foam-bubble foam-f"></view>
+    <view class="foam-bubble foam-g"></view>
+    <view class="foam-bubble foam-h"></view>
+    <view class="foam-bubble foam-i"></view>
+    <view class="foam-bubble foam-j"></view>
+    <view class="foam-bubble foam-k"></view>
+    <view class="foam-bubble foam-l"></view>
+    <view class="foam-bubble foam-m"></view>
+    <view class="foam-bubble foam-n"></view>
+    <view class="foam-bubble foam-o"></view>
+    <view class="foam-bubble foam-p"></view>
+    <view class="foam-bubble foam-q"></view>
+    <view class="foam-bubble foam-r"></view>
+  </view>
   <view class="enter-ui-foreground">
   <floating-bubbles />
 
@@ -11,10 +32,12 @@
       <text class="situation">{{situation}}</text>
     </view>
 
-    <view class="mood-emoji icon-emoji">{{moodEmoji}}</view>
+    <view class="mood-nudge-wrap">
+      <text class="mood-emoji icon-emoji">{{moodEmoji}}</text>
+    </view>
     <view class="score-bump-wrap {{scoreBump ? 'score-entry-bump' : ''}}">
       <view class="score-nudge-hint">
-        <rolling-score score-class="score score-gradient label-strong" value="{{score}}" />
+        <rolling-score score-class="score label-strong" value="{{score}}" />
       </view>
     </view>
     <view class="username-row">

@@ -17,6 +17,7 @@
       <view class="menu-btn water-food-btn card pressable {{activePanel === 'water-food-panel' ? 'menu-btn-selected' : ''}}" data-panel="water-food-panel" bindtap="selectPanel" hover-class="pressing">🍎 水/水果</view>
     </view>
 
+    <view class="eating-content-right">
     <view
       class="eating-data-input eating-data-input-lined card {{panelBump ? 'eating-panel-bump' : ''}}"
       catchanimationend="onPanelBumpEnd"
@@ -45,6 +46,7 @@
         bindfullnesschange="onFullnessChange"
       />
       <text class="panel-user-note" selectable> </text>
+    </view>
     </view>
   </view>
 

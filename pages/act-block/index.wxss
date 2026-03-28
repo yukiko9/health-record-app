@@ -20,7 +20,7 @@
 }
 
 .return-btn {
-  min-width: 110rpx;
+  min-width: 200rpx;
   text-align: center;
   padding: 8rpx 0;
 }
@@ -55,7 +55,20 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 10rpx;
+  gap: 10px;
+}
+
+.menu-btn.slow-walk-btn,
+.menu-btn.fast-walk-btn,
+.menu-btn.jog-btn,
+.menu-btn.run-btn,
+.menu-btn.sit-overtime-btn,
+.menu-btn.ride-btn {
+  height: 60px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .menu-btn {
@@ -75,7 +88,7 @@
   transform: translateY(4rpx);
   box-shadow: inset 0 6rpx 12rpx rgba(38, 62, 35, 0.22), 0 2rpx 4rpx rgba(255, 255, 255, 0.35);
   filter: brightness(0.97);
-  animation: menuSideWiggle 0.48s ease-in-out infinite;
+  animation: menuSideWiggle 0.8s ease-in-out 1 forwards;
 }
 
 @keyframes menuSideWiggle {
@@ -128,11 +141,15 @@
 .act-data-input-lined {
   background-color: rgba(255, 255, 255, 0.88);
   background-image: repeating-linear-gradient(
-    transparent 0,
-    transparent 49px,
-    rgba(72, 72, 72, 0.16) 49px,
-    rgba(72, 72, 72, 0.16) 50px
+    to bottom,
+    rgba(72, 72, 72, 0.18) 0,
+    rgba(72, 72, 72, 0.18) 1px,
+    transparent 1px,
+    transparent 50px
   );
+  background-size: 100% 50px;
+  background-origin: padding-box;
+  background-repeat: repeat;
 }
 
 .panel-user-note {

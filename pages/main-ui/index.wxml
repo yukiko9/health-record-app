@@ -1,5 +1,6 @@
 <view class="screen main-ui">
   <view class="page-bg-layer page-bg-breathe" style="{{pageBgStyle}}" />
+  <view class="binder-decor-layer" aria-hidden="true" />
   <view class="main-ui-foreground">
   <floating-bubbles />
   <view class="header-panel">
@@ -29,23 +30,39 @@
 
     <view wx:if="{{recordDayModalVisible}}" class="record-day-modal-mask" bindtap="closeRecordDayModal">
       <view
-        class="record-day-modal card {{recordDayModalWon ? 'record-day-modal-win' : 'record-day-modal-lose'}}"
+        class="record-day-modal card {{recordDayModalWon ? 'record-day-modal-win' : 'record-day-modal-lose'}} {{recordDayModalClosing ? 'record-day-modal-out' : 'record-day-modal-in'}}"
         catchtap="noopModal"
       >
+        <view class="record-day-modal-bubbles"></view>
         <view class="record-day-modal-close pressable" bindtap="closeRecordDayModal" hover-class="pressing">✕</view>
         <text class="record-day-modal-title">{{recordDayModalTitle}}</text>
         <text class="record-day-modal-score">{{recordDayModalScore}}</text>
-        <text class="record-day-modal-emoji icon-emoji">{{recordDayModalEmoji}}</text>
+        <text class="record-day-modal-encourage">{{recordDayModalEncourage}}</text>
       </view>
     </view>
   </view>
 
   <view class="main-score">
     <view class="goal-tip pressable" bindtap="goGoalSetting" hover-class="pressing">
-      <text>目标:</text>
-      <text class="goal">{{goal}}</text>
-      <text class="situation">{{situation}}</text>
-      <text class="goal-setting-btn">设置</text>
+      <view class="goal-tip-track">
+        <view class="goal-tip-fill" style="width: {{goalProgressPct}}%;">
+          <view class="goal-tip-bubbles">
+            <view class="goal-tip-bb goal-tip-bb1"></view>
+            <view class="goal-tip-bb goal-tip-bb2"></view>
+            <view class="goal-tip-bb goal-tip-bb3"></view>
+            <view class="goal-tip-bb goal-tip-bb4"></view>
+          </view>
+          <view class="goal-tip-fill-edge"></view>
+        </view>
+        <view class="goal-tip-row {{goalProgressPct > 8 ? 'goal-tip-has-fill' : ''}}">
+          <view class="goal-tip-left-cluster">
+            <text class="goal-tip-label goal-tip-on-fill">目标:</text>
+            <text class="goal goal-tip-on-fill">{{goal}}</text>
+          </view>
+          <text class="situation goal-tip-situation">{{situation}}</text>
+          <text class="goal-setting-btn goal-tip-btn">设置</text>
+        </view>
+      </view>
     </view>
 
     <view class="main-score-row">
