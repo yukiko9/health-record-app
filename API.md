@@ -2,11 +2,20 @@
 
 本文档与 [`utils/api.js`](utils/api.js) 中的路径、方法一致，供后端实现与联调。根地址由小程序配置为 **`API_BASE`**（无末尾斜杠），所有路径均与其拼接。
 
+## 给后端实现者（请先读）
+
+1. **用户维度**：当前 `api.js` **未**在请求里附带 `userId` / Token；mock 下为单机。上线前需与前端约定 **鉴权方式**（如 `Authorization`），且 **dashboard / recent / week-progress / high-rate / 各 POST** 均应按 **登录用户** 隔离数据。
+2. **计分唯一真相源**：若服务端要重算分或校验 delta，必须以 **[`utils/score.js`](utils/score.js)** 为准逐行对齐。仓库内 [`scoring-reference.md`](scoring-reference.md) 及根目录同名文件**可能与实现不一致**，请勿单独依赖其表格公式。
+3. **域名**：除 `wx.request` 的 **request 合法域名**外，`POST /api/ai/analyze` 走 **`wx.uploadFile`**，须在小程序后台单独配置 **uploadFile 合法域名**（可与 API 同域）。
+4. **AI 上传与鉴权**：[`uploadAiAnalyzeImage`](utils/api.js) 当前 **未**传 `header`（无 Token）。若接口需鉴权，需**双方改 `api.js`**（`wx.uploadFile` 支持 `header`）或后端在联调阶段接受约定测试方式。
+5. **HTTP 状态码**：`requestJson` 仅在 **2xx** 时 resolve；`uploadFile` 的 `success` 回调**未检查 `statusCode`**，仅解析 body。建议 AI 接口在业务失败时仍返回 **HTTP 200** + JSON 说明，或约定由前端补判 `statusCode`。
+6. **容错**：`GET /api/records/high-rate` 与 `GET /api/records/week-progress` 在前端 **catch 后分别返回空占位 / 空 `days`**，不向用户弹网络错误；后端长期不可用时会表现为「无高频条数据、周条全灰」，联调时可用控制台 Network 排查。
+
 **通用约定**
 
 - 成功响应可使用 **裸 JSON** 或 **`{ data: ... }`** 包裹；文中「业务体」指 `data` 解包后的对象。
 - 除文件上传外，建议 **`Content-Type: application/json`**。
-- 鉴权方式（如 `Authorization`）由项目统一约定，本文不展开。
+- 鉴权方式（如 `Authorization`）由项目统一约定；**上线前须补齐**（见上文）。
 
 ---
 
@@ -150,3 +159,4 @@
 - 活动新增 **`ride-panel`** 及 `rideTime` / `rideDistance`。
 - 饮食新增 **奶茶含糖量**、**膨化**、**咖啡**及 `coffeeCountToday` 等计分依赖字段。
 - 午睡 **`noonSleepSavesBefore`** 与本地 **`noonSleepSaves`** 计数对齐第二次起 0 分。
+- **文档**：补充「计分以 `score.js` 为准」、`uploadFile` 域名、鉴权与 AI 接口 HTTP 行为说明。

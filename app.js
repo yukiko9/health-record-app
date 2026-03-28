@@ -1,5 +1,6 @@
 App({
   onLaunch() {
+    this.loadNunitoScoreFont();
     try {
       const g = wx.getStorageSync("mockUserGoal");
       if (g != null && g !== "") {
@@ -12,6 +13,26 @@ App({
       /* ignore */
     }
     this.recalcDailySummary();
+  },
+
+  /** 小程序内自定义字体：@font-face 在部分环境下不生效，需 loadFontFace + 根路径 /fonts/ */
+  loadNunitoScoreFont() {
+    if (typeof wx.loadFontFace !== "function") {
+      return;
+    }
+    wx.loadFontFace({
+      family: "Nunito",
+      global: true,
+      source: 'url("/fonts/Nunito-Variable.ttf")',
+      desc: {
+        style: "normal",
+        weight: "700"
+      },
+      success() {},
+      fail(err) {
+        console.warn("[loadFontFace] Nunito", err);
+      }
+    });
   },
 
   globalData: {

@@ -64,3 +64,21 @@
   color: #2e5b3b;
   min-width: 52rpx;
 }
+
+/* 与 slow-walk 等面板一致：面板内选中卡片左右晃动仅 0.8s */
+.metric-card-nudge {
+  animation: metricSideWiggleRide 0.8s ease-in-out 1 forwards;
+}
+
+@keyframes metricSideWiggleRide {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4rpx);
+  }
+  75% {
+    transform: translateX(4rpx);
+  }
+}

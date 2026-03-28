@@ -298,7 +298,6 @@
   font-size: 200rpx;
   line-height: 1;
   letter-spacing: 2rpx;
-  color: #1e2a18;
 }
 
 .username-row {

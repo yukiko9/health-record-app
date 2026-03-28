@@ -2,6 +2,17 @@
 
 **接口路径级速查（给设计者）**：另见同目录 [`API.md`](API.md)。
 
+## 给后端实现者 · 易错点（2026-03 核对）
+
+| 主题 | 说明 |
+|------|------|
+| **计分公式** | 与活动走跑、骑行、饮食超量边际等相关的**唯一实现**在 [`utils/score.js`](utils/score.js)。[`scoring-reference.md`](scoring-reference.md) 为说明文档，**若与 `score.js` 冲突，以代码为准**（仓库根目录另有同名 `scoring-reference.md`，同样仅作参考）。 |
+| **用户 / 鉴权** | 当前 [`api.js`](utils/api.js) 请求**无**统一 Token；所有资源默认「单机 mock」。正式环境必须为每条接口约定 **用户维度** 与 **Header**，并由前端改 `requestJson` / `uploadAiAnalyzeImage`。 |
+| **`wx.uploadFile`** | AI 识图使用 **`uploadFile`**，微信公众平台需配置 **uploadFile 合法域名**（与 request 列表**分别**配置）。 |
+| **AI 响应与 HTTP** | `uploadAiAnalyzeImage` 成功回调内**未判断** `statusCode`；建议接口 **200** 返回 JSON（字段 `sleepHour` / `calorie`），避免依赖 4xx body。 |
+| **最近列表 `time`** | 若 `GET /api/records/recent` 返回的 `time` 为 `"MM/DD 14时35分"` 这类字符串，前端 [`mapRecordToRecentItem`](utils/api.js) 会 **去掉日期前缀**，列表上仍只显示 **时、分**。 |
+| **弱网表现** | `fetchHighRateActList`、`fetchWeekProgress` 在失败时**静默降级**（占位行 / 空 `days`），不弹 Toast；联调时勿仅凭界面判断接口是否通。 |
+
 ## 前端配置
 
 - 在 [`utils/api.js`](utils/api.js) 顶部设置 **`API_BASE`** 为后端根地址（如 `https://api.example.com`，**无末尾斜杠**）。

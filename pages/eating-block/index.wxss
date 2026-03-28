@@ -96,11 +96,12 @@
   backdrop-filter: blur(2rpx);
 }
 
+/* 侧栏菜单选中：持续左右晃动 */
 .menu-btn-selected {
   transform: translateY(4rpx);
   box-shadow: inset 0 6rpx 12rpx rgba(38, 62, 35, 0.22), 0 2rpx 4rpx rgba(255, 255, 255, 0.35);
   filter: brightness(0.97);
-  animation: menuSideWiggleEat 0.8s ease-in-out 1 forwards;
+  animation: menuSideWiggleEat 0.48s ease-in-out infinite;
 }
 
 @keyframes menuSideWiggleEat {

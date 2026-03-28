@@ -12,7 +12,6 @@
 }
 
 .goal-setting .roller-line {
-  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", Arial, sans-serif;
   font-weight: 700;
 }
 
@@ -37,7 +36,6 @@
 .score {
   font-size: 108rpx;
   line-height: 1;
-  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", Arial, sans-serif;
   font-weight: 700;
 }
 

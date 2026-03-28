@@ -64,8 +64,9 @@
   font-weight: 600;
 }
 
+/* 面板内选中态：左右晃动仅 0.8s */
 .metric-card-nudge {
-  animation: metricSideWiggle 0.5s ease-in-out infinite;
+  animation: metricSideWiggle 0.8s ease-in-out 1 forwards;
 }
 
 @keyframes metricSideWiggle {

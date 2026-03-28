@@ -4,22 +4,33 @@
   border-radius: 20rpx;
   background: rgba(224, 252, 177, 0.92);
   box-shadow: 0 8rpx 20rpx rgba(38, 62, 35, 0.12);
+  font-size: 28rpx;
 }
 
 .food-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  height: 50px;
   border: 2rpx solid rgba(121, 144, 106, 0.85);
   border-radius: 14rpx;
-  padding: 12rpx 14rpx;
+  padding: 0 14rpx;
   margin-bottom: 10rpx;
   font-weight: 700;
   background: rgba(255, 255, 255, 0.35);
 }
 
+.food-item text {
+  font-size: 28rpx;
+  line-height: 1.2;
+}
+
+.food-item text:last-child {
+  font-size: 34rpx;
+}
+
 .food-item-on {
-  animation: foodItemWiggle 0.48s ease-in-out infinite;
+  animation: foodItemWiggle 0.8s ease-in-out 1 forwards;
 }
 
 @keyframes foodItemWiggle {
@@ -36,14 +47,19 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: 50px;
   border: 2rpx solid rgba(121, 144, 106, 0.85);
   border-radius: 14rpx;
-  padding: 10rpx 14rpx;
+  padding: 0 14rpx;
   font-weight: 700;
   background: rgba(255, 255, 255, 0.4);
   box-shadow: inset 0 2rpx 4rpx rgba(255, 255, 255, 0.4);
 }
 
+.fullness-btn text {
+  font-size: 28rpx;
+}
+
 .n {
-  font-size: 42rpx;
+  font-size: 36rpx;
 }
