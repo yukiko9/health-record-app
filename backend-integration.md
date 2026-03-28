@@ -4,14 +4,14 @@
 
 ## 给后端实现者 · 易错点（2026-03 核对）
 
-| 主题 | 说明 |
-|------|------|
-| **计分公式** | 与活动走跑、骑行、饮食超量边际等相关的**唯一实现**在 [`utils/score.js`](utils/score.js)。[`scoring-reference.md`](scoring-reference.md) 为说明文档，**若与 `score.js` 冲突，以代码为准**（仓库根目录另有同名 `scoring-reference.md`，同样仅作参考）。 |
-| **用户 / 鉴权** | 当前 [`api.js`](utils/api.js) 请求**无**统一 Token；所有资源默认「单机 mock」。正式环境必须为每条接口约定 **用户维度** 与 **Header**，并由前端改 `requestJson` / `uploadAiAnalyzeImage`。 |
-| **`wx.uploadFile`** | AI 识图使用 **`uploadFile`**，微信公众平台需配置 **uploadFile 合法域名**（与 request 列表**分别**配置）。 |
-| **AI 响应与 HTTP** | `uploadAiAnalyzeImage` 成功回调内**未判断** `statusCode`；建议接口 **200** 返回 JSON（字段 `sleepHour` / `calorie`），避免依赖 4xx body。 |
-| **最近列表 `time`** | 若 `GET /api/records/recent` 返回的 `time` 为 `"MM/DD 14时35分"` 这类字符串，前端 [`mapRecordToRecentItem`](utils/api.js) 会 **去掉日期前缀**，列表上仍只显示 **时、分**。 |
-| **弱网表现** | `fetchHighRateActList`、`fetchWeekProgress` 在失败时**静默降级**（占位行 / 空 `days`），不弹 Toast；联调时勿仅凭界面判断接口是否通。 |
+| 主题                | 说明                                                                                                                                                                                                                                                  |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **计分公式**        | 与活动走跑、骑行、饮食超量边际等相关的**唯一实现**在 [`utils/score.js`](utils/score.js)。[`scoring-reference.md`](scoring-reference.md) 为说明文档，**若与 `score.js` 冲突，以代码为准**（仓库根目录另有同名 `scoring-reference.md`，同样仅作参考）。 |
+| **用户 / 鉴权**     | 当前 [`api.js`](utils/api.js) 请求**无**统一 Token；所有资源默认「单机 mock」。正式环境必须为每条接口约定 **用户维度** 与 **Header**，并由前端改 `requestJson` / `uploadAiAnalyzeImage`。                                                             |
+| **`wx.uploadFile`** | AI 识图使用 **`uploadFile`**，微信公众平台需配置 **uploadFile 合法域名**（与 request 列表**分别**配置）。                                                                                                                                             |
+| **AI 响应与 HTTP**  | `uploadAiAnalyzeImage` 成功回调内**未判断** `statusCode`；建议接口 **200** 返回 JSON（字段 `sleepHour` / `calorie`），避免依赖 4xx body。                                                                                                             |
+| **最近列表 `time`** | 若 `GET /api/records/recent` 返回的 `time` 为 `"MM/DD 14时35分"` 这类字符串，前端 [`mapRecordToRecentItem`](utils/api.js) 会 **去掉日期前缀**，列表上仍只显示 **时、分**。                                                                            |
+| **弱网表现**        | `fetchHighRateActList`、`fetchWeekProgress` 在失败时**静默降级**（占位行 / 空 `days`），不弹 Toast；联调时勿仅凭界面判断接口是否通。                                                                                                                  |
 
 ## 前端配置
 
@@ -22,11 +22,11 @@
 
 与 [`components/recent-act-list-show`](components/recent-act-list-show) 一致，每条为 `{ do, time, info }`：
 
-| 字段 | 含义 |
-|------|------|
-| **do** | 模块类型：**「活动」/「饮食」/「睡眠」** |
+| 字段     | 含义                                                                                                                                |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| **do**   | 模块类型：**「活动」/「饮食」/「睡眠」**                                                                                            |
 | **time** | 记录时间展示：**仅「时、分」**（如 `14时35分`）；后端可仍返回 `recordedAt: { day, hour, minute }`，前端会格式化为时分并**省略日期** |
-| **info** | 具体事件描述，与 POST body 中的 **`summary`** 或等价字段一致（如「吃蔬菜，饱食度为4」「慢跑，10min」） |
+| **info** | 具体事件描述，与 POST body 中的 **`summary`** 或等价字段一致（如「吃蔬菜，饱食度为4」「慢跑，10min」）                              |
 
 若 GET 返回「完整记录」（含 `module`、`recordedAt`、`summary`），前端会用 **`mapRecordToRecentItem`** 映射为上述三列；后端也可直接返回已对齐的三字段。
 
@@ -96,15 +96,19 @@
 ### 7) 保存响应（推荐）
 
 ```json
-{ "success": true, "id": "记录ID", "recordedAt": { "day": "03/22", "hour": 14, "minute": 35 } }
+{
+  "success": true,
+  "id": "记录ID",
+  "recordedAt": { "day": "03/22", "hour": 14, "minute": 35 }
+}
 ```
 
 便于前端重试与对账。
 
-### 8) AI 识图分析（主界面 `ai-analyze-btn`）
+### 8) AI 识图分析（主界面 `ai-analyze-btn`）（注意这里可能用到deepseek api key，要在后端接入deepseek api（chat模式），需要时直接找redy即可）
 
 - **`POST /api/ai/analyze`**（`API_BASE` 已配置且非 mock 时，前端通过 **`wx.uploadFile`** 调用；**multipart** 字段名 **`image`**，值为用户选择的截图临时文件。）
-- **鉴权**：与现有业务一致（如 Header 带 token）；**大模型 / 视觉识别 API Key、提示词模板均只放在后端**，小程序不持有密钥。
+- **鉴权**：与现有业务一致（如 Header 带 token）；**Deepseek API Key（由redy提供）、提示词模板均只放在后端**，小程序不持有密钥。
 - **响应**（可直接 JSON 或包在 `{ data: { ... } }`）：至少包含可选字段 **`sleepHour`**、**`calorie`**（均为 number；缺失时用 `null`/`undefined` 表示未识别）。
   - **`sleepHour`**：夜间睡眠时长（**小时**，允许小数，如 `7.5`）；前端会按 30 分钟粒度对齐后喂给 [`calcSleepScore`](utils/score.js)（`sleepMode: "night"`）。
   - **`calorie`**：活动热量（千卡或其它与产品约定一致的单位）；前端换算活动分：`heatScore = min(20, 20 * (1 - exp(-calorie/800)))`。
@@ -121,7 +125,7 @@
 
 ```
 <!-- PROMPT_PLACEHOLDER_START -->
-（请在此处粘贴：截图理解任务说明、输出 JSON 字段 sleepHour / calorie 的格式要求、单位与容错规则等全文。）
+现在你是一个用于自动识别并获取、打印用户健康数据的机器人。这是一个健康应用的主界面截图识别出来的文字，请你识别睡眠时间（单位为小时）和热量（单位为卡路里），以json格式输出（下面** **里的内容都必须完全是数字形式）：{"sleepHour": **你获取到的睡眠时长数据**, "calorie": **你获取到的卡路里消耗量，转换单位为kJ**}未获取到数据的属性值直接改为undefined。
 <!-- PROMPT_PLACEHOLDER_END -->
 ```
 
@@ -129,11 +133,11 @@
 
 设计参考：`record-tab-style-and-logic.png`。首页头部右侧为 **连续 5 个自然日** 的横向条，相对 **今天** 的窗口为 **`today - 3`** ～ **`today + 1`**（共 5 格）。每格展示 **星期英文缩写**（如 Sun.）及 **圆形状态**：
 
-| 状态 | 含义 |
-|------|------|
-| 灰圈 | 无记录或当日未判定 |
-| 绿圈 + 白勾 | 当日 **总分 ≥ 当日目标 goal**（达标） |
-| 奖杯 | 可选装饰，与达标同时展示（前端在 `won === true` 时显示） |
+| 状态        | 含义                                                     |
+| ----------- | -------------------------------------------------------- |
+| 灰圈        | 无记录或当日未判定                                       |
+| 绿圈 + 白勾 | 当日 **总分 ≥ 当日目标 goal**（达标）                    |
+| 奖杯        | 可选装饰，与达标同时展示（前端在 `won === true` 时显示） |
 
 - **未来日**（日期 > 今天 0 点）：**不可点击**，前端已禁用交互。
 - **今天与过去**：可点击，弹出 **详情浮层**：展示「星期英 + 中文」、**当日 score**、达标/未达标 **不同背景色与表情**。
