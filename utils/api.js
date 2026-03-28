@@ -10,6 +10,23 @@ function useMock() {
 /** mock 下用于模拟 GET recent，与三条 POST 写入 */
 let mockRecentList = [];
 
+const MOCK_USER_GOAL_KEY = "mockUserGoal";
+
+function readStoredMockGoal() {
+  try {
+    const g = wx.getStorageSync(MOCK_USER_GOAL_KEY);
+    if (g != null && g !== "") {
+      const n = Number(g);
+      if (!Number.isNaN(n)) {
+        return Math.max(0, Math.min(99, Math.round(n)));
+      }
+    }
+  } catch (e) {
+    /* ignore */
+  }
+  return 80;
+}
+
 function buildRecordedAt(date = new Date()) {
   const month = date.getMonth() + 1;
   const d = date.getDate();
@@ -188,7 +205,7 @@ function requestJson(path, method, data) {
 async function fetchDashboardProfile() {
   if (useMock()) {
     await delay();
-    return { username: "username", goal: 80, duration: 0 };
+    return { username: "username", goal: readStoredMockGoal(), duration: 0 };
   }
   const raw = await requestJson("/api/dashboard", "GET");
   const data = raw && raw.data != null ? raw.data : raw;
@@ -233,6 +250,12 @@ async function fetchUserDashboard() {
 async function saveGoal(payload) {
   if (useMock()) {
     await delay();
+    if (payload && payload.goal != null) {
+      const g = Math.max(0, Math.min(99, Math.round(Number(payload.goal))));
+      if (!Number.isNaN(g)) {
+        wx.setStorageSync(MOCK_USER_GOAL_KEY, g);
+      }
+    }
     return { success: true, payload };
   }
   const raw = await requestJson("/api/goal/save", "POST", payload);

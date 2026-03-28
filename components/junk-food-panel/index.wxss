@@ -18,6 +18,20 @@
   background: rgba(236, 128, 141, 0.92);
 }
 
+.food-item-on {
+  animation: foodItemWiggle 0.48s ease-in-out infinite;
+}
+
+@keyframes foodItemWiggle {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(4rpx);
+  }
+}
+
 .fullness-btn {
   display: flex;
   align-items: center;
@@ -85,4 +99,5 @@
 .sugar-chip-on {
   background: linear-gradient(180deg, #ffd4dc 0%, #f5a8b8 100%);
   border-color: rgba(120, 70, 80, 0.75);
+  animation: foodItemWiggle 0.48s ease-in-out infinite;
 }

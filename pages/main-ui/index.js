@@ -28,7 +28,8 @@ Page({
     recordDayModalScore: "",
     recordDayModalWon: false,
     recordDayModalEmoji: "🙂",
-    scoreBump: false
+    scoreBump: false,
+    todayGoalMet: false
   },
 
   async onShow() {
@@ -61,6 +62,10 @@ Page({
       wx.setStorageSync("mockWeekDayMap", map);
       weekDays = mergeWeekApi(buildFiveDaySlots(), map);
     }
+    const todayGoalMet =
+      typeof summary.scoreValue === "number" &&
+      typeof app.globalData.goal === "number" &&
+      summary.scoreValue >= app.globalData.goal;
     this.setData({
       username: app.globalData.username,
       goal: app.globalData.goal,
@@ -72,7 +77,8 @@ Page({
       situation: summary.situation,
       moodEmoji: app.getMoodEmoji(summary.scoreValue),
       pageBgStyle: getScorePageBackgroundStyle(summary.scoreValue),
-      scoreBump: false
+      scoreBump: false,
+      todayGoalMet
     });
     setTimeout(() => this.setData({ scoreBump: true }), 30);
     setTimeout(() => this.setData({ scoreBump: false }), 520);
@@ -145,11 +151,16 @@ Page({
       delta = scoreUtil.calcSleepScore(item.scorePayload);
     }
     const summary = app.addModuleScoreDelta(item.module, delta);
+    const todayGoalMet =
+      typeof summary.scoreValue === "number" &&
+      typeof app.globalData.goal === "number" &&
+      summary.scoreValue >= app.globalData.goal;
     this.setData({
       score: summary.scoreDisplay,
       situation: summary.situation,
       moodEmoji: app.getMoodEmoji(summary.scoreValue),
-      pageBgStyle: getScorePageBackgroundStyle(summary.scoreValue)
+      pageBgStyle: getScorePageBackgroundStyle(summary.scoreValue),
+      todayGoalMet
     });
     wx.showToast({ title: "已记分", icon: "success" });
   },
@@ -215,11 +226,16 @@ Page({
         }
 
         const summary = applyAiAnalyzeToApp(app, sleepHour, calorie);
+        const todayGoalMet =
+          typeof summary.scoreValue === "number" &&
+          typeof app.globalData.goal === "number" &&
+          summary.scoreValue >= app.globalData.goal;
         this.setData({
           score: summary.scoreDisplay,
           situation: summary.situation,
           moodEmoji: app.getMoodEmoji(summary.scoreValue),
-          pageBgStyle: getScorePageBackgroundStyle(summary.scoreValue)
+          pageBgStyle: getScorePageBackgroundStyle(summary.scoreValue),
+          todayGoalMet
         });
         wx.showToast({ title: "已更新分数", icon: "success" });
       },

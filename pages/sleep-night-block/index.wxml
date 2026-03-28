@@ -12,7 +12,7 @@
 
   <view class="sleep-main">
     <view class="sleep-mode-btn card pressable" bindtap="switchSleepMode" hover-class="pressing">
-      <text>夜间睡眠</text>
+      <text>夜间\n睡眠</text>
       <text class="icon-emoji">🌌</text>
     </view>
 
@@ -24,17 +24,16 @@
       </view>
       <view class="sleep-hour-add card pressable" bindtap="sleepHourAdd" hover-class="pressing">❯</view>
       <button
-        class="sleep-half-hour btn-primary {{nightSleepLocked ? 'btn-disabled' : ''}}"
+        class="sleep-save-btn btn-primary {{nightSleepLocked ? 'btn-disabled' : ''}}"
         bindtap="sleepHalfHour"
         disabled="{{nightSleepLocked}}"
       >
-        {{nightSleepLocked ? "今日已记夜间" : "保存"}}
+        {{nightSleepLocked ? "今日已记!" : "保存"}}
       </button>
     </view>
   </view>
 
   <view class="sleep-buddy-card sleep-buddy-night">
-    <image class="sleep-buddy-img" src="/images/sleepingbuddy-night.png" mode="aspectFit" />
-    <text class="sleep-buddy-note">固定作息、减少蓝光，更易入睡。（插图与文案可按 PRD 替换）</text>
+    <image class="sleep-buddy-img" src="/images/sleepingbuddy-night.png" mode="widthFix" />
   </view>
 </view>

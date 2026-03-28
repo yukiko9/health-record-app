@@ -1,5 +1,27 @@
 .enter-ui {
   position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.page-bg-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.page-bg-breathe-enter {
+  animation: mainPageBgBreathe 3.2s ease-in-out infinite;
+}
+
+.enter-ui-foreground {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -43,11 +65,17 @@
   font-size: 200rpx;
 }
 
-.enter-ui .score.label-strong {
-  font-size: 300rpx;
+.enter-ui .score-gradient.label-strong {
+  font-size: 200rpx;
   line-height: 1;
   letter-spacing: 2rpx;
-  color: #ffffff;
+}
+
+.enter-ui .score-gradient .roller-line {
+  background-image: linear-gradient(180deg, #d4f8c4 0%, #66bb6a 42%, #1b5e20 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
   text-shadow: none;
 }
 

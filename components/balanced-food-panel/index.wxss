@@ -18,6 +18,20 @@
   background: rgba(255, 255, 255, 0.35);
 }
 
+.food-item-on {
+  animation: foodItemWiggle 0.48s ease-in-out infinite;
+}
+
+@keyframes foodItemWiggle {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(4rpx);
+  }
+}
+
 .fullness-btn {
   display: flex;
   align-items: center;

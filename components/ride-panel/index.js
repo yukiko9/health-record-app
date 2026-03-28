@@ -7,20 +7,26 @@ Component({
     inputMode: {
       type: String,
       value: "time"
-    }
+    },
+    resetStamp: { type: Number, value: 0 }
   },
 
   data: {
-    timeStr: "10",
-    distStr: "0"
+    metricTouched: false,
+    timeStr: "",
+    distStr: ""
   },
 
   observers: {
+    resetStamp() {
+      this.setData({ metricTouched: false, timeStr: "", distStr: "" });
+    },
     value(v) {
       if (!v) return;
+      if (!this.data.metricTouched) return;
       this.setData({
-        timeStr: v.rideTime != null && v.rideTime !== "" ? String(v.rideTime) : "0",
-        distStr: v.rideDistance != null && v.rideDistance !== "" ? String(v.rideDistance) : "0"
+        timeStr: v.rideTime != null && v.rideTime !== "" ? String(v.rideTime) : "",
+        distStr: v.rideDistance != null && v.rideDistance !== "" ? String(v.rideDistance) : ""
       });
     }
   },
@@ -29,7 +35,8 @@ Component({
     stopBubble() {},
 
     onPickDistance() {
-      const dist = Number(this.data.distStr) || 0;
+      const dist = (this.data.distStr || "").trim() === "" ? 0 : Number(this.data.distStr) || 0;
+      this.setData({ metricTouched: true });
       this.triggerEvent("change", {
         rideTime: 0,
         rideDistance: dist,
@@ -38,7 +45,9 @@ Component({
     },
 
     onPickTime() {
-      const t = Number(this.data.timeStr) || 0;
+      const raw = (this.data.timeStr || "").trim();
+      const t = raw === "" ? 10 : Number(this.data.timeStr) || 0;
+      this.setData({ metricTouched: true });
       this.triggerEvent("change", {
         rideTime: t,
         rideDistance: 0,
@@ -48,7 +57,7 @@ Component({
 
     onDistanceInput(e) {
       const distStr = e.detail.value;
-      this.setData({ distStr });
+      this.setData({ distStr, metricTouched: true });
       this.triggerEvent("change", {
         rideTime: 0,
         rideDistance: Number(distStr) || 0,
@@ -58,7 +67,7 @@ Component({
 
     onTimeInput(e) {
       const timeStr = e.detail.value;
-      this.setData({ timeStr });
+      this.setData({ timeStr, metricTouched: true });
       this.triggerEvent("change", {
         rideTime: Number(timeStr) || 0,
         rideDistance: 0,

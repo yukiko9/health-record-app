@@ -18,7 +18,7 @@
     </view>
 
     <view
-      class="eating-data-input card {{panelBump ? 'eating-panel-bump' : ''}}"
+      class="eating-data-input eating-data-input-lined card {{panelBump ? 'eating-panel-bump' : ''}}"
       catchanimationend="onPanelBumpEnd"
     >
       <balanced-food-panel
@@ -44,11 +44,12 @@
         bindtoggle="onToggleItem"
         bindfullnesschange="onFullnessChange"
       />
+      <text class="panel-user-note" selectable> </text>
     </view>
   </view>
 
   <view class="bottom-btns">
-    <button class="save-eat-btn btn-primary" bindtap="saveEatBtn">保存</button>
-    <button class="reset-eat-btn btn-danger" bindtap="resetEatBtn">重置</button>
+    <button class="save-eat-btn btn-primary btn-wiggle-hover" bindtap="saveEatBtn" hover-class="btn-wiggle-active">保存</button>
+    <button class="reset-eat-btn btn-danger btn-wiggle-hover" bindtap="resetEatBtn" hover-class="btn-wiggle-active">重置</button>
   </view>
 </view>

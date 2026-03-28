@@ -73,6 +73,17 @@
   transform: translateY(4rpx);
   box-shadow: inset 0 6rpx 12rpx rgba(38, 62, 35, 0.22), 0 2rpx 4rpx rgba(255, 255, 255, 0.35);
   filter: brightness(0.97);
+  animation: menuSideWiggleEat 0.48s ease-in-out infinite;
+}
+
+@keyframes menuSideWiggleEat {
+  0%,
+  100% {
+    transform: translateY(4rpx) translateX(0);
+  }
+  50% {
+    transform: translateY(4rpx) translateX(3rpx);
+  }
 }
 
 .eating-data-input {
@@ -81,6 +92,38 @@
   padding: 20rpx 16rpx;
   border-width: 3rpx;
   box-shadow: inset 0 2rpx 12rpx rgba(255, 255, 255, 0.45);
+}
+
+.eating-data-input-lined {
+  background-color: rgba(255, 255, 255, 0.88);
+  background-image: repeating-linear-gradient(
+    transparent 0,
+    transparent 49px,
+    rgba(72, 72, 72, 0.16) 49px,
+    rgba(72, 72, 72, 0.16) 50px
+  );
+}
+
+.panel-user-note {
+  position: relative;
+  z-index: 1;
+  display: block;
+  font-size: 50px;
+  line-height: 1.35;
+  min-height: 100px;
+  margin-top: 20rpx;
+  padding: 12px 8px 20px;
+  color: #2e3238;
+  font-weight: 600;
+  white-space: pre-wrap;
+}
+
+.save-eat-btn,
+.reset-eat-btn {
+  min-height: 108rpx !important;
+  padding-top: 22rpx !important;
+  padding-bottom: 22rpx !important;
+  line-height: 1.25 !important;
 }
 
 .bottom-btns {

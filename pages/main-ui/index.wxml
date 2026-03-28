@@ -1,12 +1,14 @@
-<view class="screen main-ui" style="{{pageBgStyle}}">
+<view class="screen main-ui">
+  <view class="page-bg-layer page-bg-breathe" style="{{pageBgStyle}}" />
+  <view class="main-ui-foreground">
   <floating-bubbles />
   <view class="header-panel">
-    <view class="duration-panel card">
+    <view class="duration-panel card {{todayGoalMet ? 'goal-met-glow' : ''}}">
       <text class="duration-label">连胜天数</text>
       <text class="duration">{{duration}}</text>
     </view>
 
-    <view class="record-week-bar card">
+    <view class="record-week-bar card {{todayGoalMet ? 'goal-met-glow' : ''}}">
       <block wx:for="{{weekDays}}" wx:key="dateKey">
         <view
           class="record-day-slot {{item.isFuture ? 'record-day-future' : 'pressable'}}"
@@ -50,7 +52,9 @@
       <view class="main-score-col">
         <text class="mood-emoji icon-emoji">{{moodEmoji}}</text>
         <view class="score-bump-wrap {{scoreBump ? 'score-entry-bump' : ''}}">
-          <rolling-score score-class="score label-strong" value="{{score}}" />
+          <view class="score-nudge-hint">
+            <rolling-score score-class="score label-strong" value="{{score}}" />
+          </view>
         </view>
       </view>
         <view class="ai-analyze-col">
@@ -70,13 +74,13 @@
       <text>最近的活动:</text>
       <text class="list-close-btn pressable" bindtap="toggleRecentActList" hover-class="pressing">{{showRecentActList ? "◀" : "▶"}}</text>
     </view>
-    <block wx:if="{{showRecentActList}}">
+    <view class="recent-body {{showRecentActList ? 'recent-body-open' : 'recent-body-closed'}}">
       <view wx:if="{{recentActList.length === 0}}" class="recent-empty-hint">
-        <text class="recent-empty-line">点击下面的三个模块开始记录你的活动吧！</text>
-        <text class="recent-empty-line">每次保存记录都会在当前分数上叠加加分，加油！</text>
+        <text class="recent-empty-line">点击下面的三个模块开始记录你的活动！</text>
+        <text class="recent-empty-line">每次保存记录都会更新你的健康分数！</text>
       </view>
       <recent-act-list-show wx:else list="{{recentActList}}" />
-    </block>
+    </view>
   </view>
 
   <view class="do-list-panel card">
@@ -108,5 +112,6 @@
         <text>睡眠</text>
       </view>
     </view>
+  </view>
   </view>
 </view>

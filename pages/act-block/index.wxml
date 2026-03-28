@@ -21,7 +21,7 @@
     </view>
 
     <view
-      class="act-data-input card {{panelBump ? 'act-panel-bump' : ''}}"
+      class="act-data-input act-data-input-lined card {{panelBump ? 'act-panel-bump' : ''}}"
       catchanimationend="onPanelBumpEnd"
     >
       <text class="act-panel-title" wx:if="{{activePanel === 'slow-walk-panel'}}">🚶 慢走</text>
@@ -34,24 +34,28 @@
         wx:if="{{activePanel === 'slow-walk-panel'}}"
         value="{{actDataInput}}"
         inputMode="{{actInputModes.slowWalk}}"
+        reset-stamp="{{actResetStamp}}"
         bindchange="onSlowWalkChange"
       />
       <fast-walk-panel
         wx:if="{{activePanel === 'fast-walk-panel'}}"
         value="{{actDataInput}}"
         inputMode="{{actInputModes.fastWalk}}"
+        reset-stamp="{{actResetStamp}}"
         bindchange="onFastWalkChange"
       />
       <jog-panel
         wx:if="{{activePanel === 'jog-panel'}}"
         value="{{actDataInput}}"
         inputMode="{{actInputModes.jog}}"
+        reset-stamp="{{actResetStamp}}"
         bindchange="onJogChange"
       />
       <run-panel
         wx:if="{{activePanel === 'run-panel'}}"
         value="{{actDataInput}}"
         inputMode="{{actInputModes.run}}"
+        reset-stamp="{{actResetStamp}}"
         bindchange="onRunChange"
       />
       <sit-overtime-panel
@@ -63,13 +67,15 @@
         wx:if="{{activePanel === 'ride-panel'}}"
         value="{{actDataInput}}"
         inputMode="{{actInputModes.ride}}"
+        reset-stamp="{{actResetStamp}}"
         bindchange="onRideChange"
       />
+      <text class="panel-user-note" selectable> </text>
     </view>
   </view>
 
   <view class="bottom-btns">
-    <button class="save-act-btn btn-primary" bindtap="saveActBtn">保存</button>
-    <button class="reset-act-btn btn-danger" bindtap="resetActBtn">重置</button>
+    <button class="save-act-btn btn-primary btn-wiggle-hover" bindtap="saveActBtn" hover-class="btn-wiggle-active">保存</button>
+    <button class="reset-act-btn btn-danger btn-wiggle-hover" bindtap="resetActBtn" hover-class="btn-wiggle-active">重置</button>
   </view>
 </view>

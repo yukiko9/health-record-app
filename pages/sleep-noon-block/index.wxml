@@ -23,12 +23,11 @@
         <text wx:if="{{sleepHalfHour === 30}}">.5</text>
       </view>
       <view class="sleep-hour-add card pressable" bindtap="sleepHourAdd" hover-class="pressing">❯</view>
-      <button class="sleep-half-hour btn-primary" bindtap="sleepHalfHour">保存</button>
+      <button class="sleep-save-btn btn-primary" bindtap="sleepHalfHour">保存</button>
     </view>
   </view>
 
   <view class="sleep-buddy-card sleep-buddy-noon">
-    <image class="sleep-buddy-img" src="/images/sleepingbuddy-noon.png" mode="aspectFit" />
-    <text class="sleep-buddy-note">短时午睡有助恢复注意力。（插图请放入 UI/images/sleepingbuddy-noon.png）</text>
+    <image class="sleep-buddy-img" src="/images/sleepingbuddy-noon.png" mode="widthFix" />
   </view>
 </view>

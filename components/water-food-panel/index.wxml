@@ -1,17 +1,17 @@
 <view class="panel card water-food-panel">
-  <view class="food-item" bindtap="toggleItem" data-key="drink-water-btn">
+  <view class="food-item {{selectedMap['drink-water-btn'] ? 'food-item-on' : ''}}" bindtap="toggleItem" data-key="drink-water-btn">
     <text>喝水(&gt;500ml) 💧</text>
     <text>{{selectedMap['drink-water-btn'] ? "✅" : "☑️"}}</text>
   </view>
-  <view class="food-item" bindtap="toggleItem" data-key="fruit-btn">
+  <view class="food-item {{selectedMap['fruit-btn'] ? 'food-item-on' : ''}}" bindtap="toggleItem" data-key="fruit-btn">
     <text>吃水果 🍎</text>
     <text>{{selectedMap['fruit-btn'] ? "✅" : "☑️"}}</text>
   </view>
-  <view class="food-item" bindtap="toggleItem" data-key="drink-milk-btn">
+  <view class="food-item {{selectedMap['drink-milk-btn'] ? 'food-item-on' : ''}}" bindtap="toggleItem" data-key="drink-milk-btn">
     <text>喝牛奶 🥛</text>
     <text>{{selectedMap['drink-milk-btn'] ? "✅" : "☑️"}}</text>
   </view>
-  <view class="food-item" bindtap="toggleItem" data-key="coffee-btn">
+  <view class="food-item {{selectedMap['coffee-btn'] ? 'food-item-on' : ''}}" bindtap="toggleItem" data-key="coffee-btn">
     <text>咖啡 ☕️</text>
     <text>{{selectedMap['coffee-btn'] ? "✅" : "☑️"}}</text>
   </view>

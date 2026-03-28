@@ -58,6 +58,29 @@
   color: #1a2e14;
 }
 
+.metric-input-placeholder {
+  color: #9aa399;
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.metric-card-nudge {
+  animation: metricSideWiggle 0.5s ease-in-out infinite;
+}
+
+@keyframes metricSideWiggle {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4rpx);
+  }
+  75% {
+    transform: translateX(4rpx);
+  }
+}
+
 .metric-unit {
   font-size: 30rpx;
   font-weight: 700;

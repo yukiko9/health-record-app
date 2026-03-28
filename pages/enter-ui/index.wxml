@@ -1,4 +1,6 @@
-<view class="screen enter-ui" style="{{pageBgStyle}}">
+<view class="screen enter-ui">
+  <view class="page-bg-layer page-bg-breathe-enter" style="{{pageBgStyle}}" />
+  <view class="enter-ui-foreground">
   <floating-bubbles />
 
   <view class="enter-main" bindtap="enterMainUi">
@@ -11,7 +13,9 @@
 
     <view class="mood-emoji icon-emoji">{{moodEmoji}}</view>
     <view class="score-bump-wrap {{scoreBump ? 'score-entry-bump' : ''}}">
-      <rolling-score score-class="score label-strong" value="{{score}}" light="{{true}}" />
+      <view class="score-nudge-hint">
+        <rolling-score score-class="score score-gradient label-strong" value="{{score}}" />
+      </view>
     </view>
     <view class="username-row">
       <view class="username label-strong">{{username}}</view>
@@ -34,5 +38,6 @@
         </text>
       </scroll-view>
     </view>
+  </view>
   </view>
 </view>

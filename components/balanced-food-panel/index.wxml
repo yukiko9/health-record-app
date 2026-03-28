@@ -1,17 +1,17 @@
 <view class="panel card balanced-food-panel">
-  <view class="food-item" bindtap="toggleItem" data-key="vegetable-btn">
+  <view class="food-item {{selectedMap['vegetable-btn'] ? 'food-item-on' : ''}}" bindtap="toggleItem" data-key="vegetable-btn">
     <text>吃蔬菜 🥬</text>
     <text>{{selectedMap['vegetable-btn'] ? "✅" : "☑️"}}</text>
   </view>
-  <view class="food-item" bindtap="toggleItem" data-key="protein-btn">
+  <view class="food-item {{selectedMap['protein-btn'] ? 'food-item-on' : ''}}" bindtap="toggleItem" data-key="protein-btn">
     <text>优质蛋白质 🥚</text>
     <text>{{selectedMap['protein-btn'] ? "✅" : "☑️"}}</text>
   </view>
-  <view class="food-item" bindtap="toggleItem" data-key="light-btn">
+  <view class="food-item {{selectedMap['light-btn'] ? 'food-item-on' : ''}}" bindtap="toggleItem" data-key="light-btn">
     <text>清淡饮食 🍵</text>
     <text>{{selectedMap['light-btn'] ? "✅" : "☑️"}}</text>
   </view>
-  <view class="food-item" bindtap="toggleItem" data-key="no-drink-btn">
+  <view class="food-item {{selectedMap['no-drink-btn'] ? 'food-item-on' : ''}}" bindtap="toggleItem" data-key="no-drink-btn">
     <text>不喝含糖饮料 🚫</text>
     <text>{{selectedMap['no-drink-btn'] ? "✅" : "☑️"}}</text>
   </view>

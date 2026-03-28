@@ -1,6 +1,6 @@
 <view class="metric-panel fast-walk-panel">
   <view
-    class="metric-card {{inputMode === 'distance' ? 'metric-card-active' : 'metric-card-muted'}}"
+    class="metric-card {{!metricTouched ? 'metric-card-active' : (inputMode === 'distance' ? 'metric-card-active metric-card-nudge' : 'metric-card-muted')}}"
     bindtap="onPickDistance"
   >
     <view class="metric-card-head">距离</view>
@@ -9,7 +9,9 @@
         class="metric-input"
         type="digit"
         value="{{distStr}}"
-        disabled="{{inputMode !== 'distance'}}"
+        placeholder="输入数字..."
+        placeholder-class="metric-input-placeholder"
+        disabled="{{metricTouched && inputMode !== 'distance'}}"
         bindinput="onDistanceInput"
         bindfocus="onPickDistance"
       />
@@ -17,7 +19,7 @@
     </view>
   </view>
   <view
-    class="metric-card {{inputMode === 'time' ? 'metric-card-active' : 'metric-card-muted'}}"
+    class="metric-card {{!metricTouched ? 'metric-card-active' : (inputMode === 'time' ? 'metric-card-active metric-card-nudge' : 'metric-card-muted')}}"
     bindtap="onPickTime"
   >
     <view class="metric-card-head">时间</view>
@@ -26,7 +28,9 @@
         class="metric-input"
         type="digit"
         value="{{timeStr}}"
-        disabled="{{inputMode !== 'time'}}"
+        placeholder="输入数字..."
+        placeholder-class="metric-input-placeholder"
+        disabled="{{metricTouched && inputMode !== 'time'}}"
         bindinput="onTimeInput"
         bindfocus="onPickTime"
       />

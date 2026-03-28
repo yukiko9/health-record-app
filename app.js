@@ -1,4 +1,19 @@
 App({
+  onLaunch() {
+    try {
+      const g = wx.getStorageSync("mockUserGoal");
+      if (g != null && g !== "") {
+        const n = Math.max(0, Math.min(99, Math.round(Number(g))));
+        if (!Number.isNaN(n)) {
+          this.globalData.goal = n;
+        }
+      }
+    } catch (e) {
+      /* ignore */
+    }
+    this.recalcDailySummary();
+  },
+
   globalData: {
     username: "username",
     goal: 80,

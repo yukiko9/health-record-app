@@ -37,7 +37,8 @@ Page({
       ride: "time"
     },
     panelBump: false,
-    scoreBump: false
+    scoreBump: false,
+    actResetStamp: 0
   },
 
   onShow() {
@@ -129,6 +130,7 @@ Page({
 
   resetActBtn() {
     this.setData({
+      actResetStamp: this.data.actResetStamp + 1,
       actDataInput: {
         slowWalkTime: 10,
         slowWalkDistance: 0,

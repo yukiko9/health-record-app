@@ -2,7 +2,7 @@ page {
   background: #e8f5c8;
   color: #2e3238;
   min-height: 100%;
-  font-family: Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: "幼圆", "YouYuan", "Yuanti SC", "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
 }
 
 .screen {
@@ -14,9 +14,23 @@ page {
   padding: 24rpx;
 }
 
+.screen::before {
+  content: "";
+  display: block;
+  height: 36rpx;
+  margin: -4rpx -12rpx 16rpx -12rpx;
+  border-radius: 12rpx;
+  background-image: radial-gradient(circle at 50% 50%, rgba(55, 55, 55, 0.75) 9rpx, transparent 10rpx);
+  background-size: 40rpx 36rpx;
+  background-repeat: repeat-x;
+  background-position: 18rpx 50%;
+  opacity: 0.42;
+  pointer-events: none;
+}
+
 .card {
   background: rgba(240, 255, 219, 0.86);
-  border: 3rpx solid rgba(105, 131, 95, 0.72);
+  border: 5px solid rgba(105, 131, 95, 0.72);
   border-radius: 24rpx;
   box-shadow: 0 10rpx 18rpx rgba(38, 62, 35, 0.16);
 }
@@ -30,7 +44,7 @@ page {
   background: linear-gradient(180deg, #61f751 0%, #41db37 100%);
   color: #173812;
   border-radius: 20rpx;
-  border: 2rpx solid #3cae44;
+  border: 5px solid #3cae44;
   font-size: 42rpx;
   font-weight: 700;
 }
@@ -43,7 +57,7 @@ page {
   background: linear-gradient(180deg, #f0929d 0%, #ec808d 100%);
   color: #6b252d;
   border-radius: 20rpx;
-  border: 2rpx solid #b66470;
+  border: 5px solid #b66470;
   font-size: 42rpx;
   font-weight: 700;
 }
@@ -104,4 +118,58 @@ button:active {
 
 .score-entry-bump {
   animation: scoreEntryBump 0.44s cubic-bezier(0.34, 1.18, 0.64, 1) forwards;
+}
+
+@keyframes scoreNudgeHint {
+  0%,
+  72% {
+    transform: rotate(0deg);
+  }
+  74% {
+    transform: rotate(-2.2deg);
+  }
+  77% {
+    transform: rotate(2.2deg);
+  }
+  80% {
+    transform: rotate(-1.4deg);
+  }
+  83% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.score-nudge-hint {
+  display: inline-block;
+  animation: scoreNudgeHint 3s ease-in-out infinite;
+}
+
+@keyframes mainPageBgBreathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.75;
+  }
+}
+
+@keyframes btnWiggle {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  33% {
+    transform: translateX(-5rpx);
+  }
+  66% {
+    transform: translateX(5rpx);
+  }
+}
+
+.btn-wiggle-active {
+  animation: btnWiggle 0.32s ease-in-out infinite;
 }

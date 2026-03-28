@@ -1,14 +1,14 @@
 <view class="panel card junk-food-panel">
-  <view class="food-item" bindtap="toggleItem" data-key="junk-btn">
+  <view class="food-item {{selectedMap['junk-btn'] ? 'food-item-on' : ''}}" bindtap="toggleItem" data-key="junk-btn">
     <text>快餐 🍔</text>
     <text>{{selectedMap['junk-btn'] ? "✅" : "☑️"}}</text>
   </view>
-  <view class="food-item" bindtap="toggleItem" data-key="drink-btn">
+  <view class="food-item {{selectedMap['drink-btn'] ? 'food-item-on' : ''}}" bindtap="toggleItem" data-key="drink-btn">
     <text>喝含糖饮料 🧃</text>
     <text>{{selectedMap['drink-btn'] ? "✅" : "☑️"}}</text>
   </view>
   <view class="milktea-block">
-    <view class="food-item" bindtap="toggleItem" data-key="milktea-btn">
+    <view class="food-item {{selectedMap['milktea-btn'] ? 'food-item-on' : ''}}" bindtap="toggleItem" data-key="milktea-btn">
       <text>喝奶茶 🧋</text>
       <text>{{selectedMap['milktea-btn'] ? "✅" : "☑️"}}</text>
     </view>
@@ -27,11 +27,11 @@
       </view>
     </view>
   </view>
-  <view class="food-item" bindtap="toggleItem" data-key="puffed-food-btn">
+  <view class="food-item {{selectedMap['puffed-food-btn'] ? 'food-item-on' : ''}}" bindtap="toggleItem" data-key="puffed-food-btn">
     <text>吃膨化食品(一袋) 🍿</text>
     <text>{{selectedMap['puffed-food-btn'] ? "✅" : "☑️"}}</text>
   </view>
-  <view class="food-item" bindtap="toggleItem" data-key="drink-wine-btn">
+  <view class="food-item {{selectedMap['drink-wine-btn'] ? 'food-item-on' : ''}}" bindtap="toggleItem" data-key="drink-wine-btn">
     <text>喝酒 🍺</text>
     <text>{{selectedMap['drink-wine-btn'] ? "✅" : "☑️"}}</text>
   </view>
