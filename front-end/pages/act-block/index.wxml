@@ -12,12 +12,12 @@
 
   <view class="content">
     <view class="menu">
-      <view class="menu-btn slow-walk-btn card pressable {{activePanel === 'slow-walk-panel' ? 'menu-btn-selected' : ''}}" data-panel="slow-walk-panel" bindtap="selectPanel" hover-class="pressing">🚶 慢走</view>
-      <view class="menu-btn fast-walk-btn card pressable {{activePanel === 'fast-walk-panel' ? 'menu-btn-selected' : ''}}" data-panel="fast-walk-panel" bindtap="selectPanel" hover-class="pressing">🚶💦 快走</view>
-      <view class="menu-btn jog-btn card pressable {{activePanel === 'jog-panel' ? 'menu-btn-selected' : ''}}" data-panel="jog-panel" bindtap="selectPanel" hover-class="pressing">🏃 慢跑</view>
-      <view class="menu-btn run-btn card pressable {{activePanel === 'run-panel' ? 'menu-btn-selected' : ''}}" data-panel="run-panel" bindtap="selectPanel" hover-class="pressing">🏃💨 中速/快跑</view>
-      <view class="menu-btn sit-overtime-btn card pressable {{activePanel === 'sit-overtime-panel' ? 'menu-btn-selected' : ''}}" data-panel="sit-overtime-panel" bindtap="selectPanel" hover-class="pressing">🪑 久坐</view>
-      <view class="menu-btn ride-btn card pressable {{activePanel === 'ride-panel' ? 'menu-btn-selected' : ''}}" data-panel="ride-panel" bindtap="selectPanel" hover-class="pressing">🚴 通勤骑行</view>
+      <view class="menu-btn slow-walk-btn card pressable {{activePanel === 'slow-walk-panel' ? 'menu-btn-selected' : ''}}" data-panel="slow-walk-panel" bindtap="selectPanel" hover-class="pressing"><text>🚶 \n慢走</text></view>
+      <view class="menu-btn fast-walk-btn card pressable {{activePanel === 'fast-walk-panel' ? 'menu-btn-selected' : ''}}" data-panel="fast-walk-panel" bindtap="selectPanel" hover-class="pressing"><text>🚶💦\n快走</text></view>
+      <view class="menu-btn jog-btn card pressable {{activePanel === 'jog-panel' ? 'menu-btn-selected' : ''}}" data-panel="jog-panel" bindtap="selectPanel" hover-class="pressing"><text>🏃\n慢跑</text></view>
+      <view class="menu-btn run-btn card pressable {{activePanel === 'run-panel' ? 'menu-btn-selected' : ''}}" data-panel="run-panel" bindtap="selectPanel" hover-class="pressing"><text>🏃💨\n中速/快跑</text></view>
+      <view class="menu-btn sit-overtime-btn card pressable {{activePanel === 'sit-overtime-panel' ? 'menu-btn-selected' : ''}}" data-panel="sit-overtime-panel" bindtap="selectPanel" hover-class="pressing"><text>🪑\n久坐</text></view>
+      <view class="menu-btn ride-btn card pressable {{activePanel === 'ride-panel' ? 'menu-btn-selected' : ''}}" data-panel="ride-panel" bindtap="selectPanel" hover-class="pressing"><text>🚴\n通勤骑行</text></view>
     </view>
 
     <view
@@ -70,7 +70,7 @@
         reset-stamp="{{actResetStamp}}"
         bindchange="onRideChange"
       />
-      <text class="panel-user-note" selectable> </text>
+      <text class="panel-user-note" selectable>😉活动记录功能\n是在距离和时间记录中\n二选一进行登记噢！\n😝后续可能继续更新更多活动类型！ </text>
     </view>
   </view>
 

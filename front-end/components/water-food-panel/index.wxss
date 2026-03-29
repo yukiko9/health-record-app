@@ -21,7 +21,7 @@
 }
 
 .food-item text {
-  font-size: 28rpx;
+  font-size: 36rpx;
   line-height: 1.2;
 }
 
@@ -56,7 +56,7 @@
 }
 
 .fullness-btn text {
-  font-size: 28rpx;
+  font-size: 36rpx;
 }
 
 .n {

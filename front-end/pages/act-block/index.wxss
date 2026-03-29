@@ -64,7 +64,8 @@
 .menu-btn.run-btn,
 .menu-btn.sit-overtime-btn,
 .menu-btn.ride-btn {
-  height: 60px;
+  height: 84px;
+  font-size: 18px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -157,8 +158,8 @@
   position: relative;
   z-index: 1;
   display: block;
-  font-size: 50px;
-  line-height: 1.35;
+  font-size: 18px;
+  line-height: 2;
   min-height: 100px;
   margin-top: 20rpx;
   padding: 12px 8px 20px;

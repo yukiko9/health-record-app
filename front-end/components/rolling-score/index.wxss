@@ -41,5 +41,5 @@
 .roller-root.roller-light,
 .roller-root.roller-light .roller-line {
   color: #ffffff;
-  text-shadow: none;
+  text-shadow: 0 2rpx 14rpx rgba(0, 0, 0, 0.14);
 }

@@ -12,9 +12,9 @@
 
   <view class="content">
     <view class="menu">
-      <view class="menu-btn balanced-food-btn card pressable {{activePanel === 'balanced-food-panel' ? 'menu-btn-selected' : ''}}" data-panel="balanced-food-panel" bindtap="selectPanel" hover-class="pressing">🥗 健康饮食</view>
-      <view class="menu-btn junk-food-btn card pressable {{activePanel === 'junk-food-panel' ? 'menu-btn-selected' : ''}}" data-panel="junk-food-panel" bindtap="selectPanel" hover-class="pressing">🍔 快餐/饮料</view>
-      <view class="menu-btn water-food-btn card pressable {{activePanel === 'water-food-panel' ? 'menu-btn-selected' : ''}}" data-panel="water-food-panel" bindtap="selectPanel" hover-class="pressing">🍎 水/水果</view>
+      <view class="menu-btn balanced-food-btn card pressable {{activePanel === 'balanced-food-panel' ? 'menu-btn-selected' : ''}}" data-panel="balanced-food-panel" bindtap="selectPanel" hover-class="pressing"><text>🥗\n健康饮食</text></view>
+      <view class="menu-btn junk-food-btn card pressable {{activePanel === 'junk-food-panel' ? 'menu-btn-selected' : ''}}" data-panel="junk-food-panel" bindtap="selectPanel" hover-class="pressing"><text>🍔\n快餐/饮料</text></view>
+      <view class="menu-btn water-food-btn card pressable {{activePanel === 'water-food-panel' ? 'menu-btn-selected' : ''}}" data-panel="water-food-panel" bindtap="selectPanel" hover-class="pressing"><text>🍎\n水/水果</text></view>
     </view>
 
     <view class="eating-content-right">
@@ -45,7 +45,7 @@
         bindtoggle="onToggleItem"
         bindfullnesschange="onFullnessChange"
       />
-      <text class="panel-user-note" selectable> </text>
+      <text class="panel-user-note" selectable>如何描述你的饱食感：\n1：吃的很少🫠\n2：吃的还不够\n3：刚刚好😋\n4：吃的有点撑\n5：吃的非常撑！😈</text>
     </view>
     </view>
   </view>

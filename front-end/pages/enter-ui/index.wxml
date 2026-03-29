@@ -28,7 +28,7 @@
     <view class="goal-tip">
       <text>目标:</text>
       <text class="goal">{{goal}}</text>
-      <text> </text>
+      <text>\n</text>
       <text class="situation">{{situation}}</text>
     </view>
 

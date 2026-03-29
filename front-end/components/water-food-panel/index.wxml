@@ -1,6 +1,6 @@
 <view class="panel card water-food-panel">
   <view class="food-item {{selectedMap['drink-water-btn'] ? 'food-item-on' : ''}}" bindtap="toggleItem" data-key="drink-water-btn">
-    <text>喝水(&gt;500ml) 💧</text>
+    <text>喝水(1饱食度500ml) 💧</text>
     <text>{{selectedMap['drink-water-btn'] ? "✅" : "☑️"}}</text>
   </view>
   <view class="food-item {{selectedMap['fruit-btn'] ? 'food-item-on' : ''}}" bindtap="toggleItem" data-key="fruit-btn">

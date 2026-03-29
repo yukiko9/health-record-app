@@ -11,7 +11,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 50px;
+  height: 40px;
   border: 2rpx solid rgba(120, 70, 80, 0.55);
   border-radius: 14rpx;
   padding: 0 14rpx;
@@ -21,7 +21,7 @@
 }
 
 .food-item text {
-  font-size: 28rpx;
+  font-size: 36rpx;
   line-height: 1.2;
 }
 
@@ -57,7 +57,7 @@
 }
 
 .fullness-btn text {
-  font-size: 28rpx;
+  font-size: 36rpx;
 }
 
 .n {
@@ -103,7 +103,7 @@
 }
 
 .sugar-chip {
-  height: 50px;
+  height: 40px;
   padding: 0 20rpx;
   display: inline-flex;
   align-items: center;

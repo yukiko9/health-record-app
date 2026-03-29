@@ -119,6 +119,7 @@ page {
 .mood-emoji.icon-emoji {
   font-size: 88rpx;
   animation: moodEmojiBump 2s ease-in-out infinite;
+  text-shadow: 0 3rpx 14rpx rgba(0, 0, 0, 0.08);
 }
 
 @keyframes moodEmojiBump {
@@ -182,7 +183,10 @@ text.duration,
   color: #ff8a00 !important;
   font-family: "Nunito", "YouYuan", "幼圆", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
   font-weight: 700;
-  text-shadow: 0 2rpx 0 rgba(255, 255, 255, 0.35);
+  text-shadow:
+    0 1rpx 2rpx rgba(255, 255, 255, 0.4),
+    0 4rpx 18rpx rgba(255, 120, 40, 0.12),
+    0 3rpx 12rpx rgba(0, 0, 0, 0.06);
   animation: scoreNudgeHint 3s ease-in-out infinite;
 }
 
