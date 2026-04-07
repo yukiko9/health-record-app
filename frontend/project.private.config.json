@@ -1,6 +1,6 @@
 {
   "libVersion": "3.15.1",
-  "projectname": "front-end",
+  "projectname": "healthnote_frontend",
   "setting": {
     "urlCheck": false,
     "coverView": false,

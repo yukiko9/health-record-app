@@ -2,12 +2,12 @@ Component({
   properties: {
     value: {
       type: Object,
-      value: { sitOvertimeTime: 30 }
+      value: { sitOvertimeTime: 0 }
     }
   },
 
   data: {
-    timeStr: "30"
+    timeStr: "0"
   },
 
   observers: {

@@ -6,15 +6,17 @@ page {
 }
 
 /*
- * Nunito（可变字体，可渲染 Bold）；来源 googlefonts/nunito，许可见 fonts/Nunito-OFL.txt
+ * Nunito Bold（700）：Latin 子集 woff2/woff，真机兼容优于可变 TTF；许可见 fonts/Nunito-OFL.txt
  * 路径须为以 / 开头的代码包根路径；另在 app.js 中用 wx.loadFontFace(global) 再注册一次，真机更稳。
  */
 @font-face {
   font-family: "Nunito";
   font-style: normal;
-  font-weight: 200 1000;
+  font-weight: 700;
   font-display: swap;
-  src: url("/fonts/Nunito-Variable.ttf") format("truetype");
+  src:
+    url("/fonts/Nunito-Bold.woff2") format("woff2"),
+    url("/fonts/Nunito-Bold.woff") format("woff");
 }
 
 .screen {

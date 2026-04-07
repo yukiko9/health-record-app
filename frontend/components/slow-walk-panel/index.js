@@ -2,7 +2,7 @@ Component({
   properties: {
     value: {
       type: Object,
-      value: { slowWalkTime: 10, slowWalkDistance: 0 }
+      value: { slowWalkTime: 0, slowWalkDistance: 0 }
     },
     inputMode: {
       type: String,
@@ -53,7 +53,7 @@ Component({
 
     onPickTime() {
       const raw = (this.data.timeStr || "").trim();
-      const t = raw === "" ? 10 : Number(this.data.timeStr) || 0;
+      const t = raw === "" ? 0 : Number(this.data.timeStr) || 0;
       this.setData({ metricTouched: true });
       this.triggerEvent("change", {
         slowWalkTime: t,

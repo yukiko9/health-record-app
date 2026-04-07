@@ -445,6 +445,10 @@ async function uploadAiAnalyzeImage(filePath) {
       filePath,
       name: "image",
       success(res) {
+        if (res.statusCode < 200 || res.statusCode >= 300) {
+          reject(new Error(`http ${res.statusCode}`));
+          return;
+        }
         try {
           const body = JSON.parse(res.data || "{}");
           const payload = body.data != null ? body.data : body;
@@ -453,7 +457,9 @@ async function uploadAiAnalyzeImage(filePath) {
           reject(e);
         }
       },
-      fail: reject
+      fail(err) {
+        reject(err || new Error("upload fail"));
+      }
     });
   });
 }

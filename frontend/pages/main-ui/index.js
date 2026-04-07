@@ -220,7 +220,7 @@ Page({
           raw = await uploadAiAnalyzeImage(f.tempFilePath);
         } catch (e) {
           wx.hideLoading();
-          wx.showToast({ title: "上传失败，请重试", icon: "none" });
+          wx.showToast({ title: "连接失败！请重试", icon: "none" });
           return;
         }
         wx.hideLoading();

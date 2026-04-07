@@ -2,7 +2,7 @@ Component({
   properties: {
     value: {
       type: Object,
-      value: { jogTime: 10, jogDistance: 0 }
+      value: { jogTime: 0, jogDistance: 0 }
     },
     inputMode: { type: String, value: "time" },
     resetStamp: { type: Number, value: 0 }
@@ -41,7 +41,7 @@ Component({
     },
     onPickTime() {
       const raw = (this.data.timeStr || "").trim();
-      const t = raw === "" ? 10 : Number(this.data.timeStr) || 0;
+      const t = raw === "" ? 0 : Number(this.data.timeStr) || 0;
       this.setData({ metricTouched: true });
       this.triggerEvent("change", {
         jogTime: t,
