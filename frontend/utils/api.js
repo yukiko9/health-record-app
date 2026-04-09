@@ -1,21 +1,38 @@
 const delay = (ms = 250) => new Promise((resolve) => setTimeout(resolve, ms));
 
-wx.cloud.init({
-  env: "healthbook-6g0u9wm07f2a2e45",
-  traceUser: true,
-});
+/**
+ * 排查清单（与仓库内「小程序连后端排查清单」计划对应）：
+ * A. 云开发：AppID 须绑定环境 healthbook-6g0u9wm07f2a2e45；wx.cloud.init 已在 app.js onLaunch。
+ * B. AnyService：核对 X-WX-SERVICE、X-AnyService-Name 与控制台一致（见下方常量）。
+ * C. 路径：本仓库 Vercel Express 仅挂载 /api/*，默认不再加 /backend 前缀；若网关已含 /backend，再改 ANYSERVICE_API_PREFIX。
+ * D. 非 2xx：开发者工具 Console 搜 [cloud API] 查看 statusCode / errMsg。
+ * E. 对照：API_BASE 留空走 mock；或 USE_CALL_CONTAINER=false 走 wx.request 直连（需配置合法域名）。
+ * F. callContainer 在部分模拟器上不稳定，请真机再试（A4）。
+ */
 
 /**
  * 留空则走本地 mock（含内存 recent 列表）。
- * 非 mock 时请求一律经 wx.cloud.callContainer → 腾讯云 AnyService → Vercel，本常量仅作备忘/联调展示，不再拼进请求 URL。
+ * 非 mock 且 USE_CALL_CONTAINER 时走 callContainer；否则 API_BASE 仅用于 wx.request 直连。
  */
 const API_BASE = "https://health-record-app-rose.vercel.app";
 
-/** AnyService 中配置的服务标识，对应请求头 X-AnyService-Name（见项目根目录 anyservice.md） */
+/**
+ * true：wx.cloud.callContainer → AnyService → Vercel。
+ * false：wx.request / wx.uploadFile 直连 API_BASE（排除云链路问题时使用，须在小程序后台配置 request / uploadFile 合法域名）。
+ */
+const USE_CALL_CONTAINER = true;
+
+/** AnyService 中配置的服务标识 → 请求头 X-AnyService-Name（须与控制台一致，见 anyservice.md） */
 const ANY_SERVICE_NAME = "healthbook";
 
-/** AnyService 转发到 Vercel 时的路径前缀；若上游根路径即为 /api 则改为 "" */
-const ANYSERVICE_API_PREFIX = "/backend";
+/**
+ * callContainer 的 path 前缀。本仓库后端为 /api/...，默认 ""；
+ * 仅当 AnyService 上游根 URL 不含 /backend、且须由 path 拼出 /backend/api/... 时设为 "/backend"。
+ */
+const ANYSERVICE_API_PREFIX = "";
+
+/** wx.request 直连时 URL 路径前缀（一般 ""，与后端 /api 对齐） */
+const DIRECT_REQUEST_PATH_PREFIX = "";
 
 function useMock() {
   return !API_BASE || !String(API_BASE).trim();
@@ -59,10 +76,24 @@ function readLocalFileBase64(filePath) {
   });
 }
 
+function logCloudApiError(tag, info) {
+  try {
+    console.error("[cloud API]", tag, info);
+  } catch (e) {
+    /* ignore */
+  }
+}
+
 /**
  * 经云开发 callContainer 调用 AnyService，再转发至 Vercel 后端（与 anyservice.md 示例一致）
  */
 function callContainerRequest(relPath, method, options = {}) {
+  if (typeof wx.cloud === "undefined" || typeof wx.cloud.callContainer !== "function") {
+    logCloudApiError("callContainer_unavailable", { relPath, method });
+    return Promise.reject(
+      new Error("wx.cloud.callContainer 不可用，请确认已开通云开发、app.json 含 cloud:true，并在 app.js 中完成 wx.cloud.init"),
+    );
+  }
   const path = buildContainerPath(relPath);
   const upper = (method || "GET").toUpperCase();
   const headers = {
@@ -86,6 +117,15 @@ function callContainerRequest(relPath, method, options = {}) {
         if (sc >= 200 && sc < 300) {
           resolve(payload);
         } else {
+          logCloudApiError("http_non_2xx", {
+            path,
+            method: upper,
+            statusCode: sc,
+            bodyPreview:
+              typeof payload === "object"
+                ? JSON.stringify(payload).slice(0, 500)
+                : String(payload).slice(0, 500),
+          });
           const msg =
             payload && typeof payload === "object" && payload.message
               ? payload.message
@@ -94,7 +134,67 @@ function callContainerRequest(relPath, method, options = {}) {
         }
       },
       fail(err) {
+        logCloudApiError("callContainer_fail", {
+          path,
+          method: upper,
+          errMsg: err && err.errMsg,
+          errCode: err && err.errCode,
+          errno: err && err.errno,
+        });
         reject(err || new Error("callContainer fail"));
+      },
+    });
+  });
+}
+
+function buildDirectUrl(relPath) {
+  const base = String(API_BASE).replace(/\/$/, "");
+  const p = relPath.startsWith("/") ? relPath : `/${relPath}`;
+  const pre = String(DIRECT_REQUEST_PATH_PREFIX || "").replace(/\/$/, "");
+  const pathPart = pre ? `${pre}${p}` : p;
+  return `${base}${pathPart}`;
+}
+
+/** wx.request 直连 API_BASE（USE_CALL_CONTAINER === false 时使用） */
+function requestJsonDirect(path, method, data) {
+  const url = buildDirectUrl(path);
+  const upper = (method || "GET").toUpperCase();
+  return new Promise((resolve, reject) => {
+    wx.request({
+      url,
+      method: upper,
+      data:
+        upper === "GET" || upper === "HEAD"
+          ? undefined
+          : data == null
+            ? undefined
+            : data,
+      header: { "Content-Type": "application/json" },
+      success(res) {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          resolve(res.data);
+        } else {
+          logCloudApiError("direct_http_non_2xx", {
+            url,
+            method: upper,
+            statusCode: res.statusCode,
+          });
+          reject(
+            new Error(
+              res.data && res.data.message
+                ? res.data.message
+                : `http ${res.statusCode}`,
+            ),
+          );
+        }
+      },
+      fail(err) {
+        logCloudApiError("direct_request_fail", {
+          url,
+          method: upper,
+          errMsg: err && err.errMsg,
+        });
+        reject(err || new Error("network fail"));
       },
     });
   });
@@ -284,12 +384,15 @@ function mapRecordToRecentItem(record) {
 function requestJson(path, method, data) {
   const p = path.startsWith("/") ? path : `/${path}`;
   const upper = (method || "GET").toUpperCase();
-  if (upper === "GET" || upper === "HEAD") {
-    return callContainerRequest(p, method, {});
+  if (USE_CALL_CONTAINER) {
+    if (upper === "GET" || upper === "HEAD") {
+      return callContainerRequest(p, method, {});
+    }
+    return callContainerRequest(p, method, {
+      data: data == null ? {} : data,
+    });
   }
-  return callContainerRequest(p, method, {
-    data: data == null ? {} : data,
-  });
+  return requestJsonDirect(p, method, data);
 }
 
 async function fetchDashboardProfile() {
@@ -545,19 +648,55 @@ async function uploadAiAnalyzeImage(filePath) {
     await delay();
     return { sleepHour: 7, calorie: 640 };
   }
-  const imageBase64 = await readLocalFileBase64(filePath);
-  const mimeType = guessImageMimeByPath(filePath);
-  const raw = await callContainerRequest("/api/ai/analyze-json", "POST", {
-    data: { imageBase64, mimeType },
+  if (USE_CALL_CONTAINER) {
+    const imageBase64 = await readLocalFileBase64(filePath);
+    const mimeType = guessImageMimeByPath(filePath);
+    const raw = await callContainerRequest("/api/ai/analyze-json", "POST", {
+      data: { imageBase64, mimeType },
+    });
+    const payload = raw && raw.data != null ? raw.data : raw;
+    return payload && typeof payload === "object" ? payload : {};
+  }
+  return new Promise((resolve, reject) => {
+    const url = buildDirectUrl("/api/ai/analyze");
+    wx.uploadFile({
+      url,
+      filePath,
+      name: "image",
+      success(res) {
+        if (res.statusCode < 200 || res.statusCode >= 300) {
+          logCloudApiError("direct_upload_non_2xx", {
+            url,
+            statusCode: res.statusCode,
+          });
+          reject(new Error(`http ${res.statusCode}`));
+          return;
+        }
+        try {
+          const body = JSON.parse(res.data || "{}");
+          const payload = body.data != null ? body.data : body;
+          resolve(payload || {});
+        } catch (e) {
+          reject(e);
+        }
+      },
+      fail(err) {
+        logCloudApiError("direct_upload_fail", {
+          url,
+          errMsg: err && err.errMsg,
+        });
+        reject(err || new Error("upload fail"));
+      },
+    });
   });
-  const payload = raw && raw.data != null ? raw.data : raw;
-  return payload && typeof payload === "object" ? payload : {};
 }
 
 module.exports = {
   API_BASE,
   ANY_SERVICE_NAME,
   ANYSERVICE_API_PREFIX,
+  USE_CALL_CONTAINER,
+  DIRECT_REQUEST_PATH_PREFIX,
   useMock,
   buildRecordedAt,
   formatRecordedAtDisplay,

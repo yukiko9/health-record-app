@@ -1,5 +1,12 @@
 App({
   onLaunch() {
+    // A1/A2：在首屏页 require api 之前完成云初始化，避免 callContainer 未就绪（见 utils/api.js 顶部排查说明）
+    if (typeof wx.cloud !== "undefined" && typeof wx.cloud.init === "function") {
+      wx.cloud.init({
+        env: "healthbook-6g0u9wm07f2a2e45",
+        traceUser: true,
+      });
+    }
     this.loadNunitoScoreFont();
     try {
       const g = wx.getStorageSync("mockUserGoal");
