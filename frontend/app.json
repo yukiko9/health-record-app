@@ -1,4 +1,5 @@
 {
+  "cloud": true,
   "pages": [
     "pages/enter-ui/index",
     "pages/main-ui/index",

@@ -1,10 +1,103 @@
 const delay = (ms = 250) => new Promise((resolve) => setTimeout(resolve, ms));
 
-/** 填入后端根地址，如 https://api.example.com ，末尾无斜杠。留空则走本地 mock（含内存 recent 列表） */
-const API_BASE = "";
+wx.cloud.init({
+  env: "healthbook-6g0u9wm07f2a2e45",
+  traceUser: true,
+});
+
+/**
+ * 留空则走本地 mock（含内存 recent 列表）。
+ * 非 mock 时请求一律经 wx.cloud.callContainer → 腾讯云 AnyService → Vercel，本常量仅作备忘/联调展示，不再拼进请求 URL。
+ */
+const API_BASE = "https://health-record-app-rose.vercel.app";
+
+/** AnyService 中配置的服务标识，对应请求头 X-AnyService-Name（见项目根目录 anyservice.md） */
+const ANY_SERVICE_NAME = "healthbook";
+
+/** AnyService 转发到 Vercel 时的路径前缀；若上游根路径即为 /api 则改为 "" */
+const ANYSERVICE_API_PREFIX = "/backend";
 
 function useMock() {
   return !API_BASE || !String(API_BASE).trim();
+}
+
+function buildContainerPath(relPath) {
+  const p = relPath.startsWith("/") ? relPath : `/${relPath}`;
+  const pre = String(ANYSERVICE_API_PREFIX || "").replace(/\/$/, "");
+  if (!pre) return p;
+  return `${pre}${p}`;
+}
+
+function normalizeContainerData(data) {
+  if (data == null) return data;
+  if (typeof data === "string") {
+    try {
+      return JSON.parse(data);
+    } catch (e) {
+      return data;
+    }
+  }
+  return data;
+}
+
+function guessImageMimeByPath(filePath) {
+  const lower = String(filePath).toLowerCase();
+  if (lower.endsWith(".png")) return "image/png";
+  if (lower.endsWith(".webp")) return "image/webp";
+  if (lower.endsWith(".gif")) return "image/gif";
+  return "image/jpeg";
+}
+
+function readLocalFileBase64(filePath) {
+  return new Promise((resolve, reject) => {
+    wx.getFileSystemManager().readFile({
+      filePath,
+      encoding: "base64",
+      success: (r) => resolve(r.data),
+      fail: (err) => reject(err || new Error("readFile fail")),
+    });
+  });
+}
+
+/**
+ * 经云开发 callContainer 调用 AnyService，再转发至 Vercel 后端（与 anyservice.md 示例一致）
+ */
+function callContainerRequest(relPath, method, options = {}) {
+  const path = buildContainerPath(relPath);
+  const upper = (method || "GET").toUpperCase();
+  const headers = {
+    "X-WX-SERVICE": "tcbanyservice",
+    "X-AnyService-Name": ANY_SERVICE_NAME,
+  };
+  if (upper !== "GET" && upper !== "HEAD") {
+    headers["Content-Type"] = "application/json";
+  }
+  Object.assign(headers, options.header || {});
+
+  return new Promise((resolve, reject) => {
+    wx.cloud.callContainer({
+      path,
+      method: upper,
+      header: headers,
+      data: options.data,
+      success(res) {
+        const sc = res.statusCode;
+        const payload = normalizeContainerData(res.data);
+        if (sc >= 200 && sc < 300) {
+          resolve(payload);
+        } else {
+          const msg =
+            payload && typeof payload === "object" && payload.message
+              ? payload.message
+              : `http ${sc}`;
+          reject(new Error(msg));
+        }
+      },
+      fail(err) {
+        reject(err || new Error("callContainer fail"));
+      },
+    });
+  });
 }
 
 /** mock 下用于模拟 GET recent，与三条 POST 写入 */
@@ -34,7 +127,7 @@ function buildRecordedAt(date = new Date()) {
   return {
     day,
     hour: date.getHours(),
-    minute: date.getMinutes()
+    minute: date.getMinutes(),
   };
 }
 
@@ -65,22 +158,27 @@ function stripDayFromTimeDisplay(s) {
 function buildActSummary(payload) {
   const mode = payload.actInputMode === "distance" ? "distance" : "time";
   const map = {
-    "slow-walk-panel": mode === "distance"
-      ? `慢走，${payload.slowWalkDistance}米`
-      : `慢走，${payload.slowWalkTime}min`,
-    "fast-walk-panel": mode === "distance"
-      ? `快走，${payload.fastWalkDistance}米`
-      : `快走，${payload.fastWalkTime}min`,
-    "jog-panel": mode === "distance"
-      ? `慢跑，${payload.jogDistance}米`
-      : `慢跑，${payload.jogTime}min`,
-    "run-panel": mode === "distance"
-      ? `跑步，${payload.runDistance}米`
-      : `跑步，${payload.runTime}min`,
+    "slow-walk-panel":
+      mode === "distance"
+        ? `慢走，${payload.slowWalkDistance}米`
+        : `慢走，${payload.slowWalkTime}min`,
+    "fast-walk-panel":
+      mode === "distance"
+        ? `快走，${payload.fastWalkDistance}米`
+        : `快走，${payload.fastWalkTime}min`,
+    "jog-panel":
+      mode === "distance"
+        ? `慢跑，${payload.jogDistance}米`
+        : `慢跑，${payload.jogTime}min`,
+    "run-panel":
+      mode === "distance"
+        ? `跑步，${payload.runDistance}米`
+        : `跑步，${payload.runTime}min`,
     "sit-overtime-panel": `久坐，${payload.sitOvertimeTime}min`,
-    "ride-panel": mode === "distance"
-      ? `骑行，${payload.rideDistance}米`
-      : `骑行，${payload.rideTime}min`
+    "ride-panel":
+      mode === "distance"
+        ? `骑行，${payload.rideDistance}米`
+        : `骑行，${payload.rideTime}min`,
   };
   return map[payload.panel] || "活动记录";
 }
@@ -98,14 +196,14 @@ const FOOD_LABELS = {
   "drink-milk-btn": "喝牛奶",
   "milktea-btn": "奶茶",
   "puffed-food-btn": "膨化食品(一袋)",
-  "coffee-btn": "咖啡"
+  "coffee-btn": "咖啡",
 };
 
 const DRINK_STYLE_KEYS = {
   "drink-water-btn": true,
   "drink-milk-btn": true,
   "coffee-btn": true,
-  "milktea-btn": true
+  "milktea-btn": true,
 };
 
 function eatingPhraseForKey(key, payload) {
@@ -125,8 +223,12 @@ function eatingPhraseForKey(key, payload) {
 }
 
 function buildEatingSummary(payload) {
-  const selected = Object.keys(payload.selectedMap || {}).filter((k) => payload.selectedMap[k]);
-  const parts = selected.map((k) => eatingPhraseForKey(k, payload)).filter(Boolean);
+  const selected = Object.keys(payload.selectedMap || {}).filter(
+    (k) => payload.selectedMap[k],
+  );
+  const parts = selected
+    .map((k) => eatingPhraseForKey(k, payload))
+    .filter(Boolean);
   const fullness = payload.fullness != null ? payload.fullness : "";
   if (parts.length) {
     return `${parts.join("、")}，饱食度为${fullness}`;
@@ -180,25 +282,13 @@ function mapRecordToRecentItem(record) {
 }
 
 function requestJson(path, method, data) {
-  const base = String(API_BASE).replace(/\/$/, "");
   const p = path.startsWith("/") ? path : `/${path}`;
-  return new Promise((resolve, reject) => {
-    wx.request({
-      url: `${base}${p}`,
-      method: method || "GET",
-      data: data == null ? undefined : data,
-      header: { "Content-Type": "application/json" },
-      success(res) {
-        if (res.statusCode >= 200 && res.statusCode < 300) {
-          resolve(res.data);
-        } else {
-          reject(new Error(res.data && res.data.message ? res.data.message : `http ${res.statusCode}`));
-        }
-      },
-      fail(err) {
-        reject(err || new Error("network fail"));
-      }
-    });
+  const upper = (method || "GET").toUpperCase();
+  if (upper === "GET" || upper === "HEAD") {
+    return callContainerRequest(p, method, {});
+  }
+  return callContainerRequest(p, method, {
+    data: data == null ? {} : data,
   });
 }
 
@@ -212,7 +302,7 @@ async function fetchDashboardProfile() {
   return {
     username: data.username != null ? data.username : "username",
     goal: data.goal != null ? data.goal : 80,
-    duration: data.duration != null ? data.duration : 0
+    duration: data.duration != null ? data.duration : 0,
   };
 }
 
@@ -222,10 +312,13 @@ async function fetchRecentActList(limit = 20) {
     return mockRecentList.slice(0, limit).map((x) => ({
       do: x.do,
       time: x.time,
-      info: x.info
+      info: x.info,
     }));
   }
-  const raw = await requestJson(`/api/records/recent?limit=${encodeURIComponent(limit)}`, "GET");
+  const raw = await requestJson(
+    `/api/records/recent?limit=${encodeURIComponent(limit)}`,
+    "GET",
+  );
   const payload = raw && raw.data != null ? raw.data : raw;
   const list = payload && payload.list != null ? payload.list : payload;
   if (!Array.isArray(list)) {
@@ -237,13 +330,13 @@ async function fetchRecentActList(limit = 20) {
 async function fetchUserDashboard() {
   const [profile, recentActList] = await Promise.all([
     fetchDashboardProfile(),
-    fetchRecentActList(20)
+    fetchRecentActList(20),
   ]);
   return {
     username: profile.username,
     goal: profile.goal,
     duration: profile.duration,
-    recentActList
+    recentActList,
   };
 }
 
@@ -262,13 +355,22 @@ async function saveGoal(payload) {
   return raw && raw.data != null ? raw.data : raw;
 }
 
-function pushMockRecent(moduleLabel, recordedAt, summary, scorePayload, moduleKey) {
+function pushMockRecent(
+  moduleLabel,
+  recordedAt,
+  summary,
+  scorePayload,
+  moduleKey,
+) {
   const item = {
     do: moduleLabel,
     time: formatRecordedAtTimeOnly(recordedAt),
     info: summary,
     module: moduleKey,
-    scorePayload: scorePayload && typeof scorePayload === "object" ? { ...scorePayload } : null
+    scorePayload:
+      scorePayload && typeof scorePayload === "object"
+        ? { ...scorePayload }
+        : null,
   };
   mockRecentList = [item, ...mockRecentList].slice(0, 20);
 }
@@ -289,7 +391,7 @@ function emptyHighRateSlot() {
     info: "—",
     module: "",
     scorePayload: null,
-    valid: false
+    valid: false,
   };
 }
 
@@ -299,16 +401,17 @@ function normalizeHighRateItem(record) {
   }
   const base = mapRecordToRecentItem(record);
   const module = moduleKeyFromDoOrModule({ ...record, do: base.do });
-  const scorePayload = record.scorePayload != null && typeof record.scorePayload === "object"
-    ? record.scorePayload
-    : null;
+  const scorePayload =
+    record.scorePayload != null && typeof record.scorePayload === "object"
+      ? record.scorePayload
+      : null;
   const valid = !!(module && scorePayload);
   return {
     do: base.do || "—",
     info: base.info || "—",
     module,
     scorePayload,
-    valid
+    valid,
   };
 }
 
@@ -334,7 +437,7 @@ function buildMockHighRateList() {
   const meta = Object.keys(byInfo).map((info) => ({
     info,
     count: byInfo[info].length,
-    minIdx: Math.min(...byInfo[info].map((x) => x.idx))
+    minIdx: Math.min(...byInfo[info].map((x) => x.idx)),
   }));
   const hasDup = meta.some((m) => m.count > 1);
   let picked = [];
@@ -360,7 +463,10 @@ async function fetchHighRateActList(limit = 2) {
     return buildMockHighRateList().slice(0, limit);
   }
   try {
-    const raw = await requestJson(`/api/records/high-rate?limit=${encodeURIComponent(limit)}`, "GET");
+    const raw = await requestJson(
+      `/api/records/high-rate?limit=${encodeURIComponent(limit)}`,
+      "GET",
+    );
     const payload = raw && raw.data != null ? raw.data : raw;
     const list = payload && payload.list != null ? payload.list : payload;
     if (!Array.isArray(list)) {
@@ -423,7 +529,7 @@ async function fetchWeekProgress() {
     const raw = await requestJson("/api/records/week-progress", "GET");
     const payload = raw && raw.data != null ? raw.data : raw;
     return {
-      days: (payload && payload.days) || {}
+      days: (payload && payload.days) || {},
     };
   } catch (e) {
     return { days: {} };
@@ -439,33 +545,19 @@ async function uploadAiAnalyzeImage(filePath) {
     await delay();
     return { sleepHour: 7, calorie: 640 };
   }
-  return new Promise((resolve, reject) => {
-    wx.uploadFile({
-      url: `${API_BASE}/api/ai/analyze`,
-      filePath,
-      name: "image",
-      success(res) {
-        if (res.statusCode < 200 || res.statusCode >= 300) {
-          reject(new Error(`http ${res.statusCode}`));
-          return;
-        }
-        try {
-          const body = JSON.parse(res.data || "{}");
-          const payload = body.data != null ? body.data : body;
-          resolve(payload || {});
-        } catch (e) {
-          reject(e);
-        }
-      },
-      fail(err) {
-        reject(err || new Error("upload fail"));
-      }
-    });
+  const imageBase64 = await readLocalFileBase64(filePath);
+  const mimeType = guessImageMimeByPath(filePath);
+  const raw = await callContainerRequest("/api/ai/analyze-json", "POST", {
+    data: { imageBase64, mimeType },
   });
+  const payload = raw && raw.data != null ? raw.data : raw;
+  return payload && typeof payload === "object" ? payload : {};
 }
 
 module.exports = {
   API_BASE,
+  ANY_SERVICE_NAME,
+  ANYSERVICE_API_PREFIX,
   useMock,
   buildRecordedAt,
   formatRecordedAtDisplay,
@@ -482,5 +574,5 @@ module.exports = {
   saveActRecord,
   saveEatingRecord,
   saveSleepRecord,
-  uploadAiAnalyzeImage
+  uploadAiAnalyzeImage,
 };
