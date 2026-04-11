@@ -1,7 +1,7 @@
 App({
   onLaunch() {
     wx.cloud.init({
-      env: "healthbook-6g0u9wm07f2a2e45",
+      env: "prod-5g4vryi1618f27a5",
       traceUser: true,
     });
     this.loadNunitoScoreFont();
@@ -24,26 +24,19 @@ App({
     if (typeof wx.loadFontFace !== "function") {
       return;
     }
-    const load = (ext) => {
-      wx.loadFontFace({
-        family: "Nunito",
-        global: true,
-        source: `url("/fonts/Nunito-Bold.${ext}")`,
-        desc: {
-          style: "normal",
-          weight: "700",
-        },
-        success() {},
-        fail(err) {
-          if (ext === "woff2") {
-            load("woff");
-          } else {
-            console.warn("[loadFontFace] Nunito", err);
-          }
-        },
-      });
-    };
-    load("woff2");
+    wx.loadFontFace({
+      family: "NunitoDigits",
+      global: true,
+      source: 'url("/fonts/Nunito-Digits.woff2")',
+      desc: {
+        style: "normal",
+        weight: "700",
+      },
+      success() {},
+      fail(err) {
+        console.warn("[loadFontFace] NunitoDigits", err);
+      },
+    });
   },
 
   globalData: {

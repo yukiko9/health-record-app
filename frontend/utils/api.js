@@ -1,39 +1,42 @@
 const delay = (ms = 250) => new Promise((resolve) => setTimeout(resolve, ms));
+const { extractTextFromImage } = require("./ocrExtract");
 
 /**
- * 按 AnyService 使用指南重写调用逻辑：
- * 1) app.js 里全局 wx.cloud.init（env: healthbook-6g0u9wm07f2a2e45）
- * 2) 请求统一走 wx.cloud.callContainer
- * 3) header 固定带 X-WX-SERVICE: tcbanyservice + X-AnyService-Name
- * 4) path 经 VERCEL_BACKEND_PATH_PREFIX 拼到源站，例如 /backend/api/... →
- *    https://health-record-app-rose.vercel.app/backend/api/...
+ * 微信云托管调用（与 wxcloudbuilding.md、官方文档一致）：
+ * - app.js：wx.cloud.init({ env: CLOUD_ENV_ID })
+ * - wx.cloud.callContainer({ config: { env }, path, method, header, data })
+ * - header：仅 X-WX-SERVICE = 云托管「服务名称」（控制台服务列表）
+ * 文档：调用云托管服务 https://developers.weixin.qq.com/miniprogram/dev/wxcloudservice/wxcloudrun/src/development/call/
+ *      CloudBase 小程序接入 https://docs.cloudbase.net/run/develop/access/mini
  */
 const API_BASE = "https://health-record-app-rose.vercel.app";
 
-/**
- * 与 Vercel 部署中 backend 子路径一致；业务里仍写 /api/...，此处统一加前缀。
- * 若源站根路径即 /api（无前缀），改为 ""。
- */
-const VERCEL_BACKEND_PATH_PREFIX = "/backend";
+/** 云开发环境 ID（须与控制台一致，与 wxcloudbuilding.md 中 config.env 相同） */
+const CLOUD_ENV_ID = "prod-5g4vryi1618f27a5";
 
-/** AnyService 中配置的服务标识 → 请求头 X-AnyService-Name（须与控制台一致，见 anyservice.md） */
-const ANY_SERVICE_NAME = "healthbook";
+/** 云托管服务名称 → 请求头 X-WX-SERVICE（与 wxcloudbuilding.md 示例一致） */
+const CLOUD_SERVICE_NAME = "healthbook";
+
+/**
+ * 若容器内路由前有额外前缀（少见），可填如 "/backend"；默认 "" 即 path 为 /api/...
+ */
+const CLOUD_API_PATH_PREFIX = "";
 
 const CALL_CONTAINER_TIMEOUT = 10000;
 
 /**
- * 联调诊断：为 true 时每次 callContainer 在 Console 输出网关/源站信息（上线前改为 false）。
- * 也可在运行时 wx.setStorageSync("DEBUG_ANY_SERVICE", true) 开启（仅当本常量为 false 时生效）。
+ * 联调：为 true 时在 Console 输出云托管链路诊断（上线前改为 false）。
+ * 常量为 false 时，可 wx.setStorageSync("DEBUG_CLOUD_CONTAINER", true) 临时开启。
  */
-const DEBUG_ANY_SERVICE = true;
+const DEBUG_CLOUD_CONTAINER = true;
 
 function useMock() {
   return !API_BASE || !String(API_BASE).trim();
 }
 
-function buildServicePath(relPath) {
+function buildCloudApiPath(relPath) {
   const p = relPath.startsWith("/") ? relPath : `/${relPath}`;
-  const pre = String(VERCEL_BACKEND_PATH_PREFIX || "").replace(/\/$/, "");
+  const pre = String(CLOUD_API_PATH_PREFIX || "").replace(/\/$/, "");
   if (!pre) return p;
   return `${pre}${p}`;
 }
@@ -51,25 +54,6 @@ function normalizeContainerData(data, dataType) {
   return data;
 }
 
-function guessImageMimeByPath(filePath) {
-  const lower = String(filePath).toLowerCase();
-  if (lower.endsWith(".png")) return "image/png";
-  if (lower.endsWith(".webp")) return "image/webp";
-  if (lower.endsWith(".gif")) return "image/gif";
-  return "image/jpeg";
-}
-
-function readLocalFileBase64(filePath) {
-  return new Promise((resolve, reject) => {
-    wx.getFileSystemManager().readFile({
-      filePath,
-      encoding: "base64",
-      success: (r) => resolve(r.data),
-      fail: (err) => reject(err || new Error("readFile fail")),
-    });
-  });
-}
-
 function logCloudApiError(tag, info) {
   try {
     console.error("[cloud API]", tag, info);
@@ -78,17 +62,17 @@ function logCloudApiError(tag, info) {
   }
 }
 
-function isAnyServiceDebugEnabled() {
-  if (DEBUG_ANY_SERVICE) return true;
+function isCloudContainerDebugEnabled() {
+  if (DEBUG_CLOUD_CONTAINER) return true;
   try {
-    return wx.getStorageSync("DEBUG_ANY_SERVICE") === true;
+    return wx.getStorageSync("DEBUG_CLOUD_CONTAINER") === true;
   } catch (e) {
     return false;
   }
 }
 
-/** 从 callContainer 返回的 header 中提取 AnyService 诊断字段（大小写不敏感） */
-function pickAnyServiceDiagHeaders(header) {
+/** 从 callContainer 返回的 header 中提取云托管诊断字段（大小写不敏感） */
+function pickCloudRunDiagHeaders(header) {
   if (!header || typeof header !== "object") {
     return {};
   }
@@ -104,19 +88,19 @@ function pickAnyServiceDiagHeaders(header) {
   };
 }
 
-function logAnyServiceDiag(label, ctx) {
-  if (!isAnyServiceDebugEnabled()) return;
+function logCloudContainerDiag(label, ctx) {
+  if (!isCloudContainerDebugEnabled()) return;
   try {
-    console.log("[AnyService diag]", label, ctx);
+    console.log("[cloud container]", label, ctx);
   } catch (e) {
     /* ignore */
   }
 }
 
 /**
- * AnyService 统一请求封装（遵循 anyservice.md / 官方文档）
+ * 微信云托管统一请求（wx.cloud.callContainer）
  */
-function callAnyService(relPath, method, options = {}) {
+function callCloudContainer(relPath, method, options = {}) {
   if (
     typeof wx.cloud === "undefined" ||
     typeof wx.cloud.callContainer !== "function"
@@ -128,11 +112,10 @@ function callAnyService(relPath, method, options = {}) {
       ),
     );
   }
-  const path = buildServicePath(relPath);
+  const path = buildCloudApiPath(relPath);
   const upper = (method || "GET").toUpperCase();
   const headers = {
-    "X-WX-SERVICE": "tcbanyservice",
-    "X-AnyService-Name": ANY_SERVICE_NAME,
+    "X-WX-SERVICE": CLOUD_SERVICE_NAME,
   };
   if (upper !== "GET" && upper !== "HEAD") {
     headers["Content-Type"] = "application/json";
@@ -141,6 +124,9 @@ function callAnyService(relPath, method, options = {}) {
 
   return new Promise((resolve, reject) => {
     wx.cloud.callContainer({
+      config: {
+        env: CLOUD_ENV_ID,
+      },
       path,
       method: upper,
       header: headers,
@@ -150,8 +136,8 @@ function callAnyService(relPath, method, options = {}) {
       success(res) {
         const sc = res.statusCode;
         const hdr = res.header || {};
-        const diag = pickAnyServiceDiagHeaders(hdr);
-        logAnyServiceDiag(upper, {
+        const diag = pickCloudRunDiagHeaders(hdr);
+        logCloudContainerDiag(upper, {
           path,
           statusCode: sc,
           xCloudbaseRequestId: diag.xCloudbaseRequestId,
@@ -185,7 +171,7 @@ function callAnyService(relPath, method, options = {}) {
         }
       },
       fail(err) {
-        logAnyServiceDiag(`${upper}_fail`, {
+        logCloudContainerDiag(`${upper}_fail`, {
           path,
           errMsg: err && err.errMsg,
           errCode: err && err.errCode,
@@ -397,9 +383,9 @@ function requestJson(path, method, data) {
   const p = path.startsWith("/") ? path : `/${path}`;
   const upper = (method || "GET").toUpperCase();
   if (upper === "GET" || upper === "HEAD") {
-    return callAnyService(p, method, {}).then((r) => r.data);
+    return callCloudContainer(p, method, {}).then((r) => r.data);
   }
-  return callAnyService(p, method, {
+  return callCloudContainer(p, method, {
     data: data == null ? {} : data,
   }).then((r) => r.data);
 }
@@ -649,7 +635,7 @@ async function fetchWeekProgress() {
 }
 
 /**
- * 上传截图供后端视觉/OCR 解析；返回 JSON 中的 sleepHour、calorie（可为 undefined）
+ * 选图 → 前端 OCR（外接 API 或 MOCK_OCR_TEXT）→ 后端 DeepSeek 解析文本
  * @param {string} filePath 本地临时路径
  */
 async function uploadAiAnalyzeImage(filePath) {
@@ -657,10 +643,15 @@ async function uploadAiAnalyzeImage(filePath) {
     await delay();
     return { sleepHour: 7, calorie: 640 };
   }
-  const imageBase64 = await readLocalFileBase64(filePath);
-  const mimeType = guessImageMimeByPath(filePath);
-  const raw = await callAnyService("/api/ai/analyze-json", "POST", {
-    data: { imageBase64, mimeType },
+  const ocrText = await extractTextFromImage(filePath);
+  if (!ocrText || !String(ocrText).trim()) {
+    throw new Error(
+      "未识别到文字：请在 utils/ocrConfig.js 配置 OCR_EXTRACT_URL，或调试时 wx.setStorageSync(\"MOCK_OCR_TEXT\",\"粘贴截图文字\")",
+    );
+  }
+  const raw = await callCloudContainer("/api/ai/analyze-text", "POST", {
+    data: { ocrText: String(ocrText).trim() },
+    timeout: 60000,
   });
   const payload = raw && raw.data != null ? raw.data : raw;
   return payload && typeof payload === "object" ? payload : {};
@@ -668,9 +659,10 @@ async function uploadAiAnalyzeImage(filePath) {
 
 module.exports = {
   API_BASE,
-  VERCEL_BACKEND_PATH_PREFIX,
-  ANY_SERVICE_NAME,
-  DEBUG_ANY_SERVICE,
+  CLOUD_ENV_ID,
+  CLOUD_SERVICE_NAME,
+  CLOUD_API_PATH_PREFIX,
+  DEBUG_CLOUD_CONTAINER,
   useMock,
   buildRecordedAt,
   formatRecordedAtDisplay,

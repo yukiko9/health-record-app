@@ -6,17 +6,16 @@ page {
 }
 
 /*
- * Nunito Bold（700）：Latin 子集 woff2/woff，真机兼容优于可变 TTF；许可见 fonts/Nunito-OFL.txt
- * 路径须为以 / 开头的代码包根路径；另在 app.js 中用 wx.loadFontFace(global) 再注册一次，真机更稳。
+ * Nunito 仅 0–9 子集（体积小）；配合 unicode-range 仅数字用该字体，汉字仍走后续系统/幼圆。
+ * 许可见 fonts/Nunito-OFL.txt；app.js 中 loadFontFace 注册同名族。
  */
 @font-face {
-  font-family: "Nunito";
+  font-family: "NunitoDigits";
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src:
-    url("/fonts/Nunito-Bold.woff2") format("woff2"),
-    url("/fonts/Nunito-Bold.woff") format("woff");
+  unicode-range: U+30-39;
+  src: url("/fonts/Nunito-Digits.woff2") format("woff2");
 }
 
 .screen {
@@ -179,11 +178,11 @@ text.duration,
   font-weight: 700;
 }
 
-/* 分数文本：鲜橙色、Nunito 数字、统一摇晃 */
+/* 分数文本：鲜橙色；数字用 NunitoDigits 子集，其余字形走后续字体 */
 .score,
 .record-day-modal-score {
   color: #ff8a00 !important;
-  font-family: "Nunito", "YouYuan", "幼圆", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+  font-family: "NunitoDigits", "YouYuan", "幼圆", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
   font-weight: 700;
   text-shadow:
     0 1rpx 2rpx rgba(255, 255, 255, 0.4),
@@ -195,7 +194,7 @@ text.duration,
 /* rolling-score 根节点带 .score，子级 .roller-line 需单独指定（否则被全局 .roller-line 字体覆盖） */
 .roller-root.score,
 .roller-root.score .roller-line {
-  font-family: "Nunito", "YouYuan", "幼圆", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+  font-family: "NunitoDigits", "YouYuan", "幼圆", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
   font-variant-numeric: tabular-nums;
   font-weight: 700;
 }

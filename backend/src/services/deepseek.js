@@ -17,6 +17,20 @@ const SYSTEM_PROMPT = `
 如果无法识别某字段，请返回 null，不要返回文字解释。
 `.trim();
 
+/** OCR 文本模式：由前端/外接 OCR 提供纯文本，不再传图 */
+const SYSTEM_PROMPT_OCR_TEXT = `
+现在你是一个用于自动识别并获取用户健康数据的机器人。
+用户将提供一段从健康应用主界面截图中 OCR 识别出的文字（可能有错字、换行、无关内容）。
+请从中推断：
+1) 睡眠时间（单位：小时，可小数）
+2) 热量（单位：卡路里）
+
+请严格以 JSON 输出，字段如下：
+{"sleepHour": number|null, "calorie": number|null}
+
+若无法从文本中合理推断某字段，请返回 null，不要返回解释性文字。
+`.trim();
+
 function extractJsonObject(text) {
   if (!text) return null;
   const direct = text.trim();
@@ -92,7 +106,61 @@ async function analyzeImageWithDeepseek(file) {
   };
 }
 
+async function analyzeOcrTextWithDeepseek(ocrText) {
+  if (!config.deepseekApiKey) {
+    throw new Error(
+      "DEEPSEEK_API_KEY 未配置。请在 Vercel 项目环境变量中设置 DEEPSEEK_API_KEY。"
+    );
+  }
+  const text = String(ocrText || "").trim();
+  if (!text) {
+    throw new Error("ocrText 为空");
+  }
+
+  const url = `${config.deepseekBaseUrl.replace(/\/$/, "")}/chat/completions`;
+  const payload = {
+    model: config.deepseekModel,
+    temperature: 0,
+    messages: [
+      {
+        role: "system",
+        content: SYSTEM_PROMPT_OCR_TEXT
+      },
+      {
+        role: "user",
+        content: `以下为 OCR 文本，请提取 sleepHour 与 calorie，并仅输出 JSON：\n\n${text}`
+      }
+    ]
+  };
+
+  const res = await axios.post(url, payload, {
+    headers: {
+      Authorization: `Bearer ${config.deepseekApiKey}`,
+      "Content-Type": "application/json"
+    },
+    timeout: 30000
+  });
+
+  const content = res.data &&
+    res.data.choices &&
+    res.data.choices[0] &&
+    res.data.choices[0].message
+    ? res.data.choices[0].message.content
+    : "";
+
+  const parsed = extractJsonObject(content) || {};
+  const sleepHour = parsed.sleepHour == null ? null : Number(parsed.sleepHour);
+  const calorie = parsed.calorie == null ? null : Number(parsed.calorie);
+
+  return {
+    sleepHour: Number.isFinite(sleepHour) ? sleepHour : null,
+    calorie: Number.isFinite(calorie) ? calorie : null
+  };
+}
+
 module.exports = {
   SYSTEM_PROMPT,
-  analyzeImageWithDeepseek
+  SYSTEM_PROMPT_OCR_TEXT,
+  analyzeImageWithDeepseek,
+  analyzeOcrTextWithDeepseek
 };

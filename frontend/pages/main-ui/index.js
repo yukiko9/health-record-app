@@ -220,7 +220,13 @@ Page({
           raw = await uploadAiAnalyzeImage(f.tempFilePath);
         } catch (e) {
           wx.hideLoading();
-          wx.showToast({ title: "连接失败！请重试", icon: "none" });
+          const msg =
+            e && e.message ? String(e.message) : "连接失败！请重试";
+          if (msg.length > 18) {
+            wx.showModal({ title: "提示", content: msg, showCancel: false });
+          } else {
+            wx.showToast({ title: msg, icon: "none" });
+          }
           return;
         }
         wx.hideLoading();

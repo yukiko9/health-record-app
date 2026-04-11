@@ -1,9 +1,34 @@
 const express = require("express");
 const multer = require("multer");
-const { analyzeImageWithDeepseek } = require("../services/deepseek");
+const {
+  analyzeImageWithDeepseek,
+  analyzeOcrTextWithDeepseek
+} = require("../services/deepseek");
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
+
+/** 前端 OCR + 后端 DeepSeek：仅传识别文本 */
+router.post("/ai/analyze-text", async (req, res) => {
+  const ocrText = req.body && req.body.ocrText;
+  if (ocrText == null || !String(ocrText).trim()) {
+    return res.status(400).json({
+      message: "缺少 ocrText",
+      sleepHour: null,
+      calorie: null
+    });
+  }
+  try {
+    const result = await analyzeOcrTextWithDeepseek(String(ocrText).trim());
+    return res.json(result);
+  } catch (err) {
+    return res.status(500).json({
+      message: err && err.message ? err.message : "AI 分析失败",
+      sleepHour: null,
+      calorie: null
+    });
+  }
+});
 
 /** 小程序 wx.cloud.callContainer 无法 multipart，走 JSON + base64（与 multipart 共用同一分析逻辑） */
 router.post("/ai/analyze-json", async (req, res) => {
