@@ -5,17 +5,37 @@ const delay = (ms = 250) => new Promise((resolve) => setTimeout(resolve, ms));
  * 1) app.js 里全局 wx.cloud.init（env: healthbook-6g0u9wm07f2a2e45）
  * 2) 请求统一走 wx.cloud.callContainer
  * 3) header 固定带 X-WX-SERVICE: tcbanyservice + X-AnyService-Name
- * 4) path 从根路径开始（/api/...）
+ * 4) path 经 VERCEL_BACKEND_PATH_PREFIX 拼到源站，例如 /backend/api/... →
+ *    https://health-record-app-rose.vercel.app/backend/api/...
  */
 const API_BASE = "https://health-record-app-rose.vercel.app";
+
+/**
+ * 与 Vercel 部署中 backend 子路径一致；业务里仍写 /api/...，此处统一加前缀。
+ * 若源站根路径即 /api（无前缀），改为 ""。
+ */
+const VERCEL_BACKEND_PATH_PREFIX = "/backend";
 
 /** AnyService 中配置的服务标识 → 请求头 X-AnyService-Name（须与控制台一致，见 anyservice.md） */
 const ANY_SERVICE_NAME = "healthbook";
 
 const CALL_CONTAINER_TIMEOUT = 10000;
 
+/**
+ * 联调诊断：为 true 时每次 callContainer 在 Console 输出网关/源站信息（上线前改为 false）。
+ * 也可在运行时 wx.setStorageSync("DEBUG_ANY_SERVICE", true) 开启（仅当本常量为 false 时生效）。
+ */
+const DEBUG_ANY_SERVICE = true;
+
 function useMock() {
   return !API_BASE || !String(API_BASE).trim();
+}
+
+function buildServicePath(relPath) {
+  const p = relPath.startsWith("/") ? relPath : `/${relPath}`;
+  const pre = String(VERCEL_BACKEND_PATH_PREFIX || "").replace(/\/$/, "");
+  if (!pre) return p;
+  return `${pre}${p}`;
 }
 
 function normalizeContainerData(data, dataType) {
@@ -58,6 +78,41 @@ function logCloudApiError(tag, info) {
   }
 }
 
+function isAnyServiceDebugEnabled() {
+  if (DEBUG_ANY_SERVICE) return true;
+  try {
+    return wx.getStorageSync("DEBUG_ANY_SERVICE") === true;
+  } catch (e) {
+    return false;
+  }
+}
+
+/** 从 callContainer 返回的 header 中提取 AnyService 诊断字段（大小写不敏感） */
+function pickAnyServiceDiagHeaders(header) {
+  if (!header || typeof header !== "object") {
+    return {};
+  }
+  const map = {};
+  Object.keys(header).forEach((k) => {
+    map[String(k).toLowerCase()] = header[k];
+  });
+  return {
+    xCloudbaseRequestId: map["x-cloudbase-request-id"],
+    xCloudbaseUpstreamStatusCode: map["x-cloudbase-upstream-status-code"],
+    xCloudbaseUpstreamTimecost: map["x-cloudbase-upstream-timecost"],
+    xCloudbaseUpstreamType: map["x-cloudbase-upstream-type"],
+  };
+}
+
+function logAnyServiceDiag(label, ctx) {
+  if (!isAnyServiceDebugEnabled()) return;
+  try {
+    console.log("[AnyService diag]", label, ctx);
+  } catch (e) {
+    /* ignore */
+  }
+}
+
 /**
  * AnyService 统一请求封装（遵循 anyservice.md / 官方文档）
  */
@@ -73,7 +128,7 @@ function callAnyService(relPath, method, options = {}) {
       ),
     );
   }
-  const path = relPath.startsWith("/") ? relPath : `/${relPath}`;
+  const path = buildServicePath(relPath);
   const upper = (method || "GET").toUpperCase();
   const headers = {
     "X-WX-SERVICE": "tcbanyservice",
@@ -94,21 +149,29 @@ function callAnyService(relPath, method, options = {}) {
       timeout: options.timeout || CALL_CONTAINER_TIMEOUT,
       success(res) {
         const sc = res.statusCode;
+        const hdr = res.header || {};
+        const diag = pickAnyServiceDiagHeaders(hdr);
+        logAnyServiceDiag(upper, {
+          path,
+          statusCode: sc,
+          xCloudbaseRequestId: diag.xCloudbaseRequestId,
+          xCloudbaseUpstreamStatusCode: diag.xCloudbaseUpstreamStatusCode,
+          xCloudbaseUpstreamTimecost: diag.xCloudbaseUpstreamTimecost,
+          xCloudbaseUpstreamType: diag.xCloudbaseUpstreamType,
+        });
         const payload = normalizeContainerData(res.data, options.dataType);
         if (sc >= 200 && sc < 300) {
           resolve({
             statusCode: sc,
             data: payload,
-            header: res.header || {},
+            header: hdr,
           });
         } else {
           logCloudApiError("http_non_2xx", {
             path,
             method: upper,
             statusCode: sc,
-            upstreamStatus:
-              (res.header && res.header["x-cloudbase-upstream-status-code"]) ||
-              undefined,
+            upstreamStatus: diag.xCloudbaseUpstreamStatusCode,
             bodyPreview:
               typeof payload === "object"
                 ? JSON.stringify(payload).slice(0, 500)
@@ -122,6 +185,12 @@ function callAnyService(relPath, method, options = {}) {
         }
       },
       fail(err) {
+        logAnyServiceDiag(`${upper}_fail`, {
+          path,
+          errMsg: err && err.errMsg,
+          errCode: err && err.errCode,
+          errno: err && err.errno,
+        });
         logCloudApiError("callContainer_fail", {
           path,
           method: upper,
@@ -599,7 +668,9 @@ async function uploadAiAnalyzeImage(filePath) {
 
 module.exports = {
   API_BASE,
+  VERCEL_BACKEND_PATH_PREFIX,
   ANY_SERVICE_NAME,
+  DEBUG_ANY_SERVICE,
   useMock,
   buildRecordedAt,
   formatRecordedAtDisplay,
