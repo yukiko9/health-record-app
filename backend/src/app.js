@@ -31,11 +31,12 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json({ limit: "12mb" }));
 app.use(express.urlencoded({ extended: true }));
-app.use(authMiddleware);
 
 app.get("/health", (req, res) => {
   res.json({ ok: true });
 });
+
+app.use(authMiddleware);
 
 app.use("/api", dashboardRouter);
 app.use("/api", recordsRouter);

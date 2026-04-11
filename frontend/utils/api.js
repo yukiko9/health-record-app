@@ -9,7 +9,8 @@ const { extractTextFromImage } = require("./ocrExtract");
  * 文档：调用云托管服务 https://developers.weixin.qq.com/miniprogram/dev/wxcloudservice/wxcloudrun/src/development/call/
  *      CloudBase 小程序接入 https://docs.cloudbase.net/run/develop/access/mini
  */
-const API_BASE = "https://health-record-app-rose.vercel.app";
+const API_BASE =
+  "https://healthbook-244949-5-1418437518.sh.run.tcloudbase.com/";
 
 /** 云开发环境 ID（须与控制台一致，与 wxcloudbuilding.md 中 config.env 相同） */
 const CLOUD_ENV_ID = "prod-5g4vryi1618f27a5";
@@ -646,7 +647,7 @@ async function uploadAiAnalyzeImage(filePath) {
   const ocrText = await extractTextFromImage(filePath);
   if (!ocrText || !String(ocrText).trim()) {
     throw new Error(
-      "未识别到文字：请在 utils/ocrConfig.js 配置 OCR_EXTRACT_URL，或调试时 wx.setStorageSync(\"MOCK_OCR_TEXT\",\"粘贴截图文字\")",
+      '未识别到文字：请检查 utils/ocrConfig.js（OCR_PROVIDER / 合法域名 api.ocr.space），或 wx.setStorageSync("MOCK_OCR_TEXT","粘贴截图文字")',
     );
   }
   const raw = await callCloudContainer("/api/ai/analyze-text", "POST", {
