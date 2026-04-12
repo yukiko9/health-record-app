@@ -3,7 +3,8 @@ const {
   fetchUserDashboard,
   fetchHighRateActList,
   fetchWeekProgress,
-  uploadAiAnalyzeImage
+  uploadAiAnalyzeImage,
+  prependAiAnalyzeToRecentList
 } = require("../../utils/api");
 const { applyAiAnalyzeToApp } = require("../../utils/aiApply");
 const scoreUtil = require("../../utils/score");
@@ -252,6 +253,13 @@ Page({
         }
 
         const summary = applyAiAnalyzeToApp(app, sleepHour, calorie);
+        const nextRecent = prependAiAnalyzeToRecentList(app.globalData.recentActList, {
+          hadSleep: !missS,
+          hadCalorie: !missC,
+          sleepHour,
+          calorie
+        });
+        app.globalData.recentActList = nextRecent;
         const todayGoalMet =
           typeof summary.scoreValue === "number" &&
           typeof app.globalData.goal === "number" &&
@@ -262,7 +270,8 @@ Page({
           moodEmoji: app.getMoodEmoji(summary.scoreValue),
           pageBgStyle: getScorePageBackgroundStyle(summary.scoreValue),
           todayGoalMet,
-          goalProgressPct: this.computeGoalProgress(summary.scoreValue, app.globalData.goal)
+          goalProgressPct: this.computeGoalProgress(summary.scoreValue, app.globalData.goal),
+          recentActList: nextRecent
         });
         wx.showToast({ title: "已更新分数", icon: "success" });
       },

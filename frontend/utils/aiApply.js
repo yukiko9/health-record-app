@@ -10,7 +10,8 @@ function decimalHoursToSleepParts(hours) {
 }
 
 /**
- * 按 ai-analyze-logic：用最终 sleepHour（小时，可小数）、calorie 更新全局分与模块分；不写 recent。
+ * 按 ai-analyze-logic：用最终 sleepHour（小时，可小数）、calorie 更新全局分与模块分。
+ * 最近列表由调用方用 api.prependAiAnalyzeToRecentList 写入（不入库 high-rate）。
  */
 function applyAiAnalyzeToApp(app, finalSleepHour, finalCalorie) {
   const calorie = Number(finalCalorie) || 0;

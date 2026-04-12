@@ -484,6 +484,52 @@ function moduleKeyFromDoOrModule(record) {
   return "";
 }
 
+function isNightSleepHighRateSource(record) {
+  if (!record || typeof record !== "object") return false;
+  const mod = record.module;
+  const payload =
+    record.scorePayload != null && typeof record.scorePayload === "object"
+      ? record.scorePayload
+      : record.payload;
+  return mod === "sleep" && payload && payload.sleepMode === "night";
+}
+
+/** AI 识别夜间睡眠时长（小时，可小数）→ 与记分用 30 分钟粒度一致的展示文案 */
+function formatAiNightSleepDurationText(decimalHours) {
+  const totalMin = Math.round((Number(decimalHours) || 0) * (60 / 30)) * 30;
+  const t = Math.max(0, Math.min(24 * 60, totalMin));
+  const h = Math.floor(t / 60);
+  const hm = t % 60 >= 30 ? 30 : 0;
+  return hm ? `${h}小时${hm}分` : `${h}小时`;
+}
+
+/**
+ * AI 分析记分后写入最近记录（仅本地 globalData / 页面 data，与后端 POST 无关）。
+ * 列语义：do | time | info → 睡眠|登记时间|睡眠时长；活动消耗|登记时间|消耗N卡路里
+ */
+function prependAiAnalyzeToRecentList(recentList, detected) {
+  const ra = buildRecordedAt();
+  const timeStr = formatRecordedAtTimeOnly(ra);
+  const base = Array.isArray(recentList) ? recentList : [];
+  const newRows = [];
+  if (detected && detected.hadSleep) {
+    newRows.push({
+      do: "睡眠",
+      time: timeStr,
+      info: formatAiNightSleepDurationText(detected.sleepHour),
+    });
+  }
+  if (detected && detected.hadCalorie) {
+    const c = Math.round(Number(detected.calorie) || 0);
+    newRows.push({
+      do: "活动消耗",
+      time: timeStr,
+      info: `消耗${c}卡路里`,
+    });
+  }
+  return [...newRows, ...base].slice(0, 20);
+}
+
 function emptyHighRateSlot() {
   return {
     do: "—",
@@ -515,7 +561,8 @@ function normalizeHighRateItem(record) {
 }
 
 function padHighRateList(list) {
-  const out = (list || []).slice(0, 2).map(normalizeHighRateItem);
+  const filtered = (list || []).filter((r) => !isNightSleepHighRateSource(r));
+  const out = filtered.slice(0, 2).map(normalizeHighRateItem);
   while (out.length < 2) {
     out.push(emptyHighRateSlot());
   }
@@ -523,7 +570,7 @@ function padHighRateList(list) {
 }
 
 function buildMockHighRateList() {
-  const list = mockRecentList;
+  const list = mockRecentList.filter((item) => !isNightSleepHighRateSource(item));
   if (!list.length) {
     return padHighRateList([]);
   }
@@ -672,6 +719,7 @@ module.exports = {
   buildEatingSummary,
   buildSleepSummary,
   mapRecordToRecentItem,
+  prependAiAnalyzeToRecentList,
   fetchUserDashboard,
   fetchRecentActList,
   fetchHighRateActList,

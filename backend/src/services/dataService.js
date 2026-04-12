@@ -120,8 +120,20 @@ function listRecent(userId, limit = 20) {
     .map(buildRecentItem);
 }
 
+function isNightSleepRecord(row) {
+  return (
+    row &&
+    row.module === "sleep" &&
+    row.payload &&
+    row.payload.sleepMode === "night"
+  );
+}
+
 function listHighRate(userId, limit = 2) {
-  const records = getUserRecords(userId).slice().sort(sortRecordsDesc);
+  const records = getUserRecords(userId)
+    .slice()
+    .filter((r) => !isNightSleepRecord(r))
+    .sort(sortRecordsDesc);
   if (!records.length) return [];
 
   const byInfo = {};
