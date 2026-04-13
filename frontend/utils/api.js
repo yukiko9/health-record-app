@@ -696,7 +696,10 @@ async function fetchWeekProgress() {
  * 选图 → 前端 OCR（外接 API 或 MOCK_OCR_TEXT）→ 后端 DeepSeek 解析文本
  * @param {string} filePath 本地临时路径
  */
-async function submitEvaluation(payload) {
+/**
+ * 用户反馈：经 wx.cloud.callContainer 发到云托管，由服务端写入 feedback.md 并可按需 git push。
+ */
+async function submitFeedback(payload) {
   const body =
     payload && typeof payload === "object"
       ? {
@@ -708,7 +711,7 @@ async function submitEvaluation(payload) {
     await delay();
     return { success: true };
   }
-  const raw = await requestJson("/api/evaluation", "POST", body);
+  const raw = await requestJson("/api/feedback", "POST", body);
   return raw && raw.data != null ? raw.data : raw;
 }
 
@@ -754,6 +757,6 @@ module.exports = {
   saveActRecord,
   saveEatingRecord,
   saveSleepRecord,
-  submitEvaluation,
+  submitFeedback,
   uploadAiAnalyzeImage,
 };

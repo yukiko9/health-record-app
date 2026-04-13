@@ -1,12 +1,15 @@
 const express = require("express");
-const fs = require("fs");
 const path = require("path");
+const {
+  appendFeedbackBlock,
+  tryCommitPushFeedback,
+} = require("../services/feedbackStore");
 
 const router = express.Router();
 
-const EVALUATION_MD = path.join(__dirname, "..", "..", "evaluation.md");
+const FEEDBACK_MD = path.join(__dirname, "..", "..", "feedback.md");
 
-router.post("/evaluation", (req, res) => {
+router.post("/feedback", (req, res) => {
   const body = req.body && typeof req.body === "object" ? req.body : {};
   const text = body.text != null ? String(body.text) : "";
   const rawLabel = body.label;
@@ -17,11 +20,12 @@ router.post("/evaluation", (req, res) => {
   const receivedAt = new Date().toISOString();
   const block = `${JSON.stringify(payload)}\n时间: ${receivedAt}\n\n`;
   try {
-    fs.appendFileSync(EVALUATION_MD, block, "utf8");
+    appendFeedbackBlock(FEEDBACK_MD, block);
+    tryCommitPushFeedback(FEEDBACK_MD);
     res.json({ ok: true, data: { success: true } });
   } catch (err) {
     const message =
-      err && err.message ? err.message : "Failed to write evaluation";
+      err && err.message ? err.message : "Failed to write feedback";
     res.status(500).json({ message });
   }
 });

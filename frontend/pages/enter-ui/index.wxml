@@ -49,9 +49,9 @@
   </view>
 
   <view class="enter-fab-stack" catchtap="noopReadme">
-    <view class="evaluation-fab-col" catchtap="noopReadme">
-      <view id="evaluation-btn" class="evaluation-btn card pressable" catchtap="openEvaluation" hover-class="pressing">✍️</view>
-      <text class="evaluation-fab-caption">写反馈❤️</text>
+    <view class="feedback-fab-col" catchtap="noopReadme">
+      <view id="feedback-btn" class="feedback-btn card pressable" catchtap="openFeedback" hover-class="pressing">✍️</view>
+      <text class="feedback-fab-caption">写反馈❤️</text>
     </view>
     <view class="readme-fab-col" catchtap="noopReadme">
       <view class="readme-btn card pressable" catchtap="openReadme" hover-class="pressing">?</view>
@@ -59,31 +59,31 @@
     </view>
   </view>
 
-  <view wx:if="{{evaluationVisible}}" class="evaluation-mask" catchtap="closeEvaluation">
-    <view class="evaluation-panel card" catchtap="noopEvaluation">
-      <view class="evaluation-close pressable" catchtap="closeEvaluation" hover-class="pressing">×</view>
-      <scroll-view scroll-y class="evaluation-scroll">
+  <view wx:if="{{feedbackVisible}}" class="feedback-mask" catchtap="closeFeedback">
+    <view class="feedback-panel card" catchtap="noopFeedback">
+      <view class="feedback-close pressable" catchtap="closeFeedback" hover-class="pressing">×</view>
+      <scroll-view scroll-y class="feedback-scroll">
         <textarea
-          class="evaluation-textarea"
-          value="{{evaluationText}}"
+          class="feedback-textarea"
+          value="{{feedbackText}}"
           placeholder="写下你的体验、改进建议，这对我来说很重要！❤️"
-          placeholder-class="evaluation-placeholder"
+          placeholder-class="feedback-placeholder"
           maxlength="2000"
-          bindinput="onEvaluationInput"
+          bindinput="onFeedbackInput"
           show-confirm-bar="{{false}}"
         />
-        <scroll-view scroll-y class="evaluation-tag-scroll">
-          <view class="evaluation-tag-area">
+        <scroll-view scroll-y class="feedback-tag-scroll">
+          <view class="feedback-tag-area">
             <view
-              wx:for="{{evaluationTags}}"
+              wx:for="{{feedbackTags}}"
               wx:key="*this"
-              class="evaluation-tag {{evalSelected[item] ? 'evaluation-tag-selected' : ''}}"
+              class="feedback-tag {{feedbackSelected[item] ? 'feedback-tag-selected' : ''}}"
               data-tag="{{item}}"
-              catchtap="toggleEvalTag"
+              catchtap="toggleFeedbackTag"
             >{{item}}</view>
           </view>
         </scroll-view>
-        <view class="evaluation-submit btn-primary pressable" catchtap="submitEvaluationForm" hover-class="pressing">提交</view>
+        <view class="feedback-submit btn-primary pressable" catchtap="submitFeedbackForm" hover-class="pressing">提交</view>
       </scroll-view>
     </view>
   </view>

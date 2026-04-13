@@ -366,7 +366,7 @@
   gap: 28rpx;
 }
 
-.evaluation-fab-col,
+.feedback-fab-col,
 .readme-fab-col {
   display: flex;
   flex-direction: column;
@@ -374,7 +374,7 @@
   gap: 10rpx;
 }
 
-.evaluation-btn {
+.feedback-btn {
   width: 96rpx;
   height: 96rpx;
   border-radius: 50%;
@@ -389,7 +389,7 @@
   box-shadow: 0 10rpx 18rpx rgba(38, 62, 35, 0.22);
 }
 
-.evaluation-fab-caption {
+.feedback-fab-caption {
   font-size: 22rpx;
   font-weight: 700;
   color: #3d4a33;
@@ -463,7 +463,7 @@
   color: #2e3238;
 }
 
-.evaluation-mask {
+.feedback-mask {
   position: fixed;
   left: 0;
   top: 0;
@@ -478,7 +478,7 @@
   box-sizing: border-box;
 }
 
-.evaluation-panel {
+.feedback-panel {
   position: relative;
   width: 100%;
   max-width: 620rpx;
@@ -489,7 +489,7 @@
   box-sizing: border-box;
 }
 
-.evaluation-close {
+.feedback-close {
   position: absolute;
   right: 12rpx;
   top: 8rpx;
@@ -500,14 +500,14 @@
   font-weight: 700;
 }
 
-.evaluation-scroll {
+.feedback-scroll {
   flex: 1;
   max-height: 68vh;
   margin-top: 8rpx;
   box-sizing: border-box;
 }
 
-.evaluation-textarea {
+.feedback-textarea {
   width: 100%;
   min-height: 420rpx;
   max-height: 520rpx;
@@ -521,11 +521,11 @@
   border-radius: 16rpx;
 }
 
-.evaluation-placeholder {
+.feedback-placeholder {
   color: rgba(46, 50, 56, 0.42);
 }
 
-.evaluation-tag-scroll {
+.feedback-tag-scroll {
   width: 100%;
   height: 200rpx;
   margin-top: 24rpx;
@@ -533,7 +533,7 @@
   box-sizing: border-box;
 }
 
-.evaluation-tag-area {
+.feedback-tag-area {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -542,7 +542,7 @@
   box-sizing: border-box;
 }
 
-.evaluation-tag {
+.feedback-tag {
   padding: 12rpx 22rpx;
   font-size: 26rpx;
   color: #2d3a28;
@@ -556,14 +556,14 @@
     box-shadow 0.55s ease;
 }
 
-.evaluation-tag-selected {
+.feedback-tag-selected {
   background: linear-gradient(180deg, rgba(97, 247, 81, 0.62) 0%, rgba(65, 219, 55, 0.52) 100%);
   border-color: #3cae44;
   color: #0f2a0c;
   box-shadow: 0 6rpx 14rpx rgba(60, 174, 68, 0.28);
 }
 
-.evaluation-submit {
+.feedback-submit {
   margin-top: 32rpx;
   margin-bottom: 8rpx;
   padding: 22rpx 32rpx;

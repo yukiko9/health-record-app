@@ -1,8 +1,8 @@
 const app = getApp();
 const { getScorePageBackgroundStyle } = require("../../utils/pageBg");
-const { submitEvaluation } = require("../../utils/api");
+const { submitFeedback } = require("../../utils/api");
 
-const EVALUATION_TAGS = [
+const FEEDBACK_TAGS = [
   "便捷",
   "上手快",
   "实用",
@@ -27,10 +27,10 @@ Page({
     moodEmoji: "🙂",
     pageBgStyle: "",
     readmeVisible: false,
-    evaluationVisible: false,
-    evaluationText: "",
-    evaluationTags: EVALUATION_TAGS,
-    evalSelected: {},
+    feedbackVisible: false,
+    feedbackText: "",
+    feedbackTags: FEEDBACK_TAGS,
+    feedbackSelected: {},
     scoreBump: false
   },
 
@@ -63,49 +63,49 @@ Page({
     this.setData({ readmeVisible: false });
   },
 
-  noopEvaluation() {},
+  noopFeedback() {},
 
-  openEvaluation() {
-    this.setData({ evaluationVisible: true });
+  openFeedback() {
+    this.setData({ feedbackVisible: true });
   },
 
-  closeEvaluation() {
+  closeFeedback() {
     this.setData({
-      evaluationVisible: false,
-      evaluationText: "",
-      evalSelected: {}
+      feedbackVisible: false,
+      feedbackText: "",
+      feedbackSelected: {}
     });
   },
 
-  onEvaluationInput(e) {
-    this.setData({ evaluationText: (e.detail && e.detail.value) || "" });
+  onFeedbackInput(e) {
+    this.setData({ feedbackText: (e.detail && e.detail.value) || "" });
   },
 
-  toggleEvalTag(e) {
+  toggleFeedbackTag(e) {
     const tag = e.currentTarget.dataset.tag;
     if (!tag) return;
-    const next = { ...this.data.evalSelected };
+    const next = { ...this.data.feedbackSelected };
     if (next[tag]) {
       delete next[tag];
     } else {
       next[tag] = true;
     }
-    this.setData({ evalSelected: next });
+    this.setData({ feedbackSelected: next });
   },
 
-  async submitEvaluationForm() {
-    const text = (this.data.evaluationText || "").trim();
-    const label = EVALUATION_TAGS.filter((t) => this.data.evalSelected[t]);
+  async submitFeedbackForm() {
+    const text = (this.data.feedbackText || "").trim();
+    const label = FEEDBACK_TAGS.filter((t) => this.data.feedbackSelected[t]);
     if (!text.length && !label.length) {
       wx.showToast({ title: "请填写反馈或选择标签", icon: "none" });
       return;
     }
     wx.showLoading({ title: "提交中", mask: true });
     try {
-      await submitEvaluation({ text, label });
+      await submitFeedback({ text, label });
       wx.hideLoading();
       wx.showToast({ title: "感谢你的反馈", icon: "success" });
-      this.closeEvaluation();
+      this.closeFeedback();
     } catch (err) {
       wx.hideLoading();
       const msg =
