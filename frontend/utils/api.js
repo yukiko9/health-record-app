@@ -405,6 +405,17 @@ async function fetchDashboardProfile() {
   };
 }
 
+/** 解析 GET /records/recent 响应（兼容网关多包一层 data） */
+function normalizeRecentListPayload(raw, depth = 0) {
+  if (depth > 5 || raw == null) return [];
+  if (Array.isArray(raw)) return raw;
+  if (typeof raw === "object") {
+    if (Array.isArray(raw.list)) return raw.list;
+    if (raw.data != null) return normalizeRecentListPayload(raw.data, depth + 1);
+  }
+  return [];
+}
+
 async function fetchRecentActList(limit = 20) {
   if (useMock()) {
     await delay();
@@ -418,12 +429,11 @@ async function fetchRecentActList(limit = 20) {
     `/api/records/recent?limit=${encodeURIComponent(limit)}`,
     "GET",
   );
-  const payload = raw && raw.data != null ? raw.data : raw;
-  const list = payload && payload.list != null ? payload.list : payload;
+  const list = normalizeRecentListPayload(raw);
   if (!Array.isArray(list)) {
     return [];
   }
-  return list.map(mapRecordToRecentItem);
+  return list.slice(0, limit).map(mapRecordToRecentItem);
 }
 
 async function fetchUserDashboard() {

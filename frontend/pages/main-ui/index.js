@@ -53,7 +53,15 @@ Page({
       app.globalData.username = storedNick || dashboard.username;
       app.globalData.goal = dashboard.goal;
       app.globalData.duration = dashboard.duration;
-      app.globalData.recentActList = dashboard.recentActList || [];
+      const incoming = Array.isArray(dashboard.recentActList)
+        ? dashboard.recentActList
+        : [];
+      const prev = Array.isArray(app.globalData.recentActList)
+        ? app.globalData.recentActList
+        : [];
+      /** 接口偶发空数组（解析/多实例）时不覆盖本地已有列表，避免改目标后「最近活动」被清空 */
+      app.globalData.recentActList =
+        incoming.length > 0 ? incoming : prev;
     } catch (err) {
       app.globalData.recentActList = app.globalData.recentActList || [];
       wx.showToast({ title: "加载失败，请检查网络", icon: "none" });
