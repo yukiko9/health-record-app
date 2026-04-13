@@ -7,7 +7,20 @@ const {
 
 const router = express.Router();
 
-const FEEDBACK_MD = path.join(__dirname, "..", "..", "feedback.md");
+/**
+ * 默认：与本文件相对路径 backend/feedback.md（与 GitHub 上 main/backend/feedback.md 一致）。
+ * 云托管若只拷贝 backend 子目录、却把完整仓库 clone 在别处，请设 FEEDBACK_MARKDOWN_ABSPATH 指向该仓库里的 backend/feedback.md，
+ * 与 FEEDBACK_GIT_REPO_ROOT（仓库根，含 .git 与 backend/）一致。
+ */
+function resolveFeedbackMdPath() {
+  const envPath = process.env.FEEDBACK_MARKDOWN_ABSPATH;
+  if (envPath != null && String(envPath).trim()) {
+    return path.resolve(String(envPath).trim());
+  }
+  return path.join(__dirname, "..", "..", "feedback.md");
+}
+
+const FEEDBACK_MD = resolveFeedbackMdPath();
 
 router.post("/feedback", (req, res) => {
   const body = req.body && typeof req.body === "object" ? req.body : {};

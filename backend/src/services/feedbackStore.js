@@ -69,7 +69,12 @@ function tryCommitPushFeedback(feedbackMdPath) {
     .replace(/\\/g, "/");
   if (rel.startsWith("..")) {
     // eslint-disable-next-line no-console
-    console.warn("[feedback] feedback.md is outside FEEDBACK_GIT_REPO_ROOT");
+    console.warn(
+      "[feedback] feedback.md is outside FEEDBACK_GIT_REPO_ROOT — set root to the repo directory that CONTAINS this file on the same filesystem. feedbackMd=%s gitRoot=%s rel=%s",
+      path.resolve(feedbackMdPath),
+      gitRoot,
+      rel,
+    );
     return { skipped: false, error: "path_outside_repo" };
   }
 
