@@ -33,27 +33,27 @@ function calcActScore(payload) {
     raw =
       mode === "distance"
         ? (Number(payload.slowWalkDistance) || 0) * 0.00465
-        : (((1-0.9**Number(payload.slowWalkTime))/0.1) || 0) * 0.467;
+        : ((1 - 0.9 ** Number(payload.slowWalkTime)) / 0.1 || 0) * 0.467;
   } else if (panel === "fast-walk-panel") {
     raw =
       mode === "distance"
         ? (Number(payload.fastWalkDistance) || 0) * 0.006
-        : (0.7464*(1-0.88**Number(payload.fastWalkTime))/0.12 || 0) ;
+        : (0.7464 * (1 - 0.88 ** Number(payload.fastWalkTime))) / 0.12 || 0;
   } else if (panel === "jog-panel") {
     raw =
       mode === "distance"
         ? (Number(payload.jogDistance) || 0) * 0.007
-        : (1.494*(1-0.88**Number(payload.jogTime))/0.15 || 0);
+        : (1.494 * (1 - 0.88 ** Number(payload.jogTime))) / 0.15 || 0;
   } else if (panel === "run-panel") {
     raw =
       mode === "distance"
         ? (Number(payload.runDistance) || 0) * 0.009
-        : (1.8664*(1-0.82**Number(payload.runTime))/0.18 || 0);
+        : (1.8664 * (1 - 0.82 ** Number(payload.runTime))) / 0.18 || 0;
   } else if (panel === "ride-panel") {
     raw =
       mode === "distance"
-        ? 0.009325 * (Number(payload.rideDistance) || 0)
-        : (1.6 * (1 - 0.88 ** Number(payload.rideTime || 0))) / 0.12;
+        ? 0.004662 * (Number(payload.rideDistance) || 0)
+        : (1.6 * (1 - 0.88 ** Number(payload.rideTime || 0))) / 0.18;
     return Math.round(Math.min(6, raw));
   }
 
@@ -99,10 +99,10 @@ function calcEatingScore(payload) {
   let eatingScore = 0;
 
   if (panel === "balanced-food-panel") {
-    if (m["vegetable-btn"]) eatingScore += 2;
-    if (m["protein-btn"]) eatingScore += 2;
-    if (m["light-btn"]) eatingScore += 1;
-    if (m["no-drink-btn"]) eatingScore += 1;
+    if (m["vegetable-btn"]) eatingScore += 3;
+    if (m["protein-btn"]) eatingScore += 3;
+    if (m["light-btn"]) eatingScore += 2;
+    if (m["no-drink-btn"]) eatingScore += 2;
     eatingScore *= fullnessMultBalanced(fullness);
   } else if (panel === "junk-food-panel") {
     if (m["junk-btn"]) eatingScore -= 6;
@@ -155,11 +155,11 @@ function calcSleepScore(payload) {
     return 0;
   }
   /* 夜间：时长过短或过长扣分，约 7～9 小时满分（与产品表一致时可再调阈值） */
-  if (h < 4 || h > 12) return 0;
-  if (h < 5 || h > 11) return 2;
-  if (h < 6 || h > 10) return 4;
-  if (h < 7 || h > 9) return 7;
-  return 8;
+  if (h < 4 || h > 12) return 1;
+  if (h < 5 || h > 11) return 3;
+  if (h < 6 || h > 10) return 5;
+  if (h < 7 || h > 9) return 8;
+  return 9;
 }
 
 function getEatingCountsToday() {
@@ -169,7 +169,7 @@ function getEatingCountsToday() {
   return {
     wine: Number(raw.wine) || 0,
     milk: Number(raw.milk) || 0,
-    coffee: Number(raw.coffee) || 0
+    coffee: Number(raw.coffee) || 0,
   };
 }
 
@@ -186,7 +186,7 @@ function getEatingPortionCountsToday() {
     coffee: Number(raw.coffee) || 0,
     vegetable: Number(raw.vegetable) || 0,
     fruit: Number(raw.fruit) || 0,
-    protein: Number(raw.protein) || 0
+    protein: Number(raw.protein) || 0,
   };
 }
 
@@ -207,7 +207,7 @@ function eatingPortionsAfterSave(before, selectedMap) {
   return {
     vegetable: before.vegetable + (m["vegetable-btn"] ? 1 : 0),
     fruit: before.fruit + (m["fruit-btn"] ? 1 : 0),
-    protein: before.protein + (m["protein-btn"] ? 1 : 0)
+    protein: before.protein + (m["protein-btn"] ? 1 : 0),
   };
 }
 
@@ -218,7 +218,7 @@ function calcEatingOverwhelmMarginal(beforePortions, selectedMap) {
   const penAfter = totalEatingOverwhelmPenalty({
     vegetable: after.vegetable,
     fruit: after.fruit,
-    protein: after.protein
+    protein: after.protein,
   });
   return penBefore - penAfter;
 }
@@ -241,5 +241,5 @@ module.exports = {
   getEatingPortionCountsToday,
   totalEatingOverwhelmPenalty,
   eatingPortionsAfterSave,
-  calcEatingOverwhelmMarginal
+  calcEatingOverwhelmMarginal,
 };

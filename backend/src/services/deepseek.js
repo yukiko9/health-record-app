@@ -6,29 +6,13 @@ const config = require("../config");
  * 建议仅通过 Vercel 环境变量管理 DEEPSEEK_API_KEY。
  */
 const SYSTEM_PROMPT = `
-现在你是一个用于自动识别并获取、打印用户健康数据的机器人。
-你会收到一张健康应用主界面的截图，请识别并提取：
-1) 睡眠时间（单位：小时，可小数）
-2) 热量（单位：卡路里）
+现在你是一个用于自动识别并获取、打印用户健康数据的机器人。这是一个健康应用的主界面截图识别出来的文字，请你识别睡眠时间（单位为小时）和热量（单位为卡路里），以json格式输出（下面** **里的内容都必须完全是数字形式）：{"sleepHour": **你获取到的睡眠时长数据**, "calorie": **你获取到的卡路里消耗量，转换单位为kJ**}未获取到数据的属性值直接改为undefined，不要返回解释性文字。
 
-请严格以 JSON 输出，字段如下：
-{"sleepHour": number|null, "calorie": number|null}
-
-如果无法识别某字段，请返回 null，不要返回文字解释。
 `.trim();
 
 /** OCR 文本模式：由前端/外接 OCR 提供纯文本，不再传图 */
 const SYSTEM_PROMPT_OCR_TEXT = `
-现在你是一个用于自动识别并获取用户健康数据的机器人。
-用户将提供一段从健康应用主界面截图中 OCR 识别出的文字（可能有错字、换行、无关内容）。
-请从中推断：
-1) 睡眠时间（单位：小时，可小数）
-2) 热量（单位：卡路里）
-
-请严格以 JSON 输出，字段如下：
-{"sleepHour": number|null, "calorie": number|null}
-
-若无法从文本中合理推断某字段，请返回 null，不要返回解释性文字。
+现在你是一个用于自动识别并获取、打印用户健康数据的机器人。这是一个健康应用的主界面截图识别出来的文字，请你识别睡眠时间（单位为小时）和热量（单位为卡路里），以json格式输出（下面** **里的内容都必须完全是数字形式）：{"sleepHour": **你获取到的睡眠时长数据**, "calorie": **你获取到的卡路里消耗量，转换单位为kJ**}未获取到数据的属性值直接改为undefined，不要返回解释性文字。
 `.trim();
 
 function extractJsonObject(text) {
@@ -51,7 +35,7 @@ function extractJsonObject(text) {
 async function analyzeImageWithDeepseek(file) {
   if (!config.deepseekApiKey) {
     throw new Error(
-      "DEEPSEEK_API_KEY 未配置。请在 Vercel 项目环境变量中设置 DEEPSEEK_API_KEY。"
+      "DEEPSEEK_API_KEY 未配置。请在 Vercel 项目环境变量中设置 DEEPSEEK_API_KEY。",
     );
   }
   if (!file || !file.buffer) {
@@ -69,32 +53,36 @@ async function analyzeImageWithDeepseek(file) {
     messages: [
       {
         role: "system",
-        content: SYSTEM_PROMPT
+        content: SYSTEM_PROMPT,
       },
       {
         role: "user",
         content: [
-          { type: "text", text: "请识别截图中的 sleepHour 与 calorie，并仅返回 JSON。" },
-          { type: "image_url", image_url: { url: imageDataUrl } }
-        ]
-      }
-    ]
+          {
+            type: "text",
+            text: "请识别截图中的 sleepHour 与 calorie，并仅返回 JSON。",
+          },
+          { type: "image_url", image_url: { url: imageDataUrl } },
+        ],
+      },
+    ],
   };
 
   const res = await axios.post(url, payload, {
     headers: {
       Authorization: `Bearer ${config.deepseekApiKey}`,
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    timeout: 30000
+    timeout: 30000,
   });
 
-  const content = res.data &&
+  const content =
+    res.data &&
     res.data.choices &&
     res.data.choices[0] &&
     res.data.choices[0].message
-    ? res.data.choices[0].message.content
-    : "";
+      ? res.data.choices[0].message.content
+      : "";
 
   const parsed = extractJsonObject(content) || {};
   const sleepHour = parsed.sleepHour == null ? null : Number(parsed.sleepHour);
@@ -102,14 +90,14 @@ async function analyzeImageWithDeepseek(file) {
 
   return {
     sleepHour: Number.isFinite(sleepHour) ? sleepHour : null,
-    calorie: Number.isFinite(calorie) ? calorie : null
+    calorie: Number.isFinite(calorie) ? calorie : null,
   };
 }
 
 async function analyzeOcrTextWithDeepseek(ocrText) {
   if (!config.deepseekApiKey) {
     throw new Error(
-      "DEEPSEEK_API_KEY 未配置。请在 Vercel 项目环境变量中设置 DEEPSEEK_API_KEY。"
+      "DEEPSEEK_API_KEY 未配置。请在 Vercel 项目环境变量中设置 DEEPSEEK_API_KEY。",
     );
   }
   const text = String(ocrText || "").trim();
@@ -124,29 +112,30 @@ async function analyzeOcrTextWithDeepseek(ocrText) {
     messages: [
       {
         role: "system",
-        content: SYSTEM_PROMPT_OCR_TEXT
+        content: SYSTEM_PROMPT_OCR_TEXT,
       },
       {
         role: "user",
-        content: `以下为 OCR 文本，请提取 sleepHour 与 calorie，并仅输出 JSON：\n\n${text}`
-      }
-    ]
+        content: `以下为 OCR 文本，请提取 sleepHour 与 calorie，并仅输出 JSON：\n\n${text}`,
+      },
+    ],
   };
 
   const res = await axios.post(url, payload, {
     headers: {
       Authorization: `Bearer ${config.deepseekApiKey}`,
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    timeout: 30000
+    timeout: 30000,
   });
 
-  const content = res.data &&
+  const content =
+    res.data &&
     res.data.choices &&
     res.data.choices[0] &&
     res.data.choices[0].message
-    ? res.data.choices[0].message.content
-    : "";
+      ? res.data.choices[0].message.content
+      : "";
 
   const parsed = extractJsonObject(content) || {};
   const sleepHour = parsed.sleepHour == null ? null : Number(parsed.sleepHour);
@@ -154,7 +143,7 @@ async function analyzeOcrTextWithDeepseek(ocrText) {
 
   return {
     sleepHour: Number.isFinite(sleepHour) ? sleepHour : null,
-    calorie: Number.isFinite(calorie) ? calorie : null
+    calorie: Number.isFinite(calorie) ? calorie : null,
   };
 }
 
@@ -162,5 +151,5 @@ module.exports = {
   SYSTEM_PROMPT,
   SYSTEM_PROMPT_OCR_TEXT,
   analyzeImageWithDeepseek,
-  analyzeOcrTextWithDeepseek
+  analyzeOcrTextWithDeepseek,
 };
