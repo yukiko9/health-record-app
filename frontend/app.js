@@ -1,3 +1,7 @@
+const scoreUtil = require("./utils/score");
+
+const DAILY_GLOBAL_SCORE_KEY = "dailyGlobalScoreV1";
+
 App({
   onLaunch() {
     wx.cloud.init({
@@ -16,6 +20,7 @@ App({
     } catch (e) {
       /* ignore */
     }
+    this.restoreDailyScoreIfSameDay();
     this.recalcDailySummary();
   },
 
@@ -61,6 +66,53 @@ App({
     highRateActList: [],
   },
 
+  /** 退出再进（同日冷启动）时恢复当日全局分与模块累计，与 utils/score.localDateKey 对齐 */
+  restoreDailyScoreIfSameDay() {
+    try {
+      const today = scoreUtil.localDateKey();
+      const raw = wx.getStorageSync(DAILY_GLOBAL_SCORE_KEY);
+      if (!raw || typeof raw !== "object" || raw.dateKey !== today) {
+        return;
+      }
+      if (typeof raw.scoreValue === "number" && !Number.isNaN(raw.scoreValue)) {
+        this.globalData.scoreValue = Math.max(
+          0,
+          Math.min(100, Math.round(raw.scoreValue)),
+        );
+      }
+      if (raw.moduleScore && typeof raw.moduleScore === "object") {
+        this.globalData.moduleScore = {
+          act: Number(raw.moduleScore.act) || 0,
+          eating: Number(raw.moduleScore.eating) || 0,
+          sleep: Number(raw.moduleScore.sleep) || 0,
+        };
+      }
+      if (raw.moduleDone && typeof raw.moduleDone === "object") {
+        this.globalData.moduleDone = {
+          act: !!raw.moduleDone.act,
+          eating: !!raw.moduleDone.eating,
+          sleep: !!raw.moduleDone.sleep,
+        };
+      }
+    } catch (e) {
+      /* ignore */
+    }
+  },
+
+  persistDailyScoreState() {
+    try {
+      const dateKey = scoreUtil.localDateKey();
+      wx.setStorageSync(DAILY_GLOBAL_SCORE_KEY, {
+        dateKey,
+        scoreValue: this.globalData.scoreValue,
+        moduleScore: { ...this.globalData.moduleScore },
+        moduleDone: { ...this.globalData.moduleDone },
+      });
+    } catch (e) {
+      /* ignore */
+    }
+  },
+
   getMoodEmoji(score) {
     if (typeof score !== "number") return "🙂";
     if (score <= 20) return "🤒";
@@ -83,6 +135,7 @@ App({
     this.globalData.scoreValue = v;
     this.globalData.scoreDisplay = String(v);
     this.globalData.situation = v >= this.globalData.goal ? "已完成" : "未完成";
+    this.persistDailyScoreState();
     return {
       scoreValue: this.globalData.scoreValue,
       scoreDisplay: this.globalData.scoreDisplay,
