@@ -15,7 +15,8 @@ const FEEDBACK_TAGS = [
   "缺乏实用性",
   "UI需要提升",
   "活动类型待完善",
-  "不够满足日常需求"
+  "不够满足日常需求",
+  "计分规则需要更改",
 ];
 
 Page({
@@ -31,7 +32,7 @@ Page({
     feedbackText: "",
     feedbackTags: FEEDBACK_TAGS,
     feedbackSelected: {},
-    scoreBump: false
+    scoreBump: false,
   },
 
   onShow() {
@@ -39,7 +40,8 @@ Page({
     if (storedNick) {
       app.globalData.username = storedNick;
     }
-    const { scoreDisplay, scoreValue, username, goal, situation } = app.globalData;
+    const { scoreDisplay, scoreValue, username, goal, situation } =
+      app.globalData;
     this.setData({
       score: scoreDisplay,
       username: app.globalData.username || username,
@@ -47,7 +49,7 @@ Page({
       situation,
       moodEmoji: app.getMoodEmoji(scoreValue),
       pageBgStyle: getScorePageBackgroundStyle(scoreValue),
-      scoreBump: false
+      scoreBump: false,
     });
     setTimeout(() => this.setData({ scoreBump: true }), 30);
     setTimeout(() => this.setData({ scoreBump: false }), 520);
@@ -73,7 +75,7 @@ Page({
     this.setData({
       feedbackVisible: false,
       feedbackText: "",
-      feedbackSelected: {}
+      feedbackSelected: {},
     });
   },
 
@@ -108,8 +110,7 @@ Page({
       this.closeFeedback();
     } catch (err) {
       wx.hideLoading();
-      const msg =
-        err && err.message ? String(err.message) : "提交失败，请重试";
+      const msg = err && err.message ? String(err.message) : "提交失败，请重试";
       wx.showToast({ title: msg, icon: "none" });
     }
   },
@@ -126,11 +127,11 @@ Page({
       },
       fail: () => {
         wx.showToast({ title: "未授权昵称", icon: "none" });
-      }
+      },
     });
   },
 
   enterMainUi() {
     wx.navigateTo({ url: "/pages/main-ui/index" });
-  }
+  },
 });

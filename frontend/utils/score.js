@@ -52,9 +52,9 @@ function calcActScore(payload) {
   } else if (panel === "ride-panel") {
     raw =
       mode === "distance"
-        ? 0.004662 * (Number(payload.rideDistance) || 0)
-        : (1.6 * (1 - 0.88 ** Number(payload.rideTime || 0))) / 0.18;
-    return Math.round(Math.min(6, raw));
+        ? 0.003108 * (Number(payload.rideDistance) || 0)
+        : (1.6 * (1 - 0.88 ** Number(payload.rideTime || 0))) / 0.20;
+    return Math.round(Math.min(10, raw));
   }
 
   return Math.round(raw);
