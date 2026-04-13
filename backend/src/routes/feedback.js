@@ -3,7 +3,7 @@ const { persistFeedbackBlock } = require("../services/feedbackGithub");
 
 const router = express.Router();
 
-router.post("/feedback", async (req, res) => {
+async function handleFeedbackPost(req, res) {
   const body = req.body && typeof req.body === "object" ? req.body : {};
   const text = body.text != null ? String(body.text) : "";
   const rawLabel = body.label;
@@ -26,6 +26,10 @@ router.post("/feedback", async (req, res) => {
           : "Failed to persist feedback";
     res.status(code).json({ message });
   }
-});
+}
+
+router.post("/feedback", handleFeedbackPost);
+/** 兼容改名前的小程序版本或缓存仍请求 /api/evaluation，避免 404 Not Found */
+router.post("/evaluation", handleFeedbackPost);
 
 module.exports = router;

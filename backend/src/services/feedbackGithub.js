@@ -36,11 +36,21 @@ function decodeGithubFileContent(contentB64) {
   return Buffer.from(clean, "base64").toString("utf8");
 }
 
+/** GitHub REST：路径含 / 时需编码为 %2F，否则 contents 易返回 404 Not Found */
+function githubContentsPathEncoded(filePath) {
+  return encodeURIComponent(String(filePath || "").replace(/^\/+/, ""));
+}
+
+function contentsApiUrl(cfg) {
+  const enc = githubContentsPathEncoded(cfg.filePath);
+  return `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${enc}`;
+}
+
 /**
  * GET 当前文件内容与 sha；不存在时返回 { text: '', sha: null }
  */
 async function fetchRemoteFile(cfg) {
-  const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.filePath}`;
+  const url = contentsApiUrl(cfg);
   try {
     const res = await axios.get(url, {
       headers: githubHeaders(cfg.token),
@@ -66,7 +76,7 @@ async function fetchRemoteFile(cfg) {
 }
 
 async function putRemoteFile(cfg, fullText, sha, message) {
-  const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.filePath}`;
+  const url = contentsApiUrl(cfg);
   const body = {
     message: message || `chore(feedback): append ${new Date().toISOString()}`,
     content: Buffer.from(fullText, "utf8").toString("base64"),
@@ -82,10 +92,12 @@ async function putRemoteFile(cfg, fullText, sha, message) {
   if (res.status >= 200 && res.status < 300) {
     return;
   }
-  const msg =
-    res.data && res.data.message
-      ? String(res.data.message)
-      : `GitHub API ${res.status}`;
+  const ghMsg = res.data && res.data.message ? String(res.data.message) : "";
+  let msg =
+    ghMsg || `GitHub API ${res.status}`;
+  if (res.status === 404 || /not\s*found/i.test(ghMsg)) {
+    msg = `${ghMsg || "Not Found"}：请确认仓库 ${cfg.owner}/${cfg.repo}、文件路径 ${cfg.filePath}，且 Token 对该仓库有 contents 读写权限`;
+  }
   const e = new Error(msg);
   e.status = res.status;
   throw e;
