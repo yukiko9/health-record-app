@@ -696,9 +696,7 @@ async function fetchWeekProgress() {
  * 选图 → 前端 OCR（外接 API 或 MOCK_OCR_TEXT）→ 后端 DeepSeek 解析文本
  * @param {string} filePath 本地临时路径
  */
-/**
- * 用户反馈：经 wx.cloud.callContainer 发到云托管，由服务端写入 feedback.md 并可按需 git push。
- */
+/** 小程序 → 云托管 POST /api/feedback → 服务端写入 GitHub backend/feedback.md */
 async function submitFeedback(payload) {
   const body =
     payload && typeof payload === "object"
