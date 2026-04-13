@@ -2,21 +2,35 @@ const app = getApp();
 const { getScorePageBackgroundStyle } = require("../../utils/pageBg");
 const { submitFeedback } = require("../../utils/api");
 
+const README_ONCE_KEY = "healthUserReadmeShownV1";
+
 const FEEDBACK_TAGS = [
   "便捷",
   "上手快",
   "实用",
   "满足日常需求",
   "UI美观",
+  "有激励性",
   "活动类型对日常足够",
   "对此类应用感兴趣",
   "感到有可持续性",
   "缺乏专业性",
   "缺乏实用性",
+  "缺乏激励性",
   "UI需要提升",
   "活动类型待完善",
   "不够满足日常需求",
   "计分规则需要更改",
+];
+
+const WORKFLOW_GRADE_UI_RESET = [
+  { key: "coherent", label: "小程序使用逻辑通畅程度", value: 0 },
+  {
+    key: "valuable",
+    label: "小程序功能价值度(是否觉得有用)",
+    value: 0,
+  },
+  { key: "flexible", label: "操作方便/简易程度", value: 0 },
 ];
 
 Page({
@@ -32,6 +46,8 @@ Page({
     feedbackText: "",
     feedbackTags: FEEDBACK_TAGS,
     feedbackSelected: {},
+    workflowStarSlots: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    workflowGradeUi: WORKFLOW_GRADE_UI_RESET.map((r) => ({ ...r })),
     scoreBump: false,
   },
 
@@ -42,7 +58,7 @@ Page({
     }
     const { scoreDisplay, scoreValue, username, goal, situation } =
       app.globalData;
-    this.setData({
+    const patch = {
       score: scoreDisplay,
       username: app.globalData.username || username,
       goal,
@@ -50,7 +66,15 @@ Page({
       moodEmoji: app.getMoodEmoji(scoreValue),
       pageBgStyle: getScorePageBackgroundStyle(scoreValue),
       scoreBump: false,
-    });
+    };
+    try {
+      if (!wx.getStorageSync(README_ONCE_KEY)) {
+        patch.readmeVisible = true;
+      }
+    } catch (e) {
+      /* ignore */
+    }
+    this.setData(patch);
     setTimeout(() => this.setData({ scoreBump: true }), 30);
     setTimeout(() => this.setData({ scoreBump: false }), 520);
   },
@@ -62,6 +86,11 @@ Page({
   },
 
   closeReadme() {
+    try {
+      wx.setStorageSync(README_ONCE_KEY, true);
+    } catch (e) {
+      /* ignore */
+    }
     this.setData({ readmeVisible: false });
   },
 
@@ -76,11 +105,24 @@ Page({
       feedbackVisible: false,
       feedbackText: "",
       feedbackSelected: {},
+      workflowGradeUi: WORKFLOW_GRADE_UI_RESET.map((r) => ({ ...r })),
     });
   },
 
   onFeedbackInput(e) {
     this.setData({ feedbackText: (e.detail && e.detail.value) || "" });
+  },
+
+  onWorkflowStarTap(e) {
+    const key = e.currentTarget.dataset.rowKey;
+    const n = Number(e.currentTarget.dataset.star);
+    if (!key || !Number.isFinite(n) || n < 1 || n > 10) {
+      return;
+    }
+    const ui = this.data.workflowGradeUi.map((row) =>
+      row.key === key ? { ...row, value: n } : row,
+    );
+    this.setData({ workflowGradeUi: ui });
   },
 
   toggleFeedbackTag(e) {
@@ -98,13 +140,23 @@ Page({
   async submitFeedbackForm() {
     const text = (this.data.feedbackText || "").trim();
     const label = FEEDBACK_TAGS.filter((t) => this.data.feedbackSelected[t]);
-    if (!text.length && !label.length) {
-      wx.showToast({ title: "请填写反馈或选择标签", icon: "none" });
+    const scores = {};
+    this.data.workflowGradeUi.forEach((r) => {
+      scores[r.key] = r.value;
+    });
+    if (!scores.coherent || !scores.valuable || !scores.flexible) {
+      wx.showToast({ title: "请完成三项 1～10 星评分", icon: "none" });
       return;
     }
     wx.showLoading({ title: "提交中", mask: true });
     try {
-      await submitFeedback({ text, label });
+      await submitFeedback({
+        text,
+        coherent: scores.coherent,
+        valuable: scores.valuable,
+        flexible: scores.flexible,
+        label,
+      });
       wx.hideLoading();
       wx.showToast({ title: "感谢你的反馈", icon: "success" });
       this.closeFeedback();

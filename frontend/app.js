@@ -57,6 +57,8 @@ App({
       sleep: 0,
     },
     recentActList: [],
+    /** 主界面高频记录：用于接口偶发空数据时保留上次有效列表 */
+    highRateActList: [],
   },
 
   getMoodEmoji(score) {

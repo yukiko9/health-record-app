@@ -559,7 +559,9 @@ function normalizeHighRateItem(record) {
   const scorePayload =
     record.scorePayload != null && typeof record.scorePayload === "object"
       ? record.scorePayload
-      : null;
+      : record.payload != null && typeof record.payload === "object"
+        ? record.payload
+        : null;
   const valid = !!(module && scorePayload);
   return {
     do: base.do || "—",
@@ -623,8 +625,7 @@ async function fetchHighRateActList(limit = 2) {
       `/api/records/high-rate?limit=${encodeURIComponent(limit)}`,
       "GET",
     );
-    const payload = raw && raw.data != null ? raw.data : raw;
-    const list = payload && payload.list != null ? payload.list : payload;
+    const list = normalizeRecentListPayload(raw);
     if (!Array.isArray(list)) {
       return padHighRateList([]);
     }
@@ -698,13 +699,27 @@ async function fetchWeekProgress() {
  */
 /** 小程序 → 云托管 POST /api/feedback → 服务端写入 GitHub backend/feedback.md */
 async function submitFeedback(payload) {
+  const clampStar = (v) => {
+    const n = Math.round(Number(v));
+    if (!Number.isFinite(n) || n < 1 || n > 10) return 0;
+    return n;
+  };
   const body =
     payload && typeof payload === "object"
       ? {
           text: payload.text != null ? String(payload.text) : "",
+          coherent: clampStar(payload.coherent),
+          valuable: clampStar(payload.valuable),
+          flexible: clampStar(payload.flexible),
           label: Array.isArray(payload.label) ? payload.label : [],
         }
-      : { text: "", label: [] };
+      : {
+          text: "",
+          coherent: 0,
+          valuable: 0,
+          flexible: 0,
+          label: [],
+        };
   if (useMock()) {
     await delay();
     return { success: true };

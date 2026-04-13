@@ -42,6 +42,10 @@ Page({
     return Math.max(0, Math.min(100, Math.round((s / g) * 100)));
   },
 
+  highRateListHasValid(list) {
+    return Array.isArray(list) && list.some((x) => x && x.valid);
+  },
+
   async onShow() {
     await this.loadDashboard();
   },
@@ -67,7 +71,17 @@ Page({
       wx.showToast({ title: "加载失败，请检查网络", icon: "none" });
     }
     const summary = app.recalcDailySummary();
-    const highRateActList = await fetchHighRateActList(2);
+    const incomingHigh = await fetchHighRateActList(2);
+    const prevHigh = Array.isArray(app.globalData.highRateActList)
+      ? app.globalData.highRateActList
+      : [];
+    /** 后端解析失败或返回全空占位时，保留上次从接口拿到的有效高频项 */
+    const highRateActList = this.highRateListHasValid(incomingHigh)
+      ? incomingHigh
+      : this.highRateListHasValid(prevHigh)
+        ? prevHigh
+        : incomingHigh;
+    app.globalData.highRateActList = highRateActList;
     let weekDays = mergeWeekApi(buildFiveDaySlots(), (await fetchWeekProgress()).days);
     if (app.globalData.goal != null) {
       const key = dateKeyFromDate(new Date());

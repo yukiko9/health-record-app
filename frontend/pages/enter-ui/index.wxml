@@ -72,6 +72,27 @@
           bindinput="onFeedbackInput"
           show-confirm-bar="{{false}}"
         />
+        <view class="workflow-grading">
+          <view
+            class="workflow-grade-row"
+            wx:for="{{workflowGradeUi}}"
+            wx:for-item="row"
+            wx:key="key"
+          >
+            <text class="workflow-grade-label">{{row.label}}</text>
+            <view class="workflow-stars">
+              <text
+                wx:for="{{workflowStarSlots}}"
+                wx:for-item="n"
+                wx:key="*this"
+                class="workflow-star {{row.value >= n ? 'workflow-star-on' : ''}}"
+                data-row-key="{{row.key}}"
+                data-star="{{n}}"
+                catchtap="onWorkflowStarTap"
+              >{{row.value >= n ? '★' : '☆'}}</text>
+            </view>
+          </view>
+        </view>
         <scroll-view scroll-y class="feedback-tag-scroll">
           <view class="feedback-tag-area">
             <view
@@ -89,7 +110,8 @@
   </view>
 
   <view wx:if="{{readmeVisible}}" class="readme-mask" catchtap="closeReadme">
-    <view class="readme-page card" catchtap="noopReadme">
+    <view class="readme-page card readme-pop-animate" catchtap="noopReadme">
+      <view class="readme-power-emoji">💪</view>
       <view class="readme-close pressable" catchtap="closeReadme" hover-class="pressing">×</view>
       <scroll-view scroll-y class="readme-scroll">
         <text class="readme-placeholder" selectable>

@@ -3,7 +3,9 @@ page {
   color: #2e3238;
   min-height: 100vh;
   height: auto;
-  font-family: "幼圆", "YouYuan", "Yuanti SC", "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+  font-family:
+    "幼圆", "YouYuan", "Yuanti SC", "Microsoft YaHei", "PingFang SC", Arial,
+    sans-serif;
 }
 
 /*
@@ -73,16 +75,25 @@ page {
   z-index: 10;
   box-sizing: border-box;
   display: block;
-  background-image: linear-gradient(
+  background-image:
+    linear-gradient(
       to top,
       rgba(20, 20, 20, 0.92) 0,
       rgba(20, 20, 20, 0.92) 42%,
       transparent 42%
     ),
-    radial-gradient(circle at 50% 50%, rgba(55, 55, 55, 0.75) 9rpx, transparent 10rpx);
-  background-size: 40rpx 36rpx, 40rpx 36rpx;
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(55, 55, 55, 0.75) 9rpx,
+      transparent 10rpx
+    );
+  background-size:
+    40rpx 36rpx,
+    40rpx 36rpx;
   background-repeat: repeat-x, repeat-x;
-  background-position: 18rpx 50%, 18rpx 50%;
+  background-position:
+    18rpx 50%,
+    18rpx 50%;
   opacity: 0.42;
   pointer-events: none;
 }
@@ -97,16 +108,25 @@ page {
   border-radius: 12rpx;
   z-index: 10;
   box-sizing: border-box;
-  background-image: linear-gradient(
+  background-image:
+    linear-gradient(
       to top,
       rgba(20, 20, 20, 0.92) 0,
       rgba(20, 20, 20, 0.92) 42%,
       transparent 42%
     ),
-    radial-gradient(circle at 50% 50%, rgba(55, 55, 55, 0.75) 9rpx, transparent 10rpx);
-  background-size: 40rpx 36rpx, 40rpx 36rpx;
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(55, 55, 55, 0.75) 9rpx,
+      transparent 10rpx
+    );
+  background-size:
+    40rpx 36rpx,
+    40rpx 36rpx;
   background-repeat: repeat-x, repeat-x;
-  background-position: 18rpx 50%, 18rpx 50%;
+  background-position:
+    18rpx 50%,
+    18rpx 50%;
   opacity: 0.42;
   pointer-events: none;
 }
@@ -198,7 +218,9 @@ text.duration,
 .fullness-btn .n,
 .ai-analyze-icon-ai,
 .record-day-label {
-  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue",
+    "Microsoft YaHei", Arial, sans-serif;
   font-variant-numeric: tabular-nums;
 }
 
@@ -223,7 +245,9 @@ text.duration,
 .score,
 .record-day-modal-score {
   color: #ff8a00 !important;
-  font-family: "NunitoDigits", "YouYuan", "幼圆", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+  font-family:
+    "NunitoDigits", "YouYuan", "幼圆", "PingFang SC", "Microsoft YaHei", Arial,
+    sans-serif;
   font-weight: 700;
   text-shadow:
     0 1rpx 2rpx rgba(255, 255, 255, 0.4),
@@ -235,13 +259,18 @@ text.duration,
 /* rolling-score 根节点带 .score，子级 .roller-line 需单独指定（否则被全局 .roller-line 字体覆盖） */
 .roller-root.score,
 .roller-root.score .roller-line {
-  font-family: "NunitoDigits", "YouYuan", "幼圆", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+  font-family:
+    "NunitoDigits", "YouYuan", "幼圆", "PingFang SC", "Microsoft YaHei", Arial,
+    sans-serif;
   font-variant-numeric: tabular-nums;
   font-weight: 700;
 }
 
 button {
-  transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease,
+    filter 120ms ease;
   box-shadow: 0 8rpx 12rpx rgba(0, 0, 0, 0.14);
 }
 
@@ -256,7 +285,10 @@ button:active {
 }
 
 .pressable {
-  transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease,
+    filter 120ms ease;
 }
 
 .pressing {

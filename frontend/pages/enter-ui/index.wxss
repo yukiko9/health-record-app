@@ -436,9 +436,35 @@
   width: 100%;
   max-width: 620rpx;
   max-height: 72vh;
-  padding: 48rpx 28rpx 28rpx;
+  padding: 52rpx 28rpx 28rpx;
   display: flex;
   flex-direction: column;
+  background: rgba(214, 245, 198, 0.96) !important;
+  border-color: rgba(90, 140, 85, 0.55) !important;
+}
+
+.readme-pop-animate {
+  animation: readmePopIn 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes readmePopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.68);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.readme-power-emoji {
+  position: absolute;
+  left: 22rpx;
+  top: 40rpx;
+  font-size: 44rpx;
+  line-height: 1;
+  z-index: 2;
 }
 
 .readme-close {
@@ -449,12 +475,13 @@
   line-height: 1;
   color: #b32b2b;
   padding: 8rpx 20rpx;
+  z-index: 3;
 }
 
 .readme-scroll {
   flex: 1;
   max-height: 58vh;
-  margin-top: 8rpx;
+  margin-top: 20rpx;
 }
 
 .readme-placeholder {
@@ -507,10 +534,58 @@
   box-sizing: border-box;
 }
 
+.workflow-grading {
+  width: 100%;
+  margin-top: 24rpx;
+  padding: 20rpx 18rpx;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.45);
+  border: 3rpx solid rgba(105, 131, 95, 0.35);
+  border-radius: 16rpx;
+}
+
+.workflow-grade-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  margin-bottom: 22rpx;
+}
+
+.workflow-grade-row:last-child {
+  margin-bottom: 0;
+}
+
+.workflow-grade-label {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #2d3a28;
+  line-height: 1.45;
+}
+
+.workflow-stars {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6rpx 10rpx;
+  align-items: center;
+}
+
+.workflow-star {
+  font-size: 34rpx;
+  line-height: 1;
+  color: rgba(60, 80, 55, 0.28);
+  padding: 4rpx 2rpx;
+}
+
+.workflow-star-on {
+  color: #2e7d32;
+  text-shadow: 0 1rpx 4rpx rgba(46, 125, 50, 0.35);
+}
+
 .feedback-textarea {
   width: 100%;
-  min-height: 420rpx;
-  max-height: 520rpx;
+  min-height: 300rpx;
+  max-height: 400rpx;
   padding: 20rpx 22rpx;
   box-sizing: border-box;
   font-size: 30rpx;
