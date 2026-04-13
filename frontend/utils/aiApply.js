@@ -15,7 +15,7 @@ function decimalHoursToSleepParts(hours) {
  */
 function applyAiAnalyzeToApp(app, finalSleepHour, finalCalorie) {
   const calorie = Number(finalCalorie) || 0;
-  const heatScore = Math.min(20, 20 * (1 - Math.exp(-calorie / 800)));
+  const heatScore = Math.min(20, 20 * (1 - Math.exp(-calorie / 1000)));
 
   const actWas = Number(app.globalData.moduleScore.act) || 0;
   let v = typeof app.globalData.scoreValue === "number" ? app.globalData.scoreValue : 60;

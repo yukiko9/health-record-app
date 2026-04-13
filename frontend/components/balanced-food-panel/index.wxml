@@ -12,7 +12,7 @@
     <text>{{selectedMap['light-btn'] ? "✅" : "☑️"}}</text>
   </view>
   <view class="food-item {{selectedMap['no-drink-btn'] ? 'food-item-on' : ''}}" bindtap="toggleItem" data-key="no-drink-btn">
-    <text>不喝含糖饮料 🚫</text>
+    <text>食物低糖或不含糖 🚫</text>
     <text>{{selectedMap['no-drink-btn'] ? "✅" : "☑️"}}</text>
   </view>
   <view class="fullness-btn">

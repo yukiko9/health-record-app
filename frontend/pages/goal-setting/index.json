@@ -1,4 +1,5 @@
 {
+  "disableScroll": true,
   "navigationBarTitleText": "goal-setting",
   "usingComponents": {
     "floating-bubbles": "/components/floating-bubbles/index",

@@ -6,9 +6,9 @@
   justify-content: space-between;
   gap: 28rpx;
   min-height: 100vh;
+  padding-top: 40rpx;
   padding-bottom: 40rpx;
   box-sizing: border-box;
-  margin-top: -40px;
 }
 
 .goal-setting .roller-line {
@@ -16,6 +16,7 @@
 }
 
 .return-btn {
+  margin-top: 80rpx;
   align-self: flex-start;
   min-width: 200rpx;
   text-align: center;
@@ -63,12 +64,13 @@
 .goal-picker {
   display: flex;
   align-items: stretch;
-  gap: 22rpx;
+  gap: 30rpx;
   flex: 1;
   width: 100%;
   max-width: 680rpx;
   justify-content: center;
   padding: 20rpx 0;
+  max-height: 500rpx;
 }
 
 .goal-reduce,
@@ -86,7 +88,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 40px;
+  gap: 20px;
 }
 
 .goal-ten-digits,
@@ -110,13 +112,14 @@
 
 .save-goal-btn {
   min-width: 60vw;
-  height: 60px;
-  margin-top: auto;
+  height: 70px;
+  margin-top: 10rpx;
   text-align: center;
   font-size: 30px;
 }
 
 .tip {
   margin-top: 12rpx;
-  font-size: 56rpx;
+  font-size: 50rpx;
+  margin-bottom: 40rpx;
 }

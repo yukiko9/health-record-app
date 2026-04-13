@@ -2,6 +2,7 @@
   <view class="page-bg-layer page-bg-breathe" style="{{pageBgStyle}}" />
   <view class="binder-decor-layer" aria-hidden="true" />
   <view class="main-ui-foreground">
+  <view class="main-ui-shift-down">
   <floating-bubbles />
   <view class="header-panel">
     <view class="duration-panel card {{todayGoalMet ? 'goal-met-glow' : ''}}">
@@ -115,20 +116,21 @@
         </view>
       </block>
     </view>
-    <view class="entry-btns">
-      <view class="entry-btn act-btn card pressable" bindtap="goActBlock" hover-class="pressing">
-        <text class="icon-emoji">🏃</text>
-        <text>活动</text>
-      </view>
-      <view class="entry-btn eating-btn card pressable" bindtap="goEatingBlock" hover-class="pressing">
-        <text class="icon-emoji">🥄</text>
-        <text>饮食</text>
-      </view>
-      <view class="entry-btn sleep-btn card pressable" bindtap="goSleepBlock" hover-class="pressing">
-        <text class="icon-emoji">🛏️</text>
-        <text>睡眠</text>
-      </view>
+  <view class="entry-btns main-ui-entry-btns">
+    <view class="entry-btn act-btn card pressable" bindtap="goActBlock" hover-class="pressing">
+      <text class="icon-emoji">🏃</text>
+      <text>活动</text>
     </view>
+    <view class="entry-btn eating-btn card pressable" bindtap="goEatingBlock" hover-class="pressing">
+      <text class="icon-emoji">🥄</text>
+      <text>饮食</text>
+    </view>
+    <view class="entry-btn sleep-btn card pressable" bindtap="goSleepBlock" hover-class="pressing">
+      <text class="icon-emoji">🛏️</text>
+      <text>睡眠</text>
+    </view>
+  </view>
+  </view>
   </view>
   </view>
 </view>

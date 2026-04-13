@@ -24,7 +24,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: 6%;
+  top: 8%;
   height: 120px;
   z-index: 1;
   pointer-events: none;
@@ -253,7 +253,7 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  padding: 58rpx 24rpx 120rpx;
+  padding: calc(58rpx + 60px) 24rpx 120rpx;
   box-sizing: border-box;
 }
 

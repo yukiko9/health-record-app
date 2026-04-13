@@ -1,7 +1,8 @@
 page {
   background: #e8f5c8;
   color: #2e3238;
-  min-height: 100%;
+  min-height: 100vh;
+  height: auto;
   font-family: "幼圆", "YouYuan", "Yuanti SC", "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
 }
 
@@ -24,15 +25,54 @@ page {
   z-index: 1;
   width: 100%;
   min-height: 100vh;
-  padding: 24rpx;
+  /* 顶边无内边距：顶端装饰可与胶囊重叠；左右下保持 24rpx */
+  padding: 0 24rpx 24rpx;
 }
 
+/* 除 goal-setting 外：主内容区整体下移 60px；底栏请放在此节点外以免被顶下去 */
+.shift-content-down-60 {
+  padding-top: 80px;
+  box-sizing: border-box;
+}
+
+/* 活动/饮食页：胶囊下沿以下的主体列 */
+.screen-page-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.sleep-page-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.sleep-upper-wrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* 排钉：绝对定位不占流式高度，避免把下方顶栏整块挤下去（act/eating） */
 .screen::before {
   content: "";
-  display: block;
+  position: absolute;
+  left: 12rpx;
+  right: 12rpx;
+  top: calc(20rpx + 40px);
   height: 36rpx;
-  margin: -4rpx -12rpx 16rpx -12rpx;
+  margin: 0;
   border-radius: 12rpx;
+  z-index: 10;
+  box-sizing: border-box;
+  display: block;
   background-image: linear-gradient(
       to top,
       rgba(20, 20, 20, 0.92) 0,
@@ -52,7 +92,7 @@ page {
   position: absolute;
   left: 12rpx;
   right: 12rpx;
-  top: 20rpx;
+  top: calc(20rpx + 40px);
   height: 36rpx;
   border-radius: 12rpx;
   z-index: 10;
@@ -73,6 +113,7 @@ page {
 
 .main-ui.screen::before,
 .enter-ui.screen::before,
+.goal-setting.screen::before,
 .sleep-night-block.screen::before,
 .sleep-noon-block.screen::before {
   display: none;

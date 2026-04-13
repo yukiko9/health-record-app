@@ -177,6 +177,7 @@
 }
 
 .bottom-btns {
+  flex-shrink: 0;
   margin-top: auto;
   padding-top: 24rpx;
   padding-bottom: 8rpx;

@@ -1,6 +1,7 @@
 <view class="screen sleep-night-block">
   <view class="sleep-full-slide sleep-slide-night {{sleepExitUp ? 'sleep-slide-exit-up' : ''}} {{sleepEnterPlay ? 'sleep-slide-enter' : ''}}">
     <floating-bubbles />
+    <view class="sleep-upper-wrap shift-content-down-60">
     <view class="top">
       <view class="return-btn btn-danger pressable" bindtap="returnBtn" hover-class="pressing">←</view>
       <view class="score-wrap">
@@ -37,6 +38,7 @@
           {{nightSleepLocked ? "今日已记!" : "保存✅️"}}
         </button>
       </view>
+    </view>
     </view>
 
     <view class="sleep-buddy-card sleep-buddy-night {{sleepBuddyFloat ? 'sleep-buddy-float' : ''}}">

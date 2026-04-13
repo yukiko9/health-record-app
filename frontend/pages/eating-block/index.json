@@ -1,4 +1,5 @@
 {
+  "disableScroll": true,
   "navigationBarTitleText": "eating-block",
   "usingComponents": {
     "floating-bubbles": "/components/floating-bubbles/index",

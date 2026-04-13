@@ -1,6 +1,7 @@
 <view class="screen sleep-noon-block">
   <view class="sleep-full-slide sleep-slide-noon {{sleepExitUp ? 'sleep-slide-exit-up' : ''}} {{sleepEnterPlay ? 'sleep-slide-enter' : ''}}">
     <floating-bubbles />
+    <view class="sleep-upper-wrap shift-content-down-60">
     <view class="top">
       <view class="return-btn btn-danger pressable" bindtap="returnBtn" hover-class="pressing">←</view>
       <view class="score-wrap">
@@ -31,6 +32,7 @@
         <view class="sleep-hour-add card pressable" bindtap="sleepHourAdd" hover-class="pressing">❯</view>
         <button class="sleep-save-btn btn-primary" bindtap="sleepHalfHour">保存✅️</button>
       </view>
+    </view>
     </view>
 
     <view class="sleep-buddy-card sleep-buddy-noon {{sleepBuddyFloat ? 'sleep-buddy-float' : ''}}">

@@ -18,7 +18,7 @@
   flex-direction: column;
   min-height: 100vh;
   box-sizing: border-box;
-  padding: 68rpx 24rpx 24rpx 24rpx;
+  padding: 0 24rpx 24rpx;
 }
 
 .sleep-slide-noon {
@@ -251,6 +251,7 @@
 }
 
 .sleep-buddy-card {
+  flex-shrink: 0;
   margin-top: auto;
   margin-left: -24rpx;
   margin-right: -24rpx;

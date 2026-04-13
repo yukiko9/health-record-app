@@ -1,5 +1,6 @@
 <view class="screen act-block" style="{{pageBgStyle}}">
   <floating-bubbles />
+  <view class="screen-page-body shift-content-down-60">
   <view class="top">
     <view class="return-btn btn-danger pressable" bindtap="returnBtn" hover-class="pressing">←</view>
     <view class="score-wrap">
@@ -72,6 +73,7 @@
       />
       <text class="panel-user-note" selectable>😉活动记录功能\n是在距离和时间记录中\n二选一进行登记噢！\n😝后续可能继续更新更多活动类型！ </text>
     </view>
+  </view>
   </view>
 
   <view class="bottom-btns">

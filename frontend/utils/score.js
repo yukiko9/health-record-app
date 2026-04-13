@@ -81,10 +81,10 @@ function fullnessMultJunk(f) {
 }
 
 function milkteaPenaltyForSugar(sugar) {
-  if (sugar === "full") return -5;
-  if (sugar === "half") return -3;
-  if (sugar === "light") return -2;
-  if (sugar === "none") return -1;
+  if (sugar === "full") return -6;
+  if (sugar === "half") return -4;
+  if (sugar === "light") return -3;
+  if (sugar === "none") return -2;
   return 0;
 }
 
@@ -121,7 +121,7 @@ function calcEatingScore(payload) {
     if (m["fruit-btn"]) eatingScore += 2;
     if (m["drink-milk-btn"]) {
       const n = milkCountToday + 1;
-      if (n <= 2) eatingScore += 5;
+      if (n <= 2) eatingScore += 3;
     }
     if (m["coffee-btn"]) {
       const n = coffeeCountToday + 1;

@@ -10,6 +10,7 @@
     "pages/sleep-noon-block/index"
   ],
   "window": {
+    "navigationStyle": "custom",
     "navigationBarTitleText": "health-app",
     "navigationBarBackgroundColor": "#bef95d",
     "navigationBarTextStyle": "black",

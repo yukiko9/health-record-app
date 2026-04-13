@@ -1,5 +1,6 @@
 <view class="screen eating-block" style="{{pageBgStyle}}">
   <floating-bubbles />
+  <view class="screen-page-body shift-content-down-60">
   <view class="top">
     <view class="return-btn btn-danger pressable" bindtap="returnBtn" hover-class="pressing">←</view>
     <view class="score-wrap">
@@ -48,6 +49,7 @@
       <text class="panel-user-note" selectable>如何描述你的饱食感：\n1：吃的很少🫠\n2：吃的还不够\n3：刚刚好😋\n4：吃的有点撑\n5：吃的非常撑！😈</text>
     </view>
     </view>
+  </view>
   </view>
 
   <view class="bottom-btns">

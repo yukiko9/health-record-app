@@ -1,8 +1,9 @@
 .main-ui {
   position: relative;
   background: transparent;
-  padding-bottom: 48rpx;
   overflow: hidden;
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
 .page-bg-layer {
@@ -22,7 +23,26 @@
 .main-ui-foreground {
   position: relative;
   z-index: 1;
-  padding-top: 52rpx;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding-bottom: 48rpx;
+}
+
+.main-ui-shift-down {
+  flex: 1;
+  min-height: 0;
+  padding-top: calc(52rpx + 60px);
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.main-ui-entry-btns {
+  flex-shrink: 0;
+  margin-top: 20rpx;
+  padding: 0 rpx;
+  box-sizing: border-box;
 }
 
 .header-panel {
@@ -303,6 +323,7 @@
 }
 
 .main-score-row {
+  margin-top: 20rpx;
   position: relative;
   display: flex;
   flex-direction: row;
@@ -553,7 +574,7 @@
 }
 
 .recent-act-list {
-  margin-top: 18rpx;
+  margin-top: 30rpx;
   padding: 16rpx 14rpx;
   backdrop-filter: blur(4rpx);
   border-radius: 10rpx;
@@ -680,6 +701,7 @@
 .entry-btn {
   flex: 1;
   min-height: 200rpx;
+  min-width: 190rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
