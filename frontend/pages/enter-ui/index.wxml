@@ -48,9 +48,44 @@
     <view class="float-tip">点击空白处进入</view>
   </view>
 
-  <view class="readme-fab-col" catchtap="noopReadme">
-    <view class="readme-btn card pressable" catchtap="openReadme" hover-class="pressing">?</view>
-    <text class="readme-fab-caption">用户说明</text>
+  <view class="enter-fab-stack" catchtap="noopReadme">
+    <view class="evaluation-fab-col" catchtap="noopReadme">
+      <view id="evaluation-btn" class="evaluation-btn card pressable" catchtap="openEvaluation" hover-class="pressing">✍️</view>
+      <text class="evaluation-fab-caption">写反馈❤️</text>
+    </view>
+    <view class="readme-fab-col" catchtap="noopReadme">
+      <view class="readme-btn card pressable" catchtap="openReadme" hover-class="pressing">?</view>
+      <text class="readme-fab-caption">用户说明</text>
+    </view>
+  </view>
+
+  <view wx:if="{{evaluationVisible}}" class="evaluation-mask" catchtap="closeEvaluation">
+    <view class="evaluation-panel card" catchtap="noopEvaluation">
+      <view class="evaluation-close pressable" catchtap="closeEvaluation" hover-class="pressing">×</view>
+      <scroll-view scroll-y class="evaluation-scroll">
+        <textarea
+          class="evaluation-textarea"
+          value="{{evaluationText}}"
+          placeholder="写下你的体验、改进建议，这对我来说很重要！❤️"
+          placeholder-class="evaluation-placeholder"
+          maxlength="2000"
+          bindinput="onEvaluationInput"
+          show-confirm-bar="{{false}}"
+        />
+        <scroll-view scroll-y class="evaluation-tag-scroll">
+          <view class="evaluation-tag-area">
+            <view
+              wx:for="{{evaluationTags}}"
+              wx:key="*this"
+              class="evaluation-tag {{evalSelected[item] ? 'evaluation-tag-selected' : ''}}"
+              data-tag="{{item}}"
+              catchtap="toggleEvalTag"
+            >{{item}}</view>
+          </view>
+        </scroll-view>
+        <view class="evaluation-submit btn-primary pressable" catchtap="submitEvaluationForm" hover-class="pressing">提交</view>
+      </scroll-view>
+    </view>
   </view>
 
   <view wx:if="{{readmeVisible}}" class="readme-mask" catchtap="closeReadme">
@@ -58,7 +93,7 @@
       <view class="readme-close pressable" catchtap="closeReadme" hover-class="pressing">×</view>
       <scroll-view scroll-y class="readme-scroll">
         <text class="readme-placeholder" selectable>
-          小绿笔记本为常居室内的学生、上班族等朋友们提供日常活动状态记录并用健康分值让朋友们更好地了解每日的健康状况。一起来设立你的健康目标并完成每日打卡吧！\n小绿的主要职责是帮助你记录日常的简单健康活动记录，主界面的下面三个模块分别对应了三大日常活动模块！点进去有使用的附带说明噢！\n小绿在活动记录之外，也有四个提升朋友们的体验的功能：连续打卡记录、个人定制目标设置、从你的健康app界面截图读取睡眠和热量消耗数据、显示你最近的活动、提供可点击的高频重复活动记录帮助你快速进行记录。\n\nTip:使用截图读取功能时，请尽量提供一张完整包含睡眠数据和热量消耗数据的截图噢！
+          小绿笔记本为常居室内的学生、上班族等朋友们提供日常活动状态记录并用健康分值让朋友们更好地了解每日的健康状况。一起来设立你的健康目标并完成每日打卡吧！\n小绿的主要职责是帮助你记录日常的简单健康活动记录，主界面的下面三个模块分别对应了三大日常活动模块！点进去有使用的附带说明噢！\n小绿在活动记录之外，也有四个提升朋友们的体验的功能：连续打卡记录、个人定制目标设置、从你的健康app界面截图读取睡眠和热量消耗数据、显示你最近的活动、提供可点击的高频重复活动记录帮助你快速进行记录。\n\nTip:使用截图读取功能时，请尽量提供一张完整包含睡眠数据和热量消耗数据的截图噢！\n\n出于体验版限制，目前同步微信昵称功能无法使用！
         </text>
       </scroll-view>
     </view>

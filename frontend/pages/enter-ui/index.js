@@ -1,5 +1,22 @@
 const app = getApp();
 const { getScorePageBackgroundStyle } = require("../../utils/pageBg");
+const { submitEvaluation } = require("../../utils/api");
+
+const EVALUATION_TAGS = [
+  "便捷",
+  "上手快",
+  "实用",
+  "满足日常需求",
+  "UI美观",
+  "活动类型对日常足够",
+  "对此类应用感兴趣",
+  "感到有可持续性",
+  "缺乏专业性",
+  "缺乏实用性",
+  "UI需要提升",
+  "活动类型待完善",
+  "不够满足日常需求"
+];
 
 Page({
   data: {
@@ -10,6 +27,10 @@ Page({
     moodEmoji: "🙂",
     pageBgStyle: "",
     readmeVisible: false,
+    evaluationVisible: false,
+    evaluationText: "",
+    evaluationTags: EVALUATION_TAGS,
+    evalSelected: {},
     scoreBump: false
   },
 
@@ -40,6 +61,57 @@ Page({
 
   closeReadme() {
     this.setData({ readmeVisible: false });
+  },
+
+  noopEvaluation() {},
+
+  openEvaluation() {
+    this.setData({ evaluationVisible: true });
+  },
+
+  closeEvaluation() {
+    this.setData({
+      evaluationVisible: false,
+      evaluationText: "",
+      evalSelected: {}
+    });
+  },
+
+  onEvaluationInput(e) {
+    this.setData({ evaluationText: (e.detail && e.detail.value) || "" });
+  },
+
+  toggleEvalTag(e) {
+    const tag = e.currentTarget.dataset.tag;
+    if (!tag) return;
+    const next = { ...this.data.evalSelected };
+    if (next[tag]) {
+      delete next[tag];
+    } else {
+      next[tag] = true;
+    }
+    this.setData({ evalSelected: next });
+  },
+
+  async submitEvaluationForm() {
+    const text = (this.data.evaluationText || "").trim();
+    const label = EVALUATION_TAGS.filter((t) => this.data.evalSelected[t]);
+    if (!text.length && !label.length) {
+      wx.showToast({ title: "请填写反馈或选择标签", icon: "none" });
+      return;
+    }
+    wx.showLoading({ title: "提交中", mask: true });
+    try {
+      await submitEvaluation({ text, label });
+      wx.hideLoading();
+      wx.showToast({ title: "感谢你的反馈", icon: "success" });
+      this.closeEvaluation();
+    } catch (err) {
+      wx.hideLoading();
+      const msg =
+        err && err.message ? String(err.message) : "提交失败，请重试";
+      wx.showToast({ title: msg, icon: "none" });
+    }
   },
 
   syncWechatNickname() {

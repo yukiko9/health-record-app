@@ -686,6 +686,22 @@ async function fetchWeekProgress() {
  * 选图 → 前端 OCR（外接 API 或 MOCK_OCR_TEXT）→ 后端 DeepSeek 解析文本
  * @param {string} filePath 本地临时路径
  */
+async function submitEvaluation(payload) {
+  const body =
+    payload && typeof payload === "object"
+      ? {
+          text: payload.text != null ? String(payload.text) : "",
+          label: Array.isArray(payload.label) ? payload.label : [],
+        }
+      : { text: "", label: [] };
+  if (useMock()) {
+    await delay();
+    return { success: true };
+  }
+  const raw = await requestJson("/api/evaluation", "POST", body);
+  return raw && raw.data != null ? raw.data : raw;
+}
+
 async function uploadAiAnalyzeImage(filePath) {
   if (useMock()) {
     await delay();
@@ -728,5 +744,6 @@ module.exports = {
   saveActRecord,
   saveEatingRecord,
   saveSleepRecord,
+  submitEvaluation,
   uploadAiAnalyzeImage,
 };
