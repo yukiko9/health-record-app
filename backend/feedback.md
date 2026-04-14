@@ -32,3 +32,6 @@
 {"text":"久坐时间过长（如3000分钟）也会加分","coherent":8,"valuable":7,"flexible":9,"label":[]}
 时间: 2026-04-14T14:27:28.026Z
 
+{"text":"午睡0小时会加分","coherent":8,"valuable":7,"flexible":9,"label":[]}
+时间: 2026-04-14T14:27:51.337Z
+
