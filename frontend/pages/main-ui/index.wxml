@@ -97,7 +97,7 @@
         <text class="recent-empty-line">点击下面的三个模块开始记录你的活动！</text>
         <text class="recent-empty-line">每次保存记录都会更新你的健康分数！</text>
       </view>
-      <recent-act-list-show wx:else list="{{recentActList}}" />
+      <recent-act-list-show wx:else list="{{recentActList}}" bind:deleterecord="deleteRecord" />
     </view>
   </view>
 

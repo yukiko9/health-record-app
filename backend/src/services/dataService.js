@@ -108,6 +108,7 @@ function buildRecentItem(record) {
     time: formatTimeOnly(record.recordedAt),
     info: record.summary || "",
     module: record.module,
+    scoreDelta: Number(record.scoreDelta) || 0,
     scorePayload: record.payload || {}
   };
 }
@@ -199,6 +200,23 @@ function listWeekProgress(userId, goal) {
   return days;
 }
 
+function deleteRecordById(userId, id) {
+  const key = String(userId);
+  const rid = String(id || "").trim();
+  if (!rid) return { ok: false, row: null };
+  const current = getState();
+  const idx = current.records.findIndex(
+    (r) => String(r.userId) === key && String(r.id) === rid,
+  );
+  if (idx < 0) return { ok: false, row: null };
+  const row = current.records[idx];
+  updateState((s) => ({
+    ...s,
+    records: s.records.filter((_, i) => i !== idx),
+  }));
+  return { ok: true, row };
+}
+
 function getWinStreak(userId, goal) {
   let streak = 0;
   let cursor = new Date();
@@ -221,6 +239,7 @@ module.exports = {
   getUserRecordsByDate,
   getTodayDateKey,
   addRecord,
+  deleteRecordById,
   listRecent,
   listHighRate,
   computeDailySummary,

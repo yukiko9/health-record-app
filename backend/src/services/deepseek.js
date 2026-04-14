@@ -15,6 +15,59 @@ const SYSTEM_PROMPT_OCR_TEXT = `
 现在你是一个用于自动识别并获取、打印用户健康数据的机器人。这是一个健康应用的主界面截图识别出来的文字，请你识别睡眠时间（单位为小时）和热量（单位为卡路里），以json格式输出（下面** **里的内容都必须完全是数字形式）：{"sleepHour": **你获取到的睡眠时长数据**, "calorie": **你获取到的卡路里消耗量，转换单位为千卡**}未获取到数据的属性值直接改为undefined，不要返回解释性文字。
 `.trim();
 
+/**
+ * 模型返回缺字段时，用 OCR 原文做轻量规则补全（不修改 SYSTEM_PROMPT 常量）。
+ * 仅填补 null，不覆盖模型已给出的数值。
+ */
+function extractHeuristicSleepCalorie(ocrText) {
+  const text = String(ocrText || "");
+  let sleepHour = null;
+  let calorie = null;
+
+  const kcalMatch = text.match(
+    /(\d+(?:\.\d+)?)\s*(千卡|大卡|kcal|Kcal|KCAL)\b/i,
+  );
+  if (kcalMatch) {
+    const n = Number(kcalMatch[1]);
+    if (Number.isFinite(n) && n > 0) calorie = n;
+  }
+  if (calorie == null) {
+    const cal2 = text.match(
+      /(?:动态千卡|活动千卡|消耗)[^\d]{0,10}(\d{2,5})\s*(?:千卡|大卡|kcal)?/i,
+    );
+    if (cal2) {
+      const n = Number(cal2[1]);
+      if (Number.isFinite(n) && n > 0) calorie = n;
+    }
+  }
+
+  const sleep1 = text.match(
+    /(?:夜间睡眠|睡眠时长|睡眠|入睡)[^\d]{0,16}(\d+(?:\.\d+)?)\s*(?:小时|h|H)(?:(\d+)\s*分)?/,
+  );
+  if (sleep1) {
+    const h = Number(sleep1[1]);
+    const min = sleep1[2] != null ? Number(sleep1[2]) : 0;
+    if (Number.isFinite(h)) {
+      sleepHour = h + (Number.isFinite(min) ? min / 60 : 0);
+    }
+  }
+  if (sleepHour == null) {
+    const sleep2 = text.match(/(\d+(?:\.\d+)?)\s*小时(?:\s*(\d+)\s*分)?/);
+    if (sleep2) {
+      const h = Number(sleep2[1]);
+      const min = sleep2[2] != null ? Number(sleep2[2]) : 0;
+      if (Number.isFinite(h)) {
+        sleepHour = h + (Number.isFinite(min) ? min / 60 : 0);
+      }
+    }
+  }
+
+  return {
+    sleepHour: Number.isFinite(sleepHour) ? sleepHour : null,
+    calorie: Number.isFinite(calorie) ? calorie : null,
+  };
+}
+
 function extractJsonObject(text) {
   if (!text) return null;
   const direct = text.trim();
@@ -138,12 +191,18 @@ async function analyzeOcrTextWithDeepseek(ocrText) {
       : "";
 
   const parsed = extractJsonObject(content) || {};
-  const sleepHour = parsed.sleepHour == null ? null : Number(parsed.sleepHour);
-  const calorie = parsed.calorie == null ? null : Number(parsed.calorie);
+  let sleepHour = parsed.sleepHour == null ? null : Number(parsed.sleepHour);
+  let calorie = parsed.calorie == null ? null : Number(parsed.calorie);
+  sleepHour = Number.isFinite(sleepHour) ? sleepHour : null;
+  calorie = Number.isFinite(calorie) ? calorie : null;
+
+  const hint = extractHeuristicSleepCalorie(text);
+  if (sleepHour == null && hint.sleepHour != null) sleepHour = hint.sleepHour;
+  if (calorie == null && hint.calorie != null) calorie = hint.calorie;
 
   return {
-    sleepHour: Number.isFinite(sleepHour) ? sleepHour : null,
-    calorie: Number.isFinite(calorie) ? calorie : null,
+    sleepHour,
+    calorie,
   };
 }
 

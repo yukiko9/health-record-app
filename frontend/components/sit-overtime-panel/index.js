@@ -1,3 +1,5 @@
+const { metricFromInput, sanitizeIntString } = require("../../utils/actInput");
+
 Component({
   properties: {
     value: {
@@ -7,14 +9,17 @@ Component({
   },
 
   data: {
-    timeStr: "0"
+    timeStr: ""
   },
 
   observers: {
     value(v) {
       if (!v) return;
       this.setData({
-        timeStr: v.sitOvertimeTime != null && v.sitOvertimeTime !== "" ? String(v.sitOvertimeTime) : "0"
+        timeStr:
+          v.sitOvertimeTime != null && v.sitOvertimeTime !== ""
+            ? String(v.sitOvertimeTime)
+            : ""
       });
     }
   },
@@ -22,10 +27,10 @@ Component({
   methods: {
     stopBubble() {},
     onTimeInput(e) {
-      const timeStr = e.detail.value;
+      const timeStr = sanitizeIntString(e.detail.value);
       this.setData({ timeStr });
       this.triggerEvent("change", {
-        sitOvertimeTime: Number(timeStr) || 0
+        sitOvertimeTime: metricFromInput(timeStr)
       });
     }
   }

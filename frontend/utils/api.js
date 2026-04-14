@@ -1,5 +1,6 @@
 const delay = (ms = 250) => new Promise((resolve) => setTimeout(resolve, ms));
 const { extractTextFromImage } = require("./ocrExtract");
+const scoreUtil = require("./score");
 
 /**
  * 微信云托管调用（与 wxcloudbuilding.md、官方文档一致）：
@@ -203,8 +204,40 @@ function callCloudContainer(relPath, method, options = {}) {
 let mockRecentList = [];
 
 const MOCK_USER_GOAL_KEY = "mockUserGoal";
+/** 真机/非 mock 下保存目标分，冷启动与接口缺省时兜底 */
+const USER_GOAL_LOCAL_KEY = "userGoalLocal";
+
+function readUserGoalLocal() {
+  try {
+    const g = wx.getStorageSync(USER_GOAL_LOCAL_KEY);
+    if (g != null && g !== "") {
+      const n = Number(g);
+      if (!Number.isNaN(n)) {
+        return Math.max(0, Math.min(99, Math.round(n)));
+      }
+    }
+  } catch (e) {
+    /* ignore */
+  }
+  return null;
+}
+
+function persistUserGoalLocal(goal) {
+  const n = Math.round(Number(goal));
+  if (Number.isNaN(n)) return;
+  try {
+    wx.setStorageSync(
+      USER_GOAL_LOCAL_KEY,
+      Math.max(0, Math.min(99, n)),
+    );
+  } catch (e) {
+    /* ignore */
+  }
+}
 
 function readStoredMockGoal() {
+  const local = readUserGoalLocal();
+  if (local != null) return local;
   try {
     const g = wx.getStorageSync(MOCK_USER_GOAL_KEY);
     if (g != null && g !== "") {
@@ -256,28 +289,29 @@ function stripDayFromTimeDisplay(s) {
 
 function buildActSummary(payload) {
   const mode = payload.actInputMode === "distance" ? "distance" : "time";
+  const n = (x) => Number(x) || 0;
   const map = {
     "slow-walk-panel":
       mode === "distance"
-        ? `慢走，${payload.slowWalkDistance}米`
-        : `慢走，${payload.slowWalkTime}min`,
+        ? `慢走，${n(payload.slowWalkDistance)}米`
+        : `慢走，${n(payload.slowWalkTime)}min`,
     "fast-walk-panel":
       mode === "distance"
-        ? `快走，${payload.fastWalkDistance}米`
-        : `快走，${payload.fastWalkTime}min`,
+        ? `快走，${n(payload.fastWalkDistance)}米`
+        : `快走，${n(payload.fastWalkTime)}min`,
     "jog-panel":
       mode === "distance"
-        ? `慢跑，${payload.jogDistance}米`
-        : `慢跑，${payload.jogTime}min`,
+        ? `慢跑，${n(payload.jogDistance)}米`
+        : `慢跑，${n(payload.jogTime)}min`,
     "run-panel":
       mode === "distance"
-        ? `跑步，${payload.runDistance}米`
-        : `跑步，${payload.runTime}min`,
-    "sit-overtime-panel": `久坐，${payload.sitOvertimeTime}min`,
+        ? `跑步，${n(payload.runDistance)}米`
+        : `跑步，${n(payload.runTime)}min`,
+    "sit-overtime-panel": `久坐，${n(payload.sitOvertimeTime)}min`,
     "ride-panel":
       mode === "distance"
-        ? `骑行，${payload.rideDistance}米`
-        : `骑行，${payload.rideTime}min`,
+        ? `骑行，${n(payload.rideDistance)}米`
+        : `骑行，${n(payload.rideTime)}min`,
   };
   return map[payload.panel] || "活动记录";
 }
@@ -286,7 +320,7 @@ const FOOD_LABELS = {
   "vegetable-btn": "蔬菜",
   "protein-btn": "蛋白质",
   "light-btn": "清淡",
-  "no-drink-btn": "不饮酒",
+  "no-drink-btn": "食物低糖或不含糖",
   "junk-btn": "垃圾食品",
   "drink-btn": "饮品",
   "drink-wine-btn": "酒",
@@ -306,6 +340,9 @@ const DRINK_STYLE_KEYS = {
 };
 
 function eatingPhraseForKey(key, payload) {
+  if (key === "no-drink-btn") {
+    return FOOD_LABELS[key] || "食物低糖或不含糖";
+  }
   if (key === "milktea-btn" && payload && payload.milkteaSugar) {
     const map = { full: "全糖", half: "半糖", light: "微糖", none: "无糖" };
     const lab = map[payload.milkteaSugar] || "";
@@ -377,7 +414,32 @@ function mapRecordToRecentItem(record) {
   } else if (record.summary != null) {
     infoStr = String(record.summary);
   }
-  return { do: doLabel, time: timeStr, info: infoStr };
+  const scorePayload =
+    record.scorePayload != null && typeof record.scorePayload === "object"
+      ? record.scorePayload
+      : record.payload != null && typeof record.payload === "object"
+        ? record.payload
+        : null;
+  const mod =
+    record.module ||
+    (doLabel === "活动" ? "act" : doLabel === "饮食" ? "eating" : doLabel === "睡眠" ? "sleep" : "");
+  return {
+    id: record.id,
+    localId: record.localId,
+    noDelete: !!record.noDelete,
+    do: doLabel,
+    time: timeStr,
+    info: infoStr,
+    module: mod,
+    scoreDelta: (() => {
+      if (record.scoreDelta == null || record.scoreDelta === "") {
+        return undefined;
+      }
+      const n = Number(record.scoreDelta);
+      return Number.isFinite(n) ? n : undefined;
+    })(),
+    scorePayload: scorePayload || undefined,
+  };
 }
 
 function requestJson(path, method, data) {
@@ -398,9 +460,18 @@ async function fetchDashboardProfile() {
   }
   const raw = await requestJson("/api/dashboard", "GET");
   const data = raw && raw.data != null ? raw.data : raw;
+  const rawGoal = data.goal;
+  let goal;
+  if (rawGoal != null && rawGoal !== "" && Number.isFinite(Number(rawGoal))) {
+    goal = Math.max(0, Math.min(99, Math.round(Number(rawGoal))));
+    persistUserGoalLocal(goal);
+  } else {
+    const fallback = readUserGoalLocal();
+    goal = fallback != null ? fallback : 80;
+  }
   return {
     username: data.username != null ? data.username : "username",
-    goal: data.goal != null ? data.goal : 80,
+    goal,
     duration: data.duration != null ? data.duration : 0,
   };
 }
@@ -419,11 +490,7 @@ function normalizeRecentListPayload(raw, depth = 0) {
 async function fetchRecentActList(limit = 20) {
   if (useMock()) {
     await delay();
-    return mockRecentList.slice(0, limit).map((x) => ({
-      do: x.do,
-      time: x.time,
-      info: x.info,
-    }));
+    return mockRecentList.slice(0, limit).map(mapRecordToRecentItem);
   }
   const raw = await requestJson(
     `/api/records/recent?limit=${encodeURIComponent(limit)}`,
@@ -456,12 +523,43 @@ async function saveGoal(payload) {
       const g = Math.max(0, Math.min(99, Math.round(Number(payload.goal))));
       if (!Number.isNaN(g)) {
         wx.setStorageSync(MOCK_USER_GOAL_KEY, g);
+        persistUserGoalLocal(g);
       }
     }
     return { success: true, payload };
   }
   const raw = await requestJson("/api/goal/save", "POST", payload);
+  if (payload && payload.goal != null) {
+    persistUserGoalLocal(payload.goal);
+  }
   return raw && raw.data != null ? raw.data : raw;
+}
+
+function mockRecentRecordId() {
+  return `m${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
+}
+
+function computeMockListScoreDelta(moduleKey, scorePayload) {
+  const p = scorePayload && typeof scorePayload === "object" ? scorePayload : {};
+  if (moduleKey === "act") {
+    return scoreUtil.calcActScore(p);
+  }
+  if (moduleKey === "sleep") {
+    return scoreUtil.calcSleepScore(p);
+  }
+  const c = scoreUtil.getEatingCountsToday();
+  const portions = scoreUtil.getEatingPortionCountsToday();
+  const m = p.selectedMap || {};
+  const overwhelm = scoreUtil.calcEatingOverwhelmMarginal(portions, m);
+  return (
+    scoreUtil.calcEatingScore({
+      ...p,
+      wineCountToday: p.wineCountToday != null ? p.wineCountToday : c.wine,
+      milkCountToday: p.milkCountToday != null ? p.milkCountToday : c.milk,
+      coffeeCountToday:
+        p.coffeeCountToday != null ? p.coffeeCountToday : c.coffee,
+    }) + overwhelm
+  );
 }
 
 function pushMockRecent(
@@ -471,11 +569,14 @@ function pushMockRecent(
   scorePayload,
   moduleKey,
 ) {
+  const delta = computeMockListScoreDelta(moduleKey, scorePayload);
   const item = {
+    id: mockRecentRecordId(),
     do: moduleLabel,
     time: formatRecordedAtTimeOnly(recordedAt),
     info: summary,
     module: moduleKey,
+    scoreDelta: delta,
     scorePayload:
       scorePayload && typeof scorePayload === "object"
         ? { ...scorePayload }
@@ -527,6 +628,7 @@ function prependAiAnalyzeToRecentList(recentList, detected) {
       do: "睡眠",
       time: timeStr,
       info: formatAiNightSleepDurationText(detected.sleepHour),
+      noDelete: true,
     });
   }
   if (detected && detected.hadCalorie) {
@@ -535,6 +637,7 @@ function prependAiAnalyzeToRecentList(recentList, detected) {
       do: "活动消耗",
       time: timeStr,
       info: `消耗${c}卡路里`,
+      noDelete: true,
     });
   }
   return [...newRows, ...base].slice(0, 20);
@@ -728,6 +831,33 @@ async function submitFeedback(payload) {
   return raw && raw.data != null ? raw.data : raw;
 }
 
+async function deleteRecordById(id) {
+  if (useMock()) {
+    await delay();
+    const rid = String(id || "").trim();
+    const idx = mockRecentList.findIndex((x) => String(x.id) === rid);
+    if (idx < 0) {
+      throw new Error("记录不存在");
+    }
+    const row = mockRecentList[idx];
+    mockRecentList = mockRecentList.filter((_, i) => i !== idx);
+    return {
+      success: true,
+      scoreDelta: Number(row.scoreDelta) || 0,
+      module: row.module,
+      payload: (row.scorePayload && { ...row.scorePayload }) || {},
+    };
+  }
+  const raw = await requestJson(
+    `/api/records/${encodeURIComponent(String(id).trim())}`,
+    "DELETE",
+  );
+  const data = raw && raw.data != null ? raw.data : raw;
+  return data && typeof data === "object"
+    ? data
+    : { success: false, message: "删除失败" };
+}
+
 async function uploadAiAnalyzeImage(filePath) {
   if (useMock()) {
     await delay();
@@ -772,4 +902,5 @@ module.exports = {
   saveSleepRecord,
   submitFeedback,
   uploadAiAnalyzeImage,
+  deleteRecordById,
 };

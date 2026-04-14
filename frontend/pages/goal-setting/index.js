@@ -64,6 +64,14 @@ Page({
       return;
     }
     app.globalData.goal = this.data.goal;
+    try {
+      wx.setStorageSync(
+        "userGoalLocal",
+        Math.max(0, Math.min(99, Math.round(Number(this.data.goal)))),
+      );
+    } catch (e) {
+      /* ignore */
+    }
     app.recalcDailySummary();
     wx.showToast({ title: "已保存", icon: "success" });
     wx.navigateBack();

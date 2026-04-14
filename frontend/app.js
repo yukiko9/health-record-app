@@ -20,6 +20,17 @@ App({
     } catch (e) {
       /* ignore */
     }
+    try {
+      const ug = wx.getStorageSync("userGoalLocal");
+      if (ug != null && ug !== "") {
+        const n = Math.max(0, Math.min(99, Math.round(Number(ug))));
+        if (!Number.isNaN(n)) {
+          this.globalData.goal = n;
+        }
+      }
+    } catch (e) {
+      /* ignore */
+    }
     this.restoreDailyScoreIfSameDay();
     this.recalcDailySummary();
   },
@@ -170,6 +181,76 @@ App({
     this.globalData.moduleScore[module] =
       (this.globalData.moduleScore[module] || 0) + d;
     this.globalData.moduleDone[module] = true;
+    return this.recalcDailySummary();
+  },
+
+  /**
+   * 删除一条「最近活动」记录时回滚当日全局分、模块分及与计分相关的本地累计。
+   * @param {{ module?: string, scoreDelta?: number, scorePayload?: object }} item
+   */
+  revertRecordedScoreDelta(item) {
+    const module = item && item.module;
+    const d = Number(item && item.scoreDelta) || 0;
+    if (!module) {
+      return this.recalcDailySummary();
+    }
+    let v =
+      typeof this.globalData.scoreValue === "number"
+        ? this.globalData.scoreValue
+        : 60;
+    v = Math.max(0, Math.min(100, Math.round(v - d)));
+    this.globalData.scoreValue = v;
+    const cur = Number(this.globalData.moduleScore[module]) || 0;
+    this.globalData.moduleScore[module] = Math.max(0, cur - d);
+
+    const payload = (item && item.scorePayload) || {};
+    if (module === "act" && payload.panel === "sit-overtime-panel") {
+      const t = Number(payload.sitOvertimeTime) || 0;
+      const key = scoreUtil.localDateKey();
+      try {
+        const acc = wx.getStorageSync("sitDailyAccum") || {};
+        if (acc.date === key && t > 0) {
+          const total = Math.max(0, (Number(acc.total) || 0) - t);
+          wx.setStorageSync("sitDailyAccum", { date: key, total });
+        }
+      } catch (e) {
+        /* ignore */
+      }
+    }
+
+    if (module === "eating") {
+      const m = payload.selectedMap || {};
+      try {
+        const key = scoreUtil.localDateKey();
+        const raw = wx.getStorageSync("eatingDailyBtnCounts") || {};
+        if (raw.date !== key) {
+          return this.recalcDailySummary();
+        }
+        const patch = { ...raw, date: key };
+        if (m["drink-wine-btn"]) {
+          patch.wine = Math.max(0, (Number(patch.wine) || 0) - 1);
+        }
+        if (m["drink-milk-btn"]) {
+          patch.milk = Math.max(0, (Number(patch.milk) || 0) - 1);
+        }
+        if (m["coffee-btn"]) {
+          patch.coffee = Math.max(0, (Number(patch.coffee) || 0) - 1);
+        }
+        if (m["vegetable-btn"]) {
+          patch.vegetable = Math.max(0, (Number(patch.vegetable) || 0) - 1);
+        }
+        if (m["fruit-btn"]) {
+          patch.fruit = Math.max(0, (Number(patch.fruit) || 0) - 1);
+        }
+        if (m["protein-btn"]) {
+          patch.protein = Math.max(0, (Number(patch.protein) || 0) - 1);
+        }
+        wx.setStorageSync("eatingDailyBtnCounts", patch);
+      } catch (e) {
+        /* ignore */
+      }
+    }
+
     return this.recalcDailySummary();
   },
 });

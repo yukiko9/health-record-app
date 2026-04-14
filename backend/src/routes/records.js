@@ -4,6 +4,7 @@ const {
   getUserRecordsByDate,
   getTodayDateKey,
   addRecord,
+  deleteRecordById,
   listRecent,
   listHighRate,
   listWeekProgress
@@ -85,6 +86,20 @@ router.get("/records/recent", (req, res) => {
   const limit = readLimit(req.query.limit, 20);
   const list = listRecent(req.user.id, limit);
   res.json({ list });
+});
+
+router.delete("/records/:id", (req, res) => {
+  const { id } = req.params;
+  const { ok, row } = deleteRecordById(req.user.id, id);
+  if (!ok || !row) {
+    return res.status(404).json({ success: false, message: "记录不存在" });
+  }
+  return res.json({
+    success: true,
+    scoreDelta: Number(row.scoreDelta) || 0,
+    module: row.module,
+    payload: row.payload || {}
+  });
 });
 
 router.get("/records/high-rate", (req, res) => {

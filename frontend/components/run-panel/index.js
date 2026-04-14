@@ -1,3 +1,5 @@
+const { metricFromInput, sanitizeIntString } = require("../../utils/actInput");
+
 Component({
   properties: {
     value: {
@@ -31,39 +33,38 @@ Component({
   methods: {
     stopBubble() {},
     onPickDistance() {
-      const dist = (this.data.distStr || "").trim() === "" ? 0 : Number(this.data.distStr) || 0;
+      const dist = metricFromInput(this.data.distStr);
       this.setData({ metricTouched: true });
       this.triggerEvent("change", {
-        runTime: 0,
+        runTime: null,
         runDistance: dist,
         actInputMode: "distance"
       });
     },
     onPickTime() {
-      const raw = (this.data.timeStr || "").trim();
-      const t = raw === "" ? 0 : Number(this.data.timeStr) || 0;
+      const t = metricFromInput(this.data.timeStr);
       this.setData({ metricTouched: true });
       this.triggerEvent("change", {
         runTime: t,
-        runDistance: 0,
+        runDistance: null,
         actInputMode: "time"
       });
     },
     onDistanceInput(e) {
-      const distStr = e.detail.value;
+      const distStr = sanitizeIntString(e.detail.value);
       this.setData({ distStr, metricTouched: true });
       this.triggerEvent("change", {
-        runTime: 0,
-        runDistance: Number(distStr) || 0,
+        runTime: null,
+        runDistance: metricFromInput(distStr),
         actInputMode: "distance"
       });
     },
     onTimeInput(e) {
-      const timeStr = e.detail.value;
+      const timeStr = sanitizeIntString(e.detail.value);
       this.setData({ timeStr, metricTouched: true });
       this.triggerEvent("change", {
-        runTime: Number(timeStr) || 0,
-        runDistance: 0,
+        runTime: metricFromInput(timeStr),
+        runDistance: null,
         actInputMode: "time"
       });
     }

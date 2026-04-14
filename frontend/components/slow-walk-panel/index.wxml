@@ -7,11 +7,10 @@
     <view class="metric-card-body" catchtap="stopBubble">
       <input
         class="metric-input"
-        type="digit"
+        type="number"
         value="{{distStr}}"
         placeholder="输入数字..."
         placeholder-class="metric-input-placeholder"
-        disabled="{{metricTouched && inputMode !== 'distance'}}"
         bindinput="onDistanceInput"
         bindfocus="onPickDistance"
       />
@@ -26,11 +25,10 @@
     <view class="metric-card-body" catchtap="stopBubble">
       <input
         class="metric-input"
-        type="digit"
+        type="number"
         value="{{timeStr}}"
         placeholder="输入数字..."
         placeholder-class="metric-input-placeholder"
-        disabled="{{metricTouched && inputMode !== 'time'}}"
         bindinput="onTimeInput"
         bindfocus="onPickTime"
       />

@@ -4,12 +4,25 @@ const {
   fetchHighRateActList,
   fetchWeekProgress,
   uploadAiAnalyzeImage,
-  prependAiAnalyzeToRecentList
+  prependAiAnalyzeToRecentList,
+  deleteRecordById,
+  buildRecordedAt,
+  formatRecordedAtTimeOnly,
+  buildActSummary,
+  buildEatingSummary,
+  buildSleepSummary
 } = require("../../utils/api");
 const { applyAiAnalyzeToApp } = require("../../utils/aiApply");
 const scoreUtil = require("../../utils/score");
 const { buildFiveDaySlots, mergeWeekApi, dateKeyFromDate } = require("../../utils/weekUi");
 const { getScorePageBackgroundStyle } = require("../../utils/pageBg");
+
+function readSitAccumTotalForUi() {
+  const key = scoreUtil.localDateKey();
+  const raw = wx.getStorageSync("sitDailyAccum") || {};
+  if (raw.date !== key) return 0;
+  return Number(raw.total) || 0;
+}
 
 Page({
   data: {
@@ -151,27 +164,86 @@ Page({
 
   noopModal() {},
 
+  async deleteRecord(e) {
+    const { item } = e.detail || {};
+    if (!item || item.noDelete) {
+      return;
+    }
+    const rid = item.id;
+    const loc = item.localId;
+    if (!rid && !loc) {
+      wx.showToast({ title: "无法删除该条", icon: "none" });
+      return;
+    }
+    const sd = Number(item.scoreDelta);
+    if (!Number.isFinite(sd)) {
+      wx.showToast({ title: "该记录无法回滚分数", icon: "none" });
+      return;
+    }
+    if (rid) {
+      try {
+        await deleteRecordById(rid);
+      } catch (err) {
+        const raw = err && err.message ? String(err.message) : "";
+        wx.showToast({
+          title: raw.length > 12 ? "删除失败" : raw || "删除失败",
+          icon: "none"
+        });
+        return;
+      }
+    }
+    const list = [...(this.data.recentActList || [])];
+    const i = rid
+      ? list.findIndex((x) => x.id === rid)
+      : list.findIndex((x) => x.localId === loc);
+    if (i >= 0) {
+      list.splice(i, 1);
+    }
+    app.globalData.recentActList = list;
+    const summary = app.revertRecordedScoreDelta(item);
+    const todayGoalMet =
+      typeof summary.scoreValue === "number" &&
+      typeof app.globalData.goal === "number" &&
+      summary.scoreValue >= app.globalData.goal;
+    this.setData({
+      recentActList: list,
+      score: summary.scoreDisplay,
+      situation: summary.situation,
+      moodEmoji: app.getMoodEmoji(summary.scoreValue),
+      pageBgStyle: getScorePageBackgroundStyle(summary.scoreValue),
+      todayGoalMet,
+      goalProgressPct: this.computeGoalProgress(summary.scoreValue, app.globalData.goal)
+    });
+    wx.showToast({ title: "已删除", icon: "success" });
+  },
+
   onHighRateActTap(e) {
     const idx = Number(e.currentTarget.dataset.index);
     const item = (this.data.highRateActList || [])[idx];
     if (!item || !item.valid || !item.module || !item.scorePayload) {
       return;
     }
+    const p = item.scorePayload || {};
     let delta = 0;
     if (item.module === "act") {
-      delta = scoreUtil.calcActScore(item.scorePayload);
+      if (p.panel === "sit-overtime-panel") {
+        const before = readSitAccumTotalForUi();
+        delta = scoreUtil.calcActScore({ ...p, sitDailyTotalBefore: before });
+      } else {
+        delta = scoreUtil.calcActScore(p);
+      }
     } else if (item.module === "eating") {
       const c = scoreUtil.getEatingCountsToday();
       const portions = scoreUtil.getEatingPortionCountsToday();
-      const m = item.scorePayload.selectedMap || {};
+      const m = p.selectedMap || {};
       const overwhelmMarginal = scoreUtil.calcEatingOverwhelmMarginal(portions, m);
       delta =
         scoreUtil.calcEatingScore({
-          ...item.scorePayload,
+          ...p,
           wineCountToday: c.wine,
           milkCountToday: c.milk,
           coffeeCountToday: c.coffee,
-          milkteaSugar: item.scorePayload.milkteaSugar
+          milkteaSugar: p.milkteaSugar
         }) + overwhelmMarginal;
       let nw = c.wine;
       let nm = c.milk;
@@ -190,9 +262,41 @@ Page({
         protein: afterPortions.protein
       });
     } else if (item.module === "sleep") {
-      delta = scoreUtil.calcSleepScore(item.scorePayload);
+      delta = scoreUtil.calcSleepScore(p);
+    }
+    if (item.module === "act" && p.panel === "sit-overtime-panel") {
+      const key = scoreUtil.localDateKey();
+      const t = Number(p.sitOvertimeTime) || 0;
+      const before = readSitAccumTotalForUi();
+      try {
+        wx.setStorageSync("sitDailyAccum", { date: key, total: before + t });
+      } catch (e) {
+        /* ignore */
+      }
     }
     const summary = app.addModuleScoreDelta(item.module, delta);
+    const recordedAt = buildRecordedAt();
+    const timeStr = formatRecordedAtTimeOnly(recordedAt);
+    const infoStr =
+      item.module === "act"
+        ? buildActSummary(p)
+        : item.module === "eating"
+          ? buildEatingSummary(p)
+          : buildSleepSummary(p);
+    const localId = `hr-${Date.now()}-${idx}`;
+    const nextRecent = [
+      {
+        localId,
+        do: item.do,
+        time: timeStr,
+        info: infoStr,
+        module: item.module,
+        scoreDelta: delta,
+        scorePayload: { ...p }
+      },
+      ...(app.globalData.recentActList || [])
+    ].slice(0, 20);
+    app.globalData.recentActList = nextRecent;
     const todayGoalMet =
       typeof summary.scoreValue === "number" &&
       typeof app.globalData.goal === "number" &&
@@ -203,7 +307,8 @@ Page({
       moodEmoji: app.getMoodEmoji(summary.scoreValue),
       pageBgStyle: getScorePageBackgroundStyle(summary.scoreValue),
       todayGoalMet,
-      goalProgressPct: this.computeGoalProgress(summary.scoreValue, app.globalData.goal)
+      goalProgressPct: this.computeGoalProgress(summary.scoreValue, app.globalData.goal),
+      recentActList: nextRecent
     });
     wx.showToast({ title: "已记分", icon: "success" });
   },

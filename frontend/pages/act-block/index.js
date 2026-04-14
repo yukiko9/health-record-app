@@ -10,6 +10,45 @@ function readSitAccum() {
   return { date: key, total: Number(raw.total) || 0 };
 }
 
+function isPositiveMetric(v) {
+  const n = Number(v);
+  return Number.isFinite(n) && n > 0;
+}
+
+/** 当前面板下是否已填写有效数值（未填则不保存，避免沿用默认 10 分钟） */
+function isActInputComplete(panel, actInputMode, d) {
+  const mode = actInputMode === "distance" ? "distance" : "time";
+  if (panel === "slow-walk-panel") {
+    return mode === "distance"
+      ? isPositiveMetric(d.slowWalkDistance)
+      : isPositiveMetric(d.slowWalkTime);
+  }
+  if (panel === "fast-walk-panel") {
+    return mode === "distance"
+      ? isPositiveMetric(d.fastWalkDistance)
+      : isPositiveMetric(d.fastWalkTime);
+  }
+  if (panel === "jog-panel") {
+    return mode === "distance"
+      ? isPositiveMetric(d.jogDistance)
+      : isPositiveMetric(d.jogTime);
+  }
+  if (panel === "run-panel") {
+    return mode === "distance"
+      ? isPositiveMetric(d.runDistance)
+      : isPositiveMetric(d.runTime);
+  }
+  if (panel === "ride-panel") {
+    return mode === "distance"
+      ? isPositiveMetric(d.rideDistance)
+      : isPositiveMetric(d.rideTime);
+  }
+  if (panel === "sit-overtime-panel") {
+    return isPositiveMetric(d.sitOvertimeTime);
+  }
+  return false;
+}
+
 Page({
   data: {
     pageBgStyle: "",
@@ -17,17 +56,17 @@ Page({
     moodEmoji: "🙂",
     activePanel: "slow-walk-panel",
     actDataInput: {
-      slowWalkTime: 10,
-      slowWalkDistance: 0,
-      fastWalkTime: 10,
-      fastWalkDistance: 0,
-      jogTime: 10,
-      jogDistance: 0,
-      runTime: 10,
-      runDistance: 0,
-      sitOvertimeTime: 30,
-      rideTime: 10,
-      rideDistance: 0
+      slowWalkTime: null,
+      slowWalkDistance: null,
+      fastWalkTime: null,
+      fastWalkDistance: null,
+      jogTime: null,
+      jogDistance: null,
+      runTime: null,
+      runDistance: null,
+      sitOvertimeTime: null,
+      rideTime: null,
+      rideDistance: null
     },
     actInputModes: {
       slowWalk: "time",
@@ -132,17 +171,17 @@ Page({
     this.setData({
       actResetStamp: this.data.actResetStamp + 1,
       actDataInput: {
-        slowWalkTime: 10,
-        slowWalkDistance: 0,
-        fastWalkTime: 10,
-        fastWalkDistance: 0,
-        jogTime: 10,
-        jogDistance: 0,
-        runTime: 10,
-        runDistance: 0,
-        sitOvertimeTime: 30,
-        rideTime: 10,
-        rideDistance: 0
+        slowWalkTime: null,
+        slowWalkDistance: null,
+        fastWalkTime: null,
+        fastWalkDistance: null,
+        jogTime: null,
+        jogDistance: null,
+        runTime: null,
+        runDistance: null,
+        sitOvertimeTime: null,
+        rideTime: null,
+        rideDistance: null
       },
       actInputModes: {
         slowWalk: "time",
@@ -169,6 +208,10 @@ Page({
       actInputMode: modeByPanel[p] || "time",
       ...this.data.actDataInput
     };
+    if (!isActInputComplete(p, payload.actInputMode, this.data.actDataInput)) {
+      wx.showToast({ title: "请先输入时长或距离", icon: "none" });
+      return;
+    }
     if (p === "sit-overtime-panel") {
       const acc = readSitAccum();
       payload.sitDailyTotalBefore = acc.total;

@@ -6,7 +6,8 @@ function calcActScore(payload) {
     const t = Number(payload.sitOvertimeTime) || 0;
     const before = Number(payload.sitDailyTotalBefore) || 0;
     if (before + t < 300) return 0;
-    return Math.trunc(t * 0.5);
+    const tCap = Math.min(t, 240);
+    return Math.trunc(tCap * 0.5);
   }
 
   let raw = 0;
@@ -131,6 +132,7 @@ function calcSleepScore(payload) {
 
   if (payload.sleepMode === "noon") {
     if ((Number(payload.noonSleepSavesBefore) || 0) >= 1) return 0;
+    if (h <= 0) return 0;
     if (h <= 0.5) return 3;
     if (h <= 1) return 2;
     return 0;

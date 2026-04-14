@@ -1,6 +1,10 @@
 const app = getApp();
 const { saveSleepRecord, fetchRecentActList } = require("../../utils/api");
-const { calcSleepScore: calcSleepScoreUtil, getNoonSleepSavesToday, localDateKey } = require("../../utils/score");
+const {
+  calcSleepScore: calcSleepScoreUtil,
+  getNoonSleepSavesToday,
+  localDateKey,
+} = require("../../utils/score");
 
 function noonTotalToParts(totalMin) {
   let t = Math.round(totalMin / 30) * 30;
@@ -8,7 +12,7 @@ function noonTotalToParts(totalMin) {
   t = Math.max(0, Math.min(maxMin, t));
   return {
     sleepHour: Math.floor(t / 60),
-    sleepHalfHour: t % 60 >= 30 ? 30 : 0
+    sleepHalfHour: t % 60 >= 30 ? 30 : 0,
   };
 }
 
@@ -22,7 +26,7 @@ Page({
     sleepExitUp: false,
     sleepEnterPlay: false,
     sleepBuddyFloat: false,
-    sleepHourBump: false
+    sleepHourBump: false,
   },
 
   clearSleepUiTimers() {
@@ -42,7 +46,7 @@ Page({
       sleepExitUp: false,
       sleepEnterPlay: false,
       sleepBuddyFloat: false,
-      sleepHourBump: false
+      sleepHourBump: false,
     });
     setTimeout(() => this.setData({ scoreBump: true }), 30);
     setTimeout(() => this.setData({ scoreBump: false }), 520);
@@ -81,7 +85,7 @@ Page({
     const cur = this.data.sleepHour * 60 + this.data.sleepHalfHour;
     this.setData({
       ...noonTotalToParts(cur - 30),
-      sleepHourBump: true
+      sleepHourBump: true,
     });
   },
 
@@ -89,7 +93,7 @@ Page({
     const cur = this.data.sleepHour * 60 + this.data.sleepHalfHour;
     this.setData({
       ...noonTotalToParts(cur + 30),
-      sleepHourBump: true
+      sleepHourBump: true,
     });
   },
 
@@ -99,7 +103,7 @@ Page({
       sleepMode: "noon",
       sleepHour: this.data.sleepHour,
       sleepHalfHour: this.data.sleepHalfHour,
-      noonSleepSavesBefore
+      noonSleepSavesBefore,
     };
     try {
       await saveSleepRecord(payload);
@@ -111,18 +115,18 @@ Page({
     }
     wx.setStorageSync("noonSleepSaves", {
       date: localDateKey(),
-      count: noonSleepSavesBefore + 1
+      count: noonSleepSavesBefore + 1,
     });
     const sleepScore = this.calcSleepScore(payload);
     const summary = app.setModuleScore("sleep", sleepScore);
     this.setData({
       score: summary.scoreDisplay,
-      moodEmoji: app.getMoodEmoji(summary.scoreValue)
+      moodEmoji: app.getMoodEmoji(summary.scoreValue),
     });
     wx.showToast({ title: "午睡已保存", icon: "success" });
   },
 
   calcSleepScore(payload) {
     return calcSleepScoreUtil(payload);
-  }
+  },
 });

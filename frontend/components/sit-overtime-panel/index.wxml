@@ -4,8 +4,10 @@
     <view class="metric-card-body" catchtap="stopBubble">
       <input
         class="metric-input"
-        type="digit"
+        type="number"
         value="{{timeStr}}"
+        placeholder="输入数字..."
+        placeholder-class="metric-input-placeholder"
         bindinput="onTimeInput"
       />
       <text class="metric-unit">分</text>

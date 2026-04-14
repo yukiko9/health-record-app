@@ -1,10 +1,21 @@
 <view class="recent-act-list-show">
   <scroll-view class="recent-act-scroll" scroll-y>
-    <block wx:for="{{list}}" wx:key="index">
+    <block wx:for="{{list}}" wx:for-item="item" wx:for-index="idx" wx:key="idx">
       <view class="row">
-        <text>{{item.do}}</text>
-        <text>{{item.time}}</text>
-        <text>{{item.info}}</text>
+        <view class="row-main">
+          <text>{{item.do}}</text>
+          <text>{{item.time}}</text>
+          <text>{{item.info}}</text>
+        </view>
+        <button
+          wx:if="{{(item.id || item.localId) && !item.noDelete}}"
+          class="delete-record-btn"
+          size="mini"
+          catchtap="deleteRecord"
+          data-index="{{idx}}"
+        >
+          删除
+        </button>
       </view>
     </block>
   </scroll-view>
