@@ -38,3 +38,6 @@
 {"text":"填入数据，位数过大之后会出现小数点","coherent":8,"valuable":7,"flexible":9,"label":[]}
 时间: 2026-04-14T14:28:48.389Z
 
+{"text":"重新进入的小程序，首页的目标会重置为80","coherent":8,"valuable":7,"flexible":9,"label":[]}
+时间: 2026-04-14T14:29:24.207Z
+
