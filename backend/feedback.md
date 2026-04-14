@@ -35,3 +35,6 @@
 {"text":"午睡0小时会加分","coherent":8,"valuable":7,"flexible":9,"label":[]}
 时间: 2026-04-14T14:27:51.337Z
 
+{"text":"填入数据，位数过大之后会出现小数点","coherent":8,"valuable":7,"flexible":9,"label":[]}
+时间: 2026-04-14T14:28:48.389Z
+
