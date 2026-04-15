@@ -426,7 +426,7 @@ function mapRecordToRecentItem(record) {
   return {
     id: record.id,
     localId: record.localId,
-    noDelete: !!record.noDelete,
+    recordKind: record.recordKind,
     do: doLabel,
     time: timeStr,
     info: infoStr,
@@ -616,28 +616,60 @@ function formatAiNightSleepDurationText(decimalHours) {
 
 /**
  * AI 分析记分后写入最近记录（仅本地 globalData / 页面 data，与后端 POST 无关）。
- * 列语义：do | time | info → 睡眠|登记时间|睡眠时长；活动消耗|登记时间|消耗N卡路里
+ * 每条带 localId / scoreDelta / module，可与其它记录一样删除并回滚。
+ * detected.aiHints 来自 applyAiAnalyzeToApp：nightDelta、actDelta、oldNight、actWas、sleepParts
  */
 function prependAiAnalyzeToRecentList(recentList, detected) {
   const ra = buildRecordedAt();
   const timeStr = formatRecordedAtTimeOnly(ra);
   const base = Array.isArray(recentList) ? recentList : [];
   const newRows = [];
-  if (detected && detected.hadSleep) {
+  const h = detected && detected.aiHints ? detected.aiHints : null;
+  const showSleepRow =
+    h &&
+    (detected.hadSleep || Number(h.nightDelta) !== 0);
+  if (showSleepRow) {
     newRows.push({
+      localId: `ai-s-${Date.now()}`,
       do: "睡眠",
       time: timeStr,
-      info: formatAiNightSleepDurationText(detected.sleepHour),
-      noDelete: true,
+      info: detected.hadSleep
+        ? formatAiNightSleepDurationText(detected.sleepHour)
+        : "AI 夜间睡眠记分",
+      module: "sleep",
+      scoreDelta: h.nightDelta,
+      recordKind: "aiSleep",
+      scorePayload: {
+        sleepMode: "night",
+        sleepHour: h.sleepParts.sleepHour,
+        sleepHalfHour: h.sleepParts.sleepHalfHour,
+        _aiMeta: { oldNight: h.oldNight }
+      }
     });
   }
-  if (detected && detected.hadCalorie) {
+  if (detected && detected.hadCalorie && h) {
     const c = Math.round(Number(detected.calorie) || 0);
     newRows.push({
+      localId: `ai-c-${Date.now()}`,
       do: "活动消耗",
       time: timeStr,
       info: `消耗${c}卡路里`,
-      noDelete: true,
+      module: "act",
+      scoreDelta: h.actDelta,
+      recordKind: "aiCalorie",
+      scorePayload: { _aiMeta: { actWas: h.actWas } }
+    });
+  }
+  if (detected && detected.hadSleep && !detected.hadCalorie && h && Number(h.actDelta) !== 0) {
+    newRows.push({
+      localId: `ai-a-${Date.now()}`,
+      do: "活动",
+      time: timeStr,
+      info: "AI 分析（活动分）",
+      module: "act",
+      scoreDelta: h.actDelta,
+      recordKind: "aiCalorie",
+      scorePayload: { _aiMeta: { actWas: h.actWas } }
     });
   }
   return [...newRows, ...base].slice(0, 20);

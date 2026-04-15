@@ -8,13 +8,14 @@
           <text>{{item.info}}</text>
         </view>
         <button
-          wx:if="{{(item.id || item.localId) && !item.noDelete}}"
+          wx:if="{{item.id || item.localId}}"
           class="delete-record-btn"
           size="mini"
           catchtap="deleteRecord"
           data-index="{{idx}}"
+          style="font-size: 10px;"
         >
-          删除
+          ❌
         </button>
       </view>
     </block>

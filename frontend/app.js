@@ -1,4 +1,5 @@
 const scoreUtil = require("./utils/score");
+const { computeRecordRevertDelta } = require("./utils/revertRecordDelta");
 
 const DAILY_GLOBAL_SCORE_KEY = "dailyGlobalScoreV1";
 
@@ -190,7 +191,7 @@ App({
    */
   revertRecordedScoreDelta(item) {
     const module = item && item.module;
-    const d = Number(item && item.scoreDelta) || 0;
+    const d = Number(computeRecordRevertDelta(item)) || 0;
     if (!module) {
       return this.recalcDailySummary();
     }
@@ -246,6 +247,34 @@ App({
           patch.protein = Math.max(0, (Number(patch.protein) || 0) - 1);
         }
         wx.setStorageSync("eatingDailyBtnCounts", patch);
+      } catch (e) {
+        /* ignore */
+      }
+    }
+
+    if (item.recordKind === "aiSleep" && payload._aiMeta) {
+      try {
+        const key = scoreUtil.localDateKey();
+        const on = payload._aiMeta.oldNight;
+        wx.setStorageSync("nightSleepScoreApplied", {
+          date: key,
+          delta: Number(on) || 0
+        });
+      } catch (e) {
+        /* ignore */
+      }
+    }
+
+    if (module === "sleep" && payload.sleepMode === "noon") {
+      try {
+        const key = scoreUtil.localDateKey();
+        const raw = wx.getStorageSync("noonSleepSaves") || {};
+        if (raw.date === key) {
+          wx.setStorageSync("noonSleepSaves", {
+            date: key,
+            count: Math.max(0, (Number(raw.count) || 0) - 1),
+          });
+        }
       } catch (e) {
         /* ignore */
       }

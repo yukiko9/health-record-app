@@ -1,11 +1,11 @@
 const app = getApp();
 const {
   fetchUserDashboard,
+  fetchRecentActList,
   fetchHighRateActList,
   fetchWeekProgress,
   uploadAiAnalyzeImage,
   prependAiAnalyzeToRecentList,
-  deleteRecordById,
   buildRecordedAt,
   formatRecordedAtTimeOnly,
   buildActSummary,
@@ -13,6 +13,7 @@ const {
   buildSleepSummary
 } = require("../../utils/api");
 const { applyAiAnalyzeToApp } = require("../../utils/aiApply");
+const { runDeleteRecentRecord } = require("../../utils/recentRecordDelete");
 const scoreUtil = require("../../utils/score");
 const { buildFiveDaySlots, mergeWeekApi, dateKeyFromDate } = require("../../utils/weekUi");
 const { getScorePageBackgroundStyle } = require("../../utils/pageBg");
@@ -166,47 +167,46 @@ Page({
 
   async deleteRecord(e) {
     const { item } = e.detail || {};
-    if (!item || item.noDelete) {
+    if (!item) {
       return;
     }
     const rid = item.id;
     const loc = item.localId;
-    if (!rid && !loc) {
-      wx.showToast({ title: "无法删除该条", icon: "none" });
+    const result = await runDeleteRecentRecord(item);
+    if (!result.ok) {
+      wx.showToast({
+        title: result.message || "删除失败",
+        icon: "none"
+      });
       return;
     }
-    const sd = Number(item.scoreDelta);
-    if (!Number.isFinite(sd)) {
-      wx.showToast({ title: "该记录无法回滚分数", icon: "none" });
-      return;
+    let recent = [];
+    try {
+      recent = item.id
+        ? await fetchRecentActList(20)
+        : (this.data.recentActList || []).filter((x) => x.localId !== loc);
+    } catch (_) {
+      recent = (this.data.recentActList || []).filter(
+        (x) => x.id !== rid && x.localId !== loc,
+      );
     }
-    if (rid) {
-      try {
-        await deleteRecordById(rid);
-      } catch (err) {
-        const raw = err && err.message ? String(err.message) : "";
-        wx.showToast({
-          title: raw.length > 12 ? "删除失败" : raw || "删除失败",
-          icon: "none"
-        });
-        return;
-      }
-    }
-    const list = [...(this.data.recentActList || [])];
-    const i = rid
-      ? list.findIndex((x) => x.id === rid)
-      : list.findIndex((x) => x.localId === loc);
-    if (i >= 0) {
-      list.splice(i, 1);
-    }
-    app.globalData.recentActList = list;
-    const summary = app.revertRecordedScoreDelta(item);
+    app.globalData.recentActList = recent;
+    const incomingHigh = await fetchHighRateActList(2);
+    const prevHigh = app.globalData.highRateActList || [];
+    const highRateActList = this.highRateListHasValid(incomingHigh)
+      ? incomingHigh
+      : this.highRateListHasValid(prevHigh)
+        ? prevHigh
+        : incomingHigh;
+    app.globalData.highRateActList = highRateActList;
+    const summary = result.summary || app.recalcDailySummary();
     const todayGoalMet =
       typeof summary.scoreValue === "number" &&
       typeof app.globalData.goal === "number" &&
       summary.scoreValue >= app.globalData.goal;
     this.setData({
-      recentActList: list,
+      recentActList: recent,
+      highRateActList,
       score: summary.scoreDisplay,
       situation: summary.situation,
       moodEmoji: app.getMoodEmoji(summary.scoreValue),
@@ -379,12 +379,13 @@ Page({
           wx.showToast({ title: "只获取到睡眠时间！", icon: "none" });
         }
 
-        const summary = applyAiAnalyzeToApp(app, sleepHour, calorie);
+        const { summary, aiHints } = applyAiAnalyzeToApp(app, sleepHour, calorie);
         const nextRecent = prependAiAnalyzeToRecentList(app.globalData.recentActList, {
           hadSleep: !missS,
           hadCalorie: !missC,
           sleepHour,
-          calorie
+          calorie,
+          aiHints
         });
         app.globalData.recentActList = nextRecent;
         const todayGoalMet =

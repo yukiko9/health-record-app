@@ -39,7 +39,19 @@ function applyAiAnalyzeToApp(app, finalSleepHour, finalCalorie) {
   wx.setStorageSync("nightSleepScoreApplied", { date: key, delta: nightNew });
   wx.setStorageSync("nightSleepSavedDate", key);
 
-  return app.recalcDailySummary();
+  const summary = app.recalcDailySummary();
+  const nightDelta = nightNew - oldNight;
+  const actDelta = heatScore - actWas;
+  return {
+    summary,
+    aiHints: {
+      nightDelta,
+      actDelta,
+      oldNight,
+      actWas,
+      sleepParts: parts
+    }
+  };
 }
 
 module.exports = {
