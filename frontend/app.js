@@ -260,6 +260,9 @@ App({
           date: key,
           delta: Number(on) || 0
         });
+        if (wx.getStorageSync("nightSleepSavedDate") === key) {
+          wx.removeStorageSync("nightSleepSavedDate");
+        }
       } catch (e) {
         /* ignore */
       }
