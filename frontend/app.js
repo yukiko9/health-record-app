@@ -255,15 +255,18 @@ App({
     if (item.recordKind === "aiSleep" && payload._aiMeta) {
       try {
         const key = scoreUtil.localDateKey();
-        const on = Number(payload._aiMeta.oldNight) || 0;
-        wx.setStorageSync("nightSleepScoreApplied", { date: key, delta: on });
-        if (!on) {
-          wx.removeStorageSync("nightSleepSavedDate");
-          getCurrentPages().forEach((pg) => {
-            if (pg.route === "pages/sleep-night-block/index") {
-              pg.setData({ nightSleepLocked: false });
-            }
-          });
+        const on = payload._aiMeta.oldNight;
+        wx.setStorageSync("nightSleepScoreApplied", {
+          date: key,
+          delta: Number(on) || 0
+        });
+        wx.removeStorageSync("nightSleepSavedDate");
+        const stack = getCurrentPages();
+        for (let i = stack.length - 1; i >= 0; i--) {
+          if (stack[i].route === "pages/sleep-night-block/index") {
+            stack[i].setData({ nightSleepLocked: false });
+            break;
+          }
         }
       } catch (e) {
         /* ignore */
