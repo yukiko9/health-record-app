@@ -192,12 +192,8 @@ Page({
     }
     app.globalData.recentActList = recent;
     const incomingHigh = await fetchHighRateActList(2);
-    const prevHigh = app.globalData.highRateActList || [];
-    const highRateActList = this.highRateListHasValid(incomingHigh)
-      ? incomingHigh
-      : this.highRateListHasValid(prevHigh)
-        ? prevHigh
-        : incomingHigh;
+    /** 删除后必须以本次接口为准，勿回退 prevHigh，否则最后一条删光后高频仍残留 */
+    const highRateActList = incomingHigh || [];
     app.globalData.highRateActList = highRateActList;
     const summary = result.summary || app.recalcDailySummary();
     const todayGoalMet =
